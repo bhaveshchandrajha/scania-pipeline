@@ -5,10 +5,12 @@ Enriches context_index JSON files with display file (DSPF) information from the 
 - Reads AST files to find sym.dspf.* symbols and their corresponding file id/path.
 - For each context package, finds which display files are referenced by the node (sem or outgoingEdges).
 - Optionally loads DDS source for each display file from --ddsDir (e.g. QDDSSRC/MEMBER).
+- Optionally loads DDS AST (dds-ast/1.0) from --ddsAstDir (e.g. HS1210D_20260216) and attaches uiContracts
+  (recordFormats, fields) to each display file entry for advanced context and code generation.
 - Adds a "displayFiles" array to each context package for UI-aware code generation.
 
 Usage:
-  python3 enrich_context_with_display_files.py --astDir JSON_ast/JSON_20260211 --contextDir context_index [--ddsDir path/to/dds]
+  python3 enrich_context_with_display_files.py --astDir JSON_ast/JSON_20260211 --contextDir context_index [--ddsDir path/to/dds] [--ddsAstDir HS1210D_20260216]
 """
 
 import argparse
@@ -101,7 +103,7 @@ def resolve_dds_source(dds_dir: Path, file_id: str, name: str) -> Optional[str]:
     # Try QDDSSRC/NAME or NAME (flat)
     for sub in ["QDDSSRC", ""]:
         base = dds_dir / sub if sub else dds_dir
-        for ext in [".mbr", ".txt", ".dspf", ""]:
+        for ext in [".mbr", ".txt", ".dspf", ".DSPF", ""]:
             p = base / (name + ext)
             if p.is_file():
                 try:
@@ -111,21 +113,47 @@ def resolve_dds_source(dds_dir: Path, file_id: str, name: str) -> Optional[str]:
     return None
 
 
+def load_dds_ast_ui_contracts(dds_ast_dir: Optional[Path], name: str, dds_ast_cache: dict) -> Optional[dict]:
+    """
+    Load DDS AST (dds-ast/1.0) for display file `name` from dds_ast_dir.
+    Returns the uiContracts object (recordFormats, displayFiles, etc.) or None.
+    """
+    if not dds_ast_dir or not dds_ast_dir.is_dir() or not name:
+        return None
+    cache_key = name
+    if cache_key not in dds_ast_cache:
+        ast_file = dds_ast_dir / f"{name}-ast.json"
+        if not ast_file.is_file():
+            dds_ast_cache[cache_key] = None
+        else:
+            try:
+                ast = load_ast(ast_file)
+                if ast.get("version") == "dds-ast/1.0":
+                    dds_ast_cache[cache_key] = ast.get("uiContracts")
+                else:
+                    dds_ast_cache[cache_key] = None
+            except Exception:
+                dds_ast_cache[cache_key] = None
+    return dds_ast_cache.get(cache_key)
+
+
 def enrich_context_file(
     context_path: Path,
     ast_dir: Path,
     dds_dir: Optional[Path],
+    dds_ast_dir: Optional[Path],
     unit_ast_cache: dict,
+    dds_ast_cache: dict,
     attach_unit_dspf: bool = False,
 ) -> bool:
-    """Enrich one context JSON with displayFiles. Returns True if modified."""
+    """Enrich one context JSON with displayFiles (and optionally ddsSource + uiContracts). Returns True if modified."""
     # e.g. HS1212_n498.json -> unit_id=HS1212, node_id=n498
     stem = context_path.stem
     if "_" not in stem:
         return False
     unit_id, node_id = stem.split("_", 1)
 
-    # Load AST for this unit
+    # Load AST for this unit (RPG ast_dir)
     if unit_id not in unit_ast_cache:
         ast_file = ast_dir / f"{unit_id}-ast.json"
         if not ast_file.is_file():
@@ -146,7 +174,7 @@ def enrich_context_file(
     if not refs:
         return False
 
-    # Build displayFiles for referenced DSPFs only
+    # Build displayFiles for referenced DSPFs only (with optional ddsSource and uiContracts from DDS AST)
     dspf_by_id = {d["symbolId"]: d for d in all_dspf}
     display_files = []
     for sym_id in refs:
@@ -158,6 +186,10 @@ def enrich_context_file(
             dds_source = resolve_dds_source(dds_dir, entry.get("fileId"), entry["name"])
             if dds_source:
                 entry["ddsSource"] = dds_source
+        if dds_ast_dir and entry.get("name"):
+            ui_contracts = load_dds_ast_ui_contracts(dds_ast_dir, entry["name"], dds_ast_cache)
+            if ui_contracts:
+                entry["uiContracts"] = ui_contracts
         display_files.append(entry)
 
     context["displayFiles"] = display_files
@@ -168,15 +200,17 @@ def enrich_context_file(
 
 def main():
     ap = argparse.ArgumentParser(description="Enrich context packages with display file (DSPF) info from AST.")
-    ap.add_argument("--astDir", required=True, help="Directory containing *-ast.json files (e.g. JSON_ast/JSON_20260211)")
+    ap.add_argument("--astDir", required=True, help="Directory containing RPG *-ast.json files (e.g. JSON_ast/JSON_20260211)")
     ap.add_argument("--contextDir", default="context_index", help="Directory containing context_index JSON files")
     ap.add_argument("--ddsDir", default=None, help="Optional: directory containing DDS source (e.g. QDDSSRC with .mbr/.txt)")
+    ap.add_argument("--ddsAstDir", default=None, help="Optional: directory containing DDS AST files (e.g. HS1210D_20260216 with HS1210D-ast.json); attaches uiContracts to display file entries.")
     ap.add_argument("--attachUnitDspf", action="store_true", help="If set, attach all unit-level DSPFs to every context (even when node has no ref)")
     args = ap.parse_args()
 
     ast_dir = Path(args.astDir)
     context_dir = Path(args.contextDir)
     dds_dir = Path(args.ddsDir) if args.ddsDir else None
+    dds_ast_dir = Path(args.ddsAstDir) if args.ddsAstDir else None
 
     if not ast_dir.is_dir():
         print(f"AST dir not found: {ast_dir}")
@@ -184,13 +218,17 @@ def main():
     if not context_dir.is_dir():
         print(f"Context dir not found: {context_dir}")
         return 1
+    if dds_ast_dir and not dds_ast_dir.is_dir():
+        print(f"DDS AST dir not found: {dds_ast_dir}")
+        return 1
 
     unit_ast_cache = {}
+    dds_ast_cache = {}
     updated = 0
     for path in sorted(context_dir.glob("*.json")):
         if path.name == "manifest.json":
             continue
-        if enrich_context_file(path, ast_dir, dds_dir, unit_ast_cache, attach_unit_dspf=args.attachUnitDspf):
+        if enrich_context_file(path, ast_dir, dds_dir, dds_ast_dir, unit_ast_cache, dds_ast_cache, attach_unit_dspf=args.attachUnitDspf):
             updated += 1
             print(f"Enriched {path.name} with display files")
     print(f"Done. Enriched {updated} context file(s).")

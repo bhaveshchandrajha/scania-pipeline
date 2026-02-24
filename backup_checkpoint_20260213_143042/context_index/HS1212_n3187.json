@@ -1,0 +1,68 @@
+{
+  "astNode": {
+    "id": "n3187",
+    "kind": "Procedure",
+    "name": null,
+    "sem": "{\"sym.var.Age\":{\"refersTo\":\"sym.var.Age\"}}",
+    "outgoingEdges": [
+      "sym.var.Age"
+    ],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "startLine": 4079,
+      "startColumn": 7,
+      "endLine": 4098,
+      "endColumn": 24
+    },
+    "raw": {
+      "id": "n3187",
+      "kind": "Procedure",
+      "sem": {
+        "sym.var.Age": {
+          "refersTo": "sym.var.Age"
+        }
+      },
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+        "startLine": 4079,
+        "startLinePP": 4106,
+        "startCol": 7,
+        "startByte": 186993,
+        "endLine": 4098,
+        "endLinePP": 4125,
+        "endCol": 24,
+        "endByte": 187646
+      },
+      "props": {
+        "procedure_name": "CheckClaim",
+        "opcode": "PROC",
+        "name": "GetClaimAge"
+      },
+      "children": [
+        "n3188",
+        "n3189",
+        "n3190",
+        "n3206"
+      ]
+    }
+  },
+  "narrative": "### Node n3187: Procedure\n\nProcedure `n3187` expresses business logic derived from its semantic block and referenced symbols/files.\n\n- **Variables**:\n  - Age (type: t.dec9_0)\n\n- **Outgoing edges**:\n  - sym.var.Age\n\n- **Raw sem JSON**:\n```json\n{\n  \"sym.var.Age\" : {\n    \"refersTo\" : \"sym.var.Age\"\n  }\n}\n```\n",
+  "rpgSnippet": "     P GetClaimAge     B\n     D GetClaimAge     PI\n     D*----------------------------------------------------------------\n     D Age             S              9  0\n     C*****************************************************************\n        Monitor;\n           If G7324A = '1';\n              Age = %Diff(%Date(G71090:*Iso):%Date(G71080:*Iso):*M);\n           Else;\n              Age = %Diff(%Date(G71090:*Iso):%Date(G7325A:*Eur):*M);\n           EndIf;\n        On-Error *All;\n              Age = 100;\n        EndMon;\n        If Age > 99;\n           KLMTH = 99;\n        Else;\n           KLMTH = Age;\n        EndIf;\n     P GetClaimAge     E",
+  "dbContracts": [],
+  "symbolMetadata": {
+    "sym.var.Age": {
+      "name": "Age",
+      "kind": "variable",
+      "description": null,
+      "typeRef": "t.dec9_0"
+    }
+  },
+  "displayFiles": [
+    {
+      "symbolId": "sym.dspf.HS1212D",
+      "name": "HS1212D",
+      "fileId": "qsys:HSSRC/QDDSSRC/HS1212D",
+      "path": "/QSYS.LIB/HSSRC.LIB/QDDSSRC.FILE/HS1212D.MBR"
+    }
+  ]
+}

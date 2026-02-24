@@ -1,0 +1,56 @@
+{
+  "astNode": {
+    "id": "n3445",
+    "kind": "Procedure",
+    "name": null,
+    "sem": null,
+    "outgoingEdges": [],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "startLine": 4300,
+      "startColumn": 7,
+      "endLine": 4312,
+      "endColumn": 24
+    },
+    "raw": {
+      "id": "n3445",
+      "kind": "Procedure",
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+        "startLine": 4300,
+        "startLinePP": 4327,
+        "startCol": 7,
+        "startByte": 194173,
+        "endLine": 4312,
+        "endLinePP": 4339,
+        "endCol": 24,
+        "endByte": 194691
+      },
+      "props": {
+        "procedure_name": "loadClaim",
+        "opcode": "PROC",
+        "name": "getDates"
+      },
+      "children": [
+        "n3446",
+        "n3447",
+        "n3448",
+        "n3449",
+        "n3450",
+        "n3451"
+      ]
+    }
+  },
+  "narrative": "### Node n3445: Procedure\n\nProcedure `n3445` expresses business logic derived from its semantic block and referenced symbols/files.\n\n",
+  "rpgSnippet": "     P getDates        B\n     D getDates        PI\n     D*---------------------------------------------------------------\n       dates = *Blanks;\n       exec sql\n          declare c4 Cursor for select AHK080, AHK620\n            from HSAHKPF\n            where AHK000 = :G71000 and AHK010 = :G71010 and AHK020 = :G71020\n            and AHK030 = ' ' and AHK040 = :G71030 and AHK050 = :G71190;\n       exec sql open c4;\n       exec sql fetch next from c4 into :dates;\n       exec sql close c4;\n     P                 E",
+  "dbContracts": [],
+  "symbolMetadata": {},
+  "displayFiles": [
+    {
+      "symbolId": "sym.dspf.HS1212D",
+      "name": "HS1212D",
+      "fileId": "qsys:HSSRC/QDDSSRC/HS1212D",
+      "path": "/QSYS.LIB/HSSRC.LIB/QDDSSRC.FILE/HS1212D.MBR"
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "astNode": {
+    "id": "n2010",
+    "kind": "Procedure",
+    "name": null,
+    "sem": "{\"sym.var.sid\":{\"refersTo\":\"sym.var.sid\"}}",
+    "outgoingEdges": [
+      "sym.var.sid"
+    ],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1210",
+      "startLine": 3060,
+      "startColumn": 7,
+      "endLine": 3079,
+      "endColumn": 24
+    },
+    "raw": {
+      "id": "n2010",
+      "kind": "Procedure",
+      "sem": {
+        "sym.var.sid": {
+          "refersTo": "sym.var.sid"
+        }
+      },
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+        "startLine": 3060,
+        "startLinePP": 3062,
+        "startCol": 7,
+        "startByte": 142143,
+        "endLine": 3079,
+        "endLinePP": 3081,
+        "endCol": 24,
+        "endByte": 143014
+      },
+      "props": {
+        "procedure_name": "CheckV4",
+        "opcode": "PROC",
+        "name": "AddAttachments"
+      },
+      "children": [
+        "n2011",
+        "n2012",
+        "n2013",
+        "n2014",
+        "n2018"
+      ]
+    }
+  },
+  "narrative": "### Node n2010: Procedure\n\nProcedure `n2010` expresses business logic derived from its semantic block and referenced symbols/files.\n\n- **Variables**:\n  - sid (type: t.dec9_0)\n\n- **Outgoing edges**:\n  - sym.var.sid\n\n- **Raw sem JSON**:\n```json\n{\n  \"sym.var.sid\" : {\n    \"refersTo\" : \"sym.var.sid\"\n  }\n}\n```\n",
+  "rpgSnippet": "     P AddAttachments  B\n     D AddAttachments  PI\n     D   id                           9  0 value\n     D   dealerId                     3A   value\n     D   claimNo                      8A   value\n     D   failNo                       2A   value\n     D*----------------------------------------------------------------\n     D sid             S              9  0 Inz(0)\n     D*****************************************************************\n       exec sql select wkt_sid into :sid from hswktf\n                where wkt_id = :id;\n        If SQLCOD = 0 and sid > 0;\n          exec sql\n             INSERT INTO HSG75F (G75_KZL, G75_C00001, G75_FAILNO,\n             G75_FILE, G75_F00001)\n             SELECT :dealerid, :claimNo, :failNo, ATT_BLOB,\n             ATT_NAME FROM cdattf WHERE att_dmg_id = :sid;\n        EndIf;\n        Return;\n     P                 E",
+  "dbContracts": [],
+  "symbolMetadata": {
+    "sym.var.sid": {
+      "name": "sid",
+      "kind": "variable",
+      "description": null,
+      "typeRef": "t.dec9_0"
+    }
+  },
+  "displayFiles": [
+    {
+      "symbolId": "sym.dspf.HS1210D",
+      "name": "HS1210D",
+      "fileId": "qsys:HSSRC/QDDSSRC/HS1210D",
+      "path": "/QSYS.LIB/HSSRC.LIB/QDDSSRC.FILE/HS1210D.MBR"
+    }
+  ]
+}

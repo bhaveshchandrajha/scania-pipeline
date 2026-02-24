@@ -1,0 +1,60 @@
+{
+  "astNode": {
+    "id": "n2757",
+    "kind": "Procedure",
+    "name": null,
+    "sem": null,
+    "outgoingEdges": [],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "startLine": 3706,
+      "startColumn": 7,
+      "endLine": 3748,
+      "endColumn": 24
+    },
+    "raw": {
+      "id": "n2757",
+      "kind": "Procedure",
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+        "startLine": 3706,
+        "startLinePP": 3733,
+        "startCol": 7,
+        "startByte": 173932,
+        "endLine": 3748,
+        "endLinePP": 3775,
+        "endCol": 24,
+        "endByte": 175588
+      },
+      "props": {
+        "procedure_name": "loadTextFromSfl",
+        "opcode": "PROC",
+        "name": "saveText"
+      },
+      "children": [
+        "n2758",
+        "n2759",
+        "n2760",
+        "n2761",
+        "n2762",
+        "n2784",
+        "n2785",
+        "n2786",
+        "n2787",
+        "n2788"
+      ]
+    }
+  },
+  "narrative": "### Node n2757: Procedure\n\nProcedure `n2757` expresses business logic derived from its semantic block and referenced symbols/files.\n\n",
+  "rpgSnippet": "     P saveText        B\n     D saveText        PI\n     D*----------------------------------------------------------------\n       count = 1;\n       countZ = 0;\n       txt = *Blanks;\n       DoW count < 100;\n          Chain count HS1212ST;\n          If text = *Blanks;\n             exec sql\n                  delete from hsgptf\n                         where GPT_KZL = :G71000 and GPT_CNR = :G71050 and\n                               GPT_FNR = :G7306A AND GPT_ZNR = :count;\n          Else;\n             If countZ < 4;\n                countZ +=1;\n                txt(countZ) = TEXT;\n             EndIf;\n             exec sql\n                  update hsgptf set gpt_txt = :TEXT\n                         where GPT_KZL = :G71000 and GPT_CNR = :G71050 and\n                               GPT_FNR = :G7306A AND GPT_ZNR = :count;\n             If SQLCOD <> 0;\n                exec sql\n                     INSERT INTO HSGPTF\n                            (GPT_KZL, GPT_CNR, GPT_FNR, GPT_WNR, GPT_ZNR,\n                             GPT_TXT)\n                            VALUES(:G71000, :G71050, :G7306A, :G73065, :count,\n                                   :text);\n             EndIf;\n          EndIf;\n          count += 1;\n       EndDo;\n       G7312A = txt(1);\n       G7313A = txt(2);\n       G7332A = txt(3);\n       G7333A = txt(4);\n       exec sql\n            update hsg73pf set G73120 = :G7312A, G73130 = :G7313A,\n                               G73320 = :G7332A, G73330 = :G7333A\n                   where G73000 = :G71000 and G73050 = :G71050 and\n                         G73060 = :G7306A AND G73065 = :G73065;\n     P                 E",
+  "dbContracts": [],
+  "symbolMetadata": {},
+  "displayFiles": [
+    {
+      "symbolId": "sym.dspf.HS1212D",
+      "name": "HS1212D",
+      "fileId": "qsys:HSSRC/QDDSSRC/HS1212D",
+      "path": "/QSYS.LIB/HSSRC.LIB/QDDSSRC.FILE/HS1212D.MBR"
+    }
+  ]
+}
