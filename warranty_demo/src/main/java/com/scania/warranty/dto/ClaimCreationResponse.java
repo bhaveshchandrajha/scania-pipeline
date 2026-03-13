@@ -1,16 +1,13 @@
 /**
  * Data transfer object for API or display.
  * <p>
- * Generated from RPG: unit {@code HS1210}, node {@code n404}.
+ * Generated from RPG: unit {@code HS1210}, node {@code n1779}.
  */
 
 package com.scania.warranty.dto;
 
-/**
- * DTO for claim creation response.
- */
 public record ClaimCreationResponse(
-    String message,
-    String claimNumber
+    boolean success, // @rpg-trace: n1779
+    String message // @rpg-trace: n1779
 ) {
 }

@@ -16,7 +16,7 @@
     }
   },
   "narrative": "### Node n3187: Procedure `GetClaimAge`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Variables**:\n  - Age (type: t.dec9_0)\n\n- **Raw sem JSON**:\n```json\n{\n  \"sym.var.Age\": {\n    \"refersTo\": \"sym.var.Age\"\n  }\n}\n```",
-  "rpgSnippet": "     P GetClaimAge     B\n     D GetClaimAge     PI\n     D*----------------------------------------------------------------\n     D Age             S              9  0\n     C*****************************************************************\n        Monitor;\n           If G7324A = '1';\n              Age = %Diff(%Date(G71090:*Iso):%Date(G71080:*Iso):*M);\n           Else;\n              Age = %Diff(%Date(G71090:*Iso):%Date(G7325A:*Eur):*M);\n           EndIf;\n        On-Error *All;\n              Age = 100;\n        EndMon;\n        If Age > 99;\n           KLMTH = 99;\n        Else;\n           KLMTH = Age;\n        EndIf;\n     P GetClaimAge     E",
+  "rpgSnippet": "",
   "dbContracts": [],
   "symbolMetadata": {
     "sym.var.Age": {

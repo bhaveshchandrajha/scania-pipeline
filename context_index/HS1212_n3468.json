@@ -16,7 +16,7 @@
     }
   },
   "narrative": "### Node n3468: Procedure `readPositions`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Other symbols**:\n  - Positions\n\n- **Raw sem JSON**:\n```json\n{\n  \"sym.ds.Positions\": {\n    \"refersTo\": \"sym.ds.Positions\"\n  }\n}\n```",
-  "rpgSnippet": "     P readPositions   B\n     D readPositions   PI\n     D   dealerId                     3A   value\n     D   claimNo                      8A   value\n     D*****************************************************************\n       Dcl-S x Int(10) Inz(1);\n\n       clear Positions;\n       exec sql\n                SELECT LISTAGG(DISTINCT DIGITS(AHW075)),\n                       LISTAGG(DISTINCT DIGITS(AHW075))\n                       WITHIN GROUP (ORDER BY AHW075) AS AHW075\n                       into :Positions.List\n                       FROM (\n                             SELECT AHW000, AHW010, AHW020, AHW075 FROM HSAHWPF\n                                    UNION\n                             SELECT AHP000 AS AHW000, AHP010 AS AHW010,\n                                    AHP020 AS AHW020, AHP075 AS AHW075\n                             FROM HSAHPPF\n                       ) AS AHW\n                       JOIN HSG71PF\n                            ON AHW000 = G71000 AND AHW010 = G71010 AND\n                               AHW020 = G71020\n                       WHERE G71000 = :dealerId AND G71050  = :claimNo AND\n                             AHW075 > 0;\n       Positions = %ScanRpl(' ' : '0' : Positions);\n     P                 E",
+  "rpgSnippet": "",
   "dbContracts": [],
   "symbolMetadata": {
     "sym.ds.Positions": {

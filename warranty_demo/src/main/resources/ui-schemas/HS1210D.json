@@ -3,7 +3,7 @@
   "type": "list",
   "title": "Warranty Claims – HS1210D",
   "dataSource": {
-    "method": "GET",
+    "method": "POST",
     "url": "/api/claims/search",
     "params": {
       "companyCode": {
@@ -26,9 +26,9 @@
       "width": 10
     },
     {
-      "id": "invoiceDate",
+      "id": "formattedInvoiceDate",
       "label": "Invoice Date",
-      "dtoField": "invoiceDate",
+      "dtoField": "formattedInvoiceDate",
       "width": 12
     },
     {
@@ -38,10 +38,10 @@
       "width": 12
     },
     {
-      "id": "licensePlate",
-      "label": "License Plate",
-      "dtoField": "licensePlate",
-      "width": 12
+      "id": "customerNumber",
+      "label": "Customer Nr.",
+      "dtoField": "customerNumber",
+      "width": 10
     },
     {
       "id": "customerName",
@@ -53,13 +53,87 @@
       "id": "statusDescription",
       "label": "Status",
       "dtoField": "statusDescription",
-      "width": 14
+      "width": 6
     },
     {
-      "id": "numberOfFailures",
+      "id": "errorCount",
       "label": "Errors",
-      "dtoField": "numberOfFailures",
+      "dtoField": "errorCount",
       "width": 6
+    },
+    {
+      "id": "companyCode",
+      "label": "Company",
+      "dtoField": "companyCode",
+      "width": 6
+    },
+    {
+      "id": "orderNumber",
+      "label": "Order Nr.",
+      "dtoField": "orderNumber",
+      "width": 10
+    },
+    {
+      "id": "demandCode",
+      "label": "DMC",
+      "dtoField": "demandCode",
+      "width": 6
+    }
+  ],
+  "actions": [
+    {
+      "id": "CF03",
+      "type": "exit",
+      "label": "CF03 Verlassen (Exit)",
+      "action": "historyBack"
+    },
+    {
+      "id": "CF05",
+      "type": "refresh",
+      "label": "CF05 Aktualisieren (Refresh)",
+      "reuseDataSource": true
+    },
+    {
+      "id": "CF06",
+      "type": "create",
+      "label": "CF06 Erstellen (Create)",
+      "navigate": "/claims/create"
+    },
+    {
+      "id": "CF09",
+      "type": "listStart",
+      "label": "CF09 Listenanfang (List Start)",
+      "action": "scrollToTop"
+    },
+    {
+      "id": "CF11",
+      "type": "view",
+      "label": "CF11 Ansicht (View)",
+      "navigate": "/claims/{{companyCode}}/{{claimNumber}}"
+    },
+    {
+      "id": "CF12",
+      "type": "back",
+      "label": "CF12 Zurück (Back)",
+      "action": "historyBack"
+    },
+    {
+      "id": "CF16",
+      "type": "sort",
+      "label": "CF16 Sortierung (Sort)",
+      "action": "openSortDialog"
+    },
+    {
+      "id": "CF17",
+      "type": "sortToggle",
+      "label": "CF17 Sortierung Auf/Ab (Sort Toggle)",
+      "action": "toggleSortOrder"
+    },
+    {
+      "id": "CF19",
+      "type": "filter",
+      "label": "CF19 Filter setzen (Set Filter)",
+      "action": "openFilterDialog"
     }
   ],
   "filters": [
@@ -69,53 +143,6 @@
       "type": "string",
       "param": "companyCode",
       "default": "001"
-    }
-  ],
-  "actions": [
-    {
-      "id": "CF03",
-      "type": "exit",
-      "label": "CF03 Verlassen (Exit)"
-    },
-    {
-      "id": "CF05",
-      "type": "refresh",
-      "label": "CF05 Aktualisieren (Refresh)"
-    },
-    {
-      "id": "CF06",
-      "type": "create",
-      "label": "CF06 Erstellen (Create)"
-    },
-    {
-      "id": "CF09",
-      "type": "listStart",
-      "label": "CF09 Listenanfang"
-    },
-    {
-      "id": "CF11",
-      "type": "view",
-      "label": "CF11 Ansicht"
-    },
-    {
-      "id": "CF12",
-      "type": "back",
-      "label": "CF12 Zurück"
-    },
-    {
-      "id": "CF16",
-      "type": "sort",
-      "label": "CF16 Sortierung"
-    },
-    {
-      "id": "CF17",
-      "type": "sortToggle",
-      "label": "CF17 Sortierung Auf/Ab"
-    },
-    {
-      "id": "CF19",
-      "type": "filter",
-      "label": "CF19 Filter setzen"
     }
   ]
 }

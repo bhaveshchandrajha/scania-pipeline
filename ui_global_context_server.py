@@ -19,7 +19,8 @@ Endpoints:
   GET  /api/list-programs
   POST /api/build-global-context
   POST /api/export-neo4j
-  POST /api/migrate-feature
+  POST /api/migrate-feature      (generates Java + ui-schemas from displayFiles)
+  POST /api/regenerate-ui-schema (regenerate ui-schemas without full migration)
   POST /api/build-application
 """
 
@@ -27,6 +28,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
@@ -50,7 +52,7 @@ def _truncate_build_output(raw: str) -> str:
     return f"... (earlier output omitted, showing last {BUILD_OUTPUT_MAX_CHARS} chars)\n" + tail
 
 
-def _run_maven_build_with_autofix(proj_path: Path) -> dict:
+def _run_maven_build_with_autofix(proj_path: Path, progress_callback=None, hitl_mode: bool = False) -> dict:
     """
     Run Maven build in proj_path with an agentic self-correction loop:
 
@@ -59,20 +61,34 @@ def _run_maven_build_with_autofix(proj_path: Path) -> dict:
     - If still failing, call the LLM-based compile error fixer script and rebuild.
     - Repeat the LLM fixer + rebuild cycle up to MAX_LLM_PASSES times.
 
+    progress_callback(msg: str) is called with status updates to keep connections alive.
     Returns a dict with buildSuccess, buildExitCode, buildOutput.
     """
 
-    MAX_LLM_PASSES = 3
+    def _progress(msg: str) -> None:
+        if progress_callback:
+            try:
+                progress_callback(msg)
+            except Exception:
+                pass
 
-    def _run_build_once() -> tuple[int | None, str]:
+    MAX_LLM_PASSES = 4
+
+    def _run_build_once(use_clean: bool = False, full_package: bool = False) -> tuple[int | None, str]:
         try:
-            cmd = ["mvn", "-f", "pom.xml", "clean", "package", "-DskipTests"]
+            # compile-only is ~2-3x faster than clean package; use for fix loop
+            if full_package:
+                cmd = ["mvn", "-f", "pom.xml", "-T", "1C", "-q", "clean", "package", "-DskipTests"]
+            elif use_clean:
+                cmd = ["mvn", "-f", "pom.xml", "-T", "1C", "-q", "clean", "compile"]
+            else:
+                cmd = ["mvn", "-f", "pom.xml", "-T", "1C", "-q", "compile"]
             proc = subprocess.run(
                 cmd,
                 cwd=str(proj_path),
                 capture_output=True,
                 text=True,
-                timeout=900,
+                timeout=300,
             )
             output = (proc.stdout or "") + (proc.stderr or "")
             return proc.returncode, output
@@ -123,27 +139,56 @@ def _run_maven_build_with_autofix(proj_path: Path) -> dict:
                 continue
         return changed
 
-    # Initial build + filename mismatch autofix
-    exit_code, output = _run_build_once()
+    # Pre-build: resilient pipeline fixers
+    try:
+        from fix_idclass import run_fix as run_idclass_fix
+        count, _ = run_idclass_fix(proj_path)
+        if count > 0:
+            _progress(f"IdClass fixer: {count} entity(ies) fixed.")
+    except Exception:
+        pass
+    try:
+        from fix_test_alignment import run_fix as run_test_alignment
+        count, _ = run_test_alignment(proj_path)
+        if count > 0:
+            _progress(f"Test alignment: {count} file(s) fixed.")
+    except Exception:
+        pass
+    try:
+        from fix_ambiguous_mapping import run_fix as run_ambiguous_mapping_fix
+        count, _ = run_ambiguous_mapping_fix(proj_path)
+        if count > 0:
+            _progress(f"Ambiguous mapping fixer: {count} endpoint(s) fixed.")
+    except Exception:
+        pass
+
+    # Initial build (clean compile for fresh state) + filename mismatch autofix
+    _progress("Running Maven compile...")
+    exit_code, output = _run_build_once(use_clean=True)
     combined_output = output
 
     if exit_code is not None and exit_code != 0:
         if _autofix_filename_issues(output):
-            exit_code2, output2 = _run_build_once()
+            exit_code2, output2 = _run_build_once(use_clean=True)
             combined_output = (combined_output or "") + "\n\n=== Rebuild after filename autofix ===\n\n" + (output2 or "")
             exit_code = exit_code2
 
-    # Iterative LLM-based correction loop
+    # Iterative LLM-based correction loop (compile-only, no clean = faster)
     llm_pass = 0
+    suggested_fixes = None
     while exit_code is not None and exit_code != 0 and llm_pass < MAX_LLM_PASSES:
         llm_pass += 1
+        use_propose_only = hitl_mode and llm_pass == 1
+        _progress(f"Running LLM compile fixer (pass {llm_pass}/{MAX_LLM_PASSES}){' [propose-only for HITL]' if use_propose_only else ''}...")
         try:
             log_path = proj_path / "target" / f"last_compile_errors_pass{llm_pass}.txt"
             log_path.parent.mkdir(parents=True, exist_ok=True)
             log_path.write_text(combined_output or "", encoding="utf-8", errors="ignore")
 
-            # Call the LLM-based fixer script
+            # Call the LLM-based fixer script (with --propose-only for HITL on first pass)
             cmd = [sys.executable, str(ROOT_DIR / "fix_compile_errors.py"), str(proj_path), str(log_path)]
+            if use_propose_only:
+                cmd.append("--propose-only")
             proc = subprocess.run(
                 cmd,
                 cwd=str(ROOT_DIR),
@@ -157,11 +202,36 @@ def _run_maven_build_with_autofix(proj_path: Path) -> dict:
                 + (proc.stdout or "")
                 + (proc.stderr or "")
             )
+
+            if use_propose_only:
+                # HITL: parse JSON from stdout, return suggested fixes without applying
+                try:
+                    for line in (proc.stdout or "").splitlines():
+                        line = line.strip()
+                        if line.startswith("{"):
+                            data = json.loads(line)
+                            if data.get("proposeOnly") and data.get("suggestedFixes"):
+                                suggested_fixes = data["suggestedFixes"]
+                                break
+                except Exception:
+                    pass
+                if suggested_fixes:
+                    return {
+                        "buildSuccess": False,
+                        "buildExitCode": exit_code,
+                        "buildOutput": combined_output,
+                        "testOutput": "",
+                        "testSummary": None,
+                        "needsReview": True,
+                        "suggestedFixes": suggested_fixes,
+                        "errorSummary": "Compilation failed. Review suggested fixes and apply to continue.",
+                    }
         except Exception as e:
             combined_output = (combined_output or "") + f"\n\n(LLM compile error fixer failed on pass {llm_pass}: {e})"
             break
 
-        # Rebuild after LLM corrections
+        # Rebuild after LLM corrections (compile only, incremental)
+        _progress(f"Rebuilding after LLM pass {llm_pass}...")
         exit_code, output_after_llm = _run_build_once()
         combined_output = (
             (combined_output or "")
@@ -172,10 +242,79 @@ def _run_maven_build_with_autofix(proj_path: Path) -> dict:
         if exit_code == 0:
             break
 
+    # After successful compile: package (jar) + run tests
+    # Gate: build is only successful if compile, package, AND tests all pass.
+    # SKIP_TESTS=1: skip test compile & run (use when tests are out of sync after migration).
+    skip_tests = os.environ.get("SKIP_TESTS", "").lower() in ("1", "true", "yes")
+    test_output = ""
+    test_summary = None
+    package_ok = False
+    test_ok = False
+    max_test_fix_passes = 2  # Retry once after ambiguous-mapping fix
+    if exit_code == 0:
+        for test_fix_pass in range(max_test_fix_passes):
+            try:
+                # -Dmaven.test.skip=true skips test-compile AND test execution (avoids test/domain mismatch)
+                mvn_skip = "-Dmaven.test.skip=true" if skip_tests else "-DskipTests"
+                proc = subprocess.run(
+                    ["mvn", "-f", "pom.xml", "-T", "1C", "-q", "package", mvn_skip],
+                    cwd=str(proj_path),
+                    capture_output=True,
+                    text=True,
+                    timeout=180,
+                )
+                pack_out = (proc.stdout or "") + (proc.stderr or "")
+                if proc.returncode != 0:
+                    test_output = pack_out
+                    break
+                package_ok = True
+                if skip_tests:
+                    test_ok = True
+                    test_summary = "Tests skipped (SKIP_TESTS=1)"
+                    break
+                proc = subprocess.run(
+                    ["mvn", "-f", "pom.xml", "-q", "test"],
+                    cwd=str(proj_path),
+                    capture_output=True,
+                    text=True,
+                    timeout=300,
+                )
+                test_output = (proc.stdout or "") + (proc.stderr or "")
+                test_ok = proc.returncode == 0
+                for line in (test_output or "").splitlines():
+                    if "Tests run:" in line and "Failures:" in line:
+                        test_summary = line.strip()
+                        break
+                if test_ok:
+                    break
+                # If tests failed with Ambiguous mapping, try fix and retry
+                if "Ambiguous mapping" in (test_output or "") and test_fix_pass < max_test_fix_passes - 1:
+                    try:
+                        from fix_ambiguous_mapping import run_fix as run_ambiguous_mapping_fix
+                        count, _ = run_ambiguous_mapping_fix(proj_path, test_output)
+                        if count > 0:
+                            _progress(f"Ambiguous mapping fixer (post-test): {count} endpoint(s) fixed. Retrying tests...")
+                            continue
+                    except Exception:
+                        pass
+                break
+            except Exception as e:
+                test_output = f"Test run failed: {e}"
+                break
+
+    # Build succeeds only if compile, package, and tests all pass
+    build_success = (
+        exit_code == 0 if exit_code is not None else False
+    ) and package_ok and test_ok
+
     return {
-        "buildSuccess": exit_code == 0 if exit_code is not None else False,
+        "buildSuccess": build_success,
         "buildExitCode": exit_code,
         "buildOutput": combined_output,
+        "testOutput": test_output,
+        "testSummary": test_summary,
+        "needsReview": False,
+        "suggestedFixes": None,
     }
 
 
@@ -224,6 +363,16 @@ class GlobalContextHandler(BaseHTTPRequestHandler):
         # Keep stdout clean; log to stderr
         sys.stderr.write("%s - - [%s] %s\n" % (self.address_string(), self.log_date_time_string(), format % args))
 
+    def end_headers(self):
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        super().end_headers()
+
+    def do_OPTIONS(self):
+        self.send_response(204)
+        self.end_headers()
+
     def _send_json(self, obj, status=200):
         data = json.dumps(obj).encode("utf-8")
         try:
@@ -235,6 +384,32 @@ class GlobalContextHandler(BaseHTTPRequestHandler):
         except (BrokenPipeError, ConnectionResetError):
             pass  # Client disconnected; avoid traceback
 
+    def _write_chunked_line(self, line: str) -> None:
+        """Write a single newline-delimited JSON line as a chunked chunk. Keeps connection alive."""
+        data = (line + "\n").encode("utf-8")
+        try:
+            self.wfile.write(f"{len(data):x}\r\n".encode("ascii"))
+            self.wfile.write(data)
+            self.wfile.write(b"\r\n")
+            self.wfile.flush()
+        except (BrokenPipeError, ConnectionResetError):
+            pass  # Client disconnected; avoid traceback
+
+    def _start_chunked_response(self, content_type: str = "application/x-ndjson; charset=utf-8") -> None:
+        """Start a chunked response. Call _write_chunked_line for each chunk, then _end_chunked_response."""
+        self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Transfer-Encoding", "chunked")
+        self.end_headers()
+
+    def _end_chunked_response(self) -> None:
+        """End chunked response with 0-length chunk."""
+        try:
+            self.wfile.write(b"0\r\n\r\n")
+            self.wfile.flush()
+        except (BrokenPipeError, ConnectionResetError):
+            pass
+
     def do_GET(self):
         parsed = urlparse(self.path)
         if parsed.path in ("/", "/ui_global_context.html"):
@@ -243,11 +418,19 @@ class GlobalContextHandler(BaseHTTPRequestHandler):
                 self.send_error(404, "ui_global_context.html not found")
                 return
             content = ui_path.read_bytes()
+            app_port = os.environ.get("APP_PORT", "8081")
+            content = content.replace(b"__APP_PORT__", app_port.encode())
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Content-Length", str(len(content)))
+            self.send_header("Cache-Control", "no-cache")
             self.end_headers()
             self.wfile.write(content)
+            return
+
+        if parsed.path == "/api/health":
+            port = self.server.server_address[1] if self.server else 8003
+            self._send_json({"ok": True, "server": "global-context", "port": port})
             return
 
         if parsed.path == "/api/discover-directories":
@@ -351,6 +534,7 @@ class GlobalContextHandler(BaseHTTPRequestHandler):
                             "programId": mf.get("programId"),
                             "entryNodeId": mf.get("entryNodeId"),
                             "generatedCount": len(mf.get("generatedFiles") or []),
+                            "uiSchemaCount": len(mf.get("uiSchemaGenerated") or []),
                             "timestamp": latest.stem.split("_")[-1] if "_" in latest.stem else latest.name,
                         }
                     except Exception:
@@ -407,6 +591,28 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
                 self._send_json(result, status=result.get("status", 404))
             else:
                 self._send_json(result)
+            return
+
+        if parsed.path == "/api/run-application-log":
+            proj_path = ROOT_DIR / "warranty_demo"
+            log_path = proj_path / "target" / "spring-boot-run.log"
+            qs = parse_qs(parsed.query or "")
+            lines = 80
+            if "lines" in qs and qs["lines"]:
+                try:
+                    lines = min(max(1, int(qs["lines"][0])), 200)
+                except (ValueError, TypeError):
+                    pass
+            if not log_path.is_file():
+                self._send_json({"logTail": "", "error": "Log file not found. Run the application first."})
+                return
+            try:
+                with open(log_path, "r", encoding="utf-8", errors="ignore") as f:
+                    all_lines = f.readlines()
+                tail = "".join(all_lines[-lines:])
+                self._send_json({"logTail": tail[-8000:] if len(tail) > 8000 else tail})
+            except Exception as e:
+                self._send_json({"logTail": "", "error": str(e)})
             return
 
         if parsed.path == "/api/knowledge-graph-data":
@@ -1556,40 +1762,63 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
                         rpg_file_path = matches[0]
 
             # Run migrate_to_pure_java.py for each context file, integrating into the main app project
+            # Use chunked streaming to keep connection alive and show progress (avoids timeout after 18+ min)
             target_project = "warranty_demo"
             runs = []
-            for cf in context_files:
+            n_files = len(context_files)
+            self._start_chunked_response()
+
+            def send_progress(msg: str) -> None:
+                try:
+                    self._write_chunked_line(json.dumps({"progress": msg}))
+                except (BrokenPipeError, ConnectionResetError):
+                    pass
+
+            for i, cf in enumerate(context_files):
+                cf_name = Path(cf).name
+                send_progress(f"Migrating {i + 1}/{n_files}: {cf_name}...")
                 cmd = [
                     sys.executable,
                     str(ROOT_DIR / "migrate_to_pure_java.py"),
                     cf,
                     "--target-project",
                     target_project,
+                    "--no-inline-origin",  # Skip inject_origin (saves 1-3+ min as project grows)
                 ]
                 if rpg_file_path:
                     cmd.extend(["--rpg-file", str(rpg_file_path)])
                 try:
-                    proc = subprocess.run(
+                    proc = subprocess.Popen(
                         cmd,
-                        capture_output=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
                         text=True,
-                        timeout=900,
                         cwd=str(ROOT_DIR),
                     )
-                    runs.append({
-                        "contextFile": cf,
-                        "returnCode": proc.returncode,
-                        "stdoutPreview": (proc.stdout or "")[:4000],
-                        "stderrPreview": (proc.stderr or "")[:4000],
-                    })
+                    start = time.monotonic()
+                    migrate_timeout = 1500  # 25 min for large nodes like n404 (~23k lines)
+                    while proc.poll() is None and (time.monotonic() - start) < migrate_timeout:
+                        time.sleep(15)  # Check every 15s (was 45s) for better progress feedback
+                        if proc.poll() is None:
+                            send_progress(f"Still migrating {cf_name}... (LLM may take several minutes)")
+                    if proc.poll() is None:
+                        proc.kill()
+                        proc.wait()
+                        runs.append({"contextFile": cf, "error": f"Migration timeout ({migrate_timeout}s)"})
+                    else:
+                        stdout, stderr = proc.communicate()
+                        runs.append({
+                            "contextFile": cf,
+                            "returnCode": proc.returncode,
+                            "stdoutPreview": (stdout or "")[:4000],
+                            "stderrPreview": (stderr or "")[:4000],
+                        })
                 except Exception as e:
-                    runs.append({
-                        "contextFile": cf,
-                        "error": str(e),
-                    })
+                    runs.append({"contextFile": cf, "error": str(e)})
 
             # Build list of generated files from stdout/stderr previews
             generated_files = []
+            ui_schema_generated = []
             for r in runs:
                 for key in ("stdoutPreview", "stderrPreview"):
                     out = r.get(key) or ""
@@ -1605,6 +1834,13 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
                                 rel = rel.split(" (", 1)[0].strip()
                             if rel and rel not in generated_files:
                                 generated_files.append(rel)
+                        elif line.startswith("// ✅ Generated UI schema: "):
+                            # Migration pipeline: ui-schemas/<ScreenId>.json from displayFiles
+                            rel = line.replace("// ✅ Generated UI schema: ", "", 1).strip()
+                            if rel and rel not in ui_schema_generated:
+                                ui_schema_generated.append(rel)
+                                if rel not in generated_files:
+                                    generated_files.append(rel)
 
             # Fallback: if no generated files were detected from this run (e.g., idempotent run
             # that didn't rewrite files), try to reuse the most recent manifest's generatedFiles
@@ -1624,6 +1860,10 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
                             for f in prev_files:
                                 if f and f not in generated_files:
                                     generated_files.append(f)
+                            prev_ui = mf_data.get("uiSchemaGenerated") or []
+                            for f in prev_ui:
+                                if f and f not in ui_schema_generated:
+                                    ui_schema_generated.append(f)
                 except Exception:
                     # Best-effort only; safe to ignore failures here.
                     pass
@@ -1700,8 +1940,15 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
                 })
 
             if db_files:
-                db_part = ", ".join(f"{d.get('name')} ({d.get('library')})" for d in db_files)
-                summary = f"Migrated feature starting at {program_id} {entry_node_id} with {len(nodes_in_slice)} node(s); DB files involved: {db_part}."
+                db_items = [f"{d.get('name')} ({d.get('library')})" for d in db_files]
+                # Format as multiline: wrap every 8 items for readability
+                wrap_at = 8
+                db_lines = []
+                for i in range(0, len(db_items), wrap_at):
+                    chunk = db_items[i : i + wrap_at]
+                    db_lines.append(", ".join(chunk))
+                db_part = "\n  ".join(db_lines)
+                summary = f"Migrated feature starting at {program_id} {entry_node_id} with {len(nodes_in_slice)} node(s); DB files involved:\n  {db_part}."
             else:
                 summary = f"Migrated feature starting at {program_id} {entry_node_id} with {len(nodes_in_slice)} node(s)."
 
@@ -1714,6 +1961,7 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
                 "contextFiles": context_files,
                 "dbFiles": db_files,
                 "generatedFiles": generated_files,
+                "uiSchemaGenerated": ui_schema_generated,
                 "rpgSnippet": rpg_snippet,
                 "primaryServiceFile": primary_service_file,
                 "runs": runs,
@@ -1737,43 +1985,94 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
                         if stderr:
                             error_chunks.append(f"{ctx_file} stderr:\n{stderr}")
                 error_text = "\n\n".join(error_chunks) or "Migration script failed; see server logs."
-                self._send_json({
+                send_progress("Migration failed.")
+                self._write_chunked_line(json.dumps({"result": {
                     "success": False,
                     "summary": summary,
                     "manifestPath": str(manifest_path),
                     "generatedFiles": generated_files,
+                    "uiSchemaGenerated": ui_schema_generated,
                     "rpgSnippet": rpg_snippet,
                     "primaryServiceFile": primary_service_file,
                     "error": error_text,
-                }, status=500)
+                }}))
+                self._end_chunked_response()
                 return
 
-            # Agentic step: immediately run application build after migration with a simple self-correction pass
-            proj_path = ROOT_DIR / "warranty_demo"
-            if proj_path.is_dir():
-                build_result = _run_maven_build_with_autofix(proj_path)
-            else:
-                build_result = {
-                    "buildSuccess": False,
-                    "buildExitCode": None,
-                    "buildOutput": f"Project directory not found: {proj_path}",
-                }
+            # Pipeline separation: Migrate Feature (tab 3) = code gen only.
+            # Build Application (tab 5) handles compile/build error resolution.
+            send_progress("Code generation complete. Run Build Application (tab 5) to compile.")
 
-            build_output = _truncate_build_output(build_result["buildOutput"] or "")
-
-            # Respond with migration + build information
-            self._send_json({
+            # Respond with migration info only (no build - that's tab 5's responsibility)
+            self._write_chunked_line(json.dumps({"result": {
                 "success": True,
                 "summary": summary,
                 "manifestPath": str(manifest_path),
                 "generatedFiles": generated_files,
+                "uiSchemaGenerated": ui_schema_generated,
                 "rpgSnippet": rpg_snippet,
                 "primaryServiceFile": primary_service_file,
                 "primaryServiceSource": primary_service_source,
-                "buildSuccess": build_result["buildSuccess"],
-                "buildExitCode": build_result["buildExitCode"],
-                "buildOutput": build_output,
-            })
+                "buildSuccess": None,
+                "buildExitCode": None,
+                "buildOutput": None,
+            }}))
+            self._end_chunked_response()
+            return
+
+        if parsed.path == "/api/regenerate-ui-schema":
+            content_length = int(self.headers.get("Content-Length", 0))
+            program_id = None
+            entry_node_id = None
+            if content_length > 0:
+                try:
+                    body = json.loads(self.rfile.read(content_length).decode("utf-8"))
+                    program_id = body.get("programId")
+                    entry_node_id = body.get("entryNodeId")
+                except Exception:
+                    pass
+            if not program_id or not entry_node_id:
+                self._send_json({
+                    "success": False,
+                    "error": "programId and entryNodeId are required",
+                }, status=400)
+                return
+            unit_short = program_id.split("/")[-1] if "/" in program_id else program_id
+            ctx_path = ROOT_DIR / "context_index" / f"{unit_short}_{entry_node_id}.json"
+            if not ctx_path.exists():
+                self._send_json({
+                    "success": False,
+                    "error": f"Context not found: {unit_short}_{entry_node_id}.json. Run Build Global Context and Migrate Feature first.",
+                }, status=400)
+                return
+            try:
+                ctx = json.loads(ctx_path.read_text(encoding="utf-8", errors="ignore"))
+                from ui_schema_generator import generate_ui_schema, write_ui_schema
+                schema = generate_ui_schema(ctx, unit_id=unit_short)
+                if not schema:
+                    self._send_json({
+                        "success": False,
+                        "error": "No display files in context; cannot generate UI schema.",
+                    }, status=400)
+                    return
+                out_path = write_ui_schema(schema, ROOT_DIR / "warranty_demo")
+                rel_path = str(out_path.relative_to(ROOT_DIR))
+                self._send_json({
+                    "success": True,
+                    "message": f"UI schema generated: {rel_path}",
+                    "uiSchemaPath": rel_path,
+                    "screenId": schema.get("screenId"),
+                })
+            except ImportError as e:
+                self._send_json({
+                    "success": False,
+                    "error": f"ui_schema_generator not found: {e}",
+                }, status=500)
+            except Exception as e:
+                self._send_json({
+                    "success": False,
+                    "error": str(e),
+                }, status=500)
             return
 
         if parsed.path == "/api/validate":
@@ -1855,24 +2154,124 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
                 }, status=500)
             return
 
+        if parsed.path == "/api/push-to-repo":
+            content_length = int(self.headers.get("Content-Length", 0))
+            project_dir = "warranty_demo"
+            branch_name = None
+            if content_length > 0:
+                try:
+                    body = json.loads(self.rfile.read(content_length).decode("utf-8"))
+                    project_dir = (body.get("projectDir") or project_dir).strip() or project_dir
+                    branch_name = (body.get("branch") or "").strip() or None
+                except Exception:
+                    pass
+
+            proj_path = ROOT_DIR / project_dir
+            if not proj_path.is_dir():
+                self._send_json({
+                    "success": False,
+                    "error": f"Project directory not found: {project_dir}",
+                }, status=400)
+                return
+
+            try:
+                from push_to_repo import push_to_repo
+                result = push_to_repo(proj_path, branch_name=branch_name)
+                if result.get("success"):
+                    self._send_json({
+                        "success": True,
+                        "message": result.get("message", "Pushed successfully"),
+                        "branch": result.get("branch"),
+                        "repo": result.get("repo"),
+                    })
+                else:
+                    self._send_json({
+                        "success": False,
+                        "error": result.get("error", "Push failed"),
+                    }, status=500)
+            except Exception as e:
+                self._send_json({
+                    "success": False,
+                    "error": str(e),
+                }, status=500)
+            return
+
         if parsed.path == "/api/run-application":
             global _app_process
             proj_path = ROOT_DIR / "warranty_demo"
             if not proj_path.is_dir():
                 self._send_json({"started": False, "error": "warranty_demo not found. Build the application first."}, status=400)
                 return
+            # Clear dead process so we can start fresh
+            if _app_process is not None and _app_process.poll() is not None:
+                _app_process = None
             if _app_process is not None and _app_process.poll() is None:
                 self._send_json({"started": True, "message": "Application already running."})
                 return
+            # Consume any POST body (profile param no longer used)
+            content_length = int(self.headers.get("Content-Length", 0))
+            if content_length > 0:
+                self.rfile.read(content_length)
+            log_path = proj_path / "target" / "spring-boot-run.log"
+            log_path.parent.mkdir(parents=True, exist_ok=True)
             try:
+                # Default: H2 (so H2 Console works). Set RUN_PROFILE=rds for PostgreSQL
+                run_profile = os.environ.get("RUN_PROFILE", "").strip()
+                cmd = ["mvn", "spring-boot:run", "-DskipTests"]
+                if run_profile:
+                    cmd.extend(["-Dspring-boot.run.profiles=" + run_profile])
+                log_file = open(log_path, "w", encoding="utf-8")
+                log_file.write(f"Starting: {' '.join(cmd)}\n")
+                log_file.flush()
                 _app_process = subprocess.Popen(
-                    ["mvn", "spring-boot:run", "-DskipTests"],
+                    cmd,
                     cwd=str(proj_path),
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
+                    stdout=log_file,
+                    stderr=subprocess.STDOUT,
                     start_new_session=True,
                 )
-                self._send_json({"started": True, "message": "Application starting. Check status in 30-60 seconds."})
+                time.sleep(3)
+                if _app_process.poll() is not None:
+                    with open(log_path, "r", encoding="utf-8", errors="ignore") as f:
+                        log_content = f.read()
+                    tail = "".join(log_content.splitlines()[-40:])
+                    # Runtime fixer: try IdClass fix and retry once
+                    try:
+                        from fix_runtime_errors import apply_fixes
+                        fixed, msg = apply_fixes(proj_path, log_content)
+                        if fixed:
+                            log_file2 = open(log_path, "a", encoding="utf-8")
+                            log_file2.write(f"\n\n=== Runtime fix applied: {msg} ===\n")
+                            log_file2.flush()
+                            _app_process = subprocess.Popen(
+                                cmd,
+                                cwd=str(proj_path),
+                                stdout=log_file2,
+                                stderr=subprocess.STDOUT,
+                                start_new_session=True,
+                            )
+                            time.sleep(5)
+                            if _app_process.poll() is None:
+                                self._send_json({
+                                    "started": True,
+                                    "message": f"Application started after runtime fix. {msg}",
+                                })
+                                return
+                            with open(log_path, "r", encoding="utf-8", errors="ignore") as f2:
+                                tail = "".join(f2.readlines()[-40:])
+                    except Exception:
+                        pass
+                    self._send_json({
+                        "started": False,
+                        "error": f"Application exited immediately (exit {_app_process.returncode}). Check {log_path}",
+                        "logTail": tail[-2000:] if len(tail) > 2000 else tail,
+                    }, status=500)
+                    _app_process = None
+                    return
+                self._send_json({
+                    "started": True,
+                    "message": "Application starting. Check status in 30-60 seconds. Log: " + str(log_path),
+                })
             except Exception as e:
                 self._send_json({"started": False, "error": str(e)}, status=500)
             return
@@ -1881,10 +2280,12 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
             # Run a Maven build for the main application (default: warranty_demo)
             content_length = int(self.headers.get("Content-Length", 0))
             project_dir = "warranty_demo"
+            hitl_mode = True
             if content_length > 0:
                 try:
                     body = json.loads(self.rfile.read(content_length).decode("utf-8"))
                     project_dir = (body.get("projectDir") or project_dir).strip() or project_dir
+                    hitl_mode = body.get("hitlMode", True)
                 except Exception:
                     pass
 
@@ -1916,8 +2317,8 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
                     except Exception:
                         pass
 
-            build_result = _run_maven_build_with_autofix(proj_path)
-            self._send_json({
+            build_result = _run_maven_build_with_autofix(proj_path, hitl_mode=hitl_mode)
+            resp = {
                 "success": build_result["buildSuccess"],
                 "output": _truncate_build_output(build_result["buildOutput"] or ""),
                 "exitCode": build_result["buildExitCode"],
@@ -1926,7 +2327,67 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
                     "javaFileCount": java_count,
                     "lastMigrated": last_migrated,
                 },
-            }, status=200 if build_result["buildSuccess"] else 500)
+            }
+            if build_result.get("testSummary"):
+                resp["testSummary"] = build_result["testSummary"]
+            if build_result.get("testOutput"):
+                resp["testOutput"] = _truncate_build_output(build_result["testOutput"])
+            if build_result.get("needsReview"):
+                resp["needsReview"] = True
+                resp["suggestedFixes"] = build_result.get("suggestedFixes")
+                resp["errorSummary"] = build_result.get("errorSummary", "Build failed. Review suggested fixes.")
+            self._send_json(resp, status=200 if build_result["buildSuccess"] else 500)
+            return
+
+        if parsed.path == "/api/apply-approved-fixes":
+            content_length = int(self.headers.get("Content-Length", 0))
+            if content_length == 0:
+                self._send_json({"success": False, "error": "Request body required"}, status=400)
+                return
+            try:
+                body = json.loads(self.rfile.read(content_length).decode("utf-8"))
+                project_dir = (body.get("projectDir") or "warranty_demo").strip()
+                suggested_fixes = body.get("suggestedFixes")
+                if not suggested_fixes or not isinstance(suggested_fixes, dict):
+                    self._send_json({"success": False, "error": "suggestedFixes (object) required"}, status=400)
+                    return
+            except json.JSONDecodeError as e:
+                self._send_json({"success": False, "error": f"Invalid JSON: {e}"}, status=400)
+                return
+
+            proj_path = ROOT_DIR / project_dir
+            if not proj_path.is_dir():
+                self._send_json({"success": False, "error": f"Project directory not found: {proj_path}"}, status=400)
+                return
+
+            written = []
+            for rel_path, content in suggested_fixes.items():
+                rel_path = rel_path.replace("\\", "/")
+                target = proj_path / rel_path
+                try:
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_text(content, encoding="utf-8")
+                    written.append(rel_path)
+                except Exception as e:
+                    self._send_json({"success": False, "error": f"Failed to write {rel_path}: {e}"}, status=500)
+                    return
+
+            build_result = _run_maven_build_with_autofix(proj_path, hitl_mode=False)
+            resp = {
+                "success": build_result["buildSuccess"],
+                "output": _truncate_build_output(build_result["buildOutput"] or ""),
+                "exitCode": build_result["buildExitCode"],
+                "filesApplied": written,
+                "buildContext": {
+                    "projectDir": project_dir,
+                    "javaFileCount": len(list((proj_path / "src" / "main" / "java").rglob("*.java"))) if (proj_path / "src" / "main" / "java").is_dir() else 0,
+                },
+            }
+            if build_result.get("testSummary"):
+                resp["testSummary"] = build_result["testSummary"]
+            if build_result.get("testOutput"):
+                resp["testOutput"] = _truncate_build_output(build_result["testOutput"])
+            self._send_json(resp, status=200 if build_result["buildSuccess"] else 500)
             return
 
         # Fallback 404 for unknown POST paths
@@ -1935,7 +2396,8 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
 
 def main():
     port = int(os.environ.get("UI_PORT", "8003"))
-    addr = ("", port)
+    bind_host = os.environ.get("BIND_HOST", "0.0.0.0")  # 0.0.0.0 for Docker; 127.0.0.1 for local-only
+    addr = (bind_host, port)
     httpd = HTTPServer(addr, GlobalContextHandler)
     print()
     print(f"Global Context UI server running on http://localhost:{port}/")
@@ -1943,16 +2405,21 @@ def main():
     print("Endpoints:")
     print(f"  GET  /                    - Global Context UI (ui_global_context.html)")
     print(f"  GET  /traceability        - RPG→Java Traceability Viewer")
+    print(f"  GET  /api/health              - Health check")
     print(f"  GET  /api/discover-directories")
     print(f"  GET  /api/list-programs")
     print(f"  GET  /api/build-context")
     print(f"  GET  /api/customize-guide")
     print(f"  POST /api/validate")
+    print(f"  POST /api/push-to-repo")
+    print(f"  GET  /api/run-application-log  - Last N lines of spring-boot-run.log")
     print(f"  POST /api/run-application")
     print(f"  POST /api/build-global-context")
     print(f"  POST /api/export-neo4j")
     print(f"  POST /api/migrate-feature")
+    print(f"  POST /api/regenerate-ui-schema")
     print(f"  POST /api/build-application")
+    print(f"  POST /api/apply-approved-fixes")
     print()
     try:
         httpd.serve_forever()

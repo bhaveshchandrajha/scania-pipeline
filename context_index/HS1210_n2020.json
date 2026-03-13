@@ -14,7 +14,7 @@
     }
   },
   "narrative": "### Node n2020: Procedure `reNumberPos`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Raw sem JSON**:\n```json\n{}\n```",
-  "rpgSnippet": "     P reNumberPos     B\n     D reNumberPos     PI\n     D   dealerId                     3A   value\n     D   claimNo                      8A   value\n     D*****************************************************************\n       DCL-DS Claims qualified;\n              List Char(512) Pos(1);\n              Record Dim(999) Pos(1);\n                     lineNo zoned(3) overlay(Record: 1);\n                     pos zoned(3) overlay(Record: *next);\n       END-DS Claims;\n\n       DCL-S x uns(5) inz(1);\n       DCL-S posN uns(3) inz(0);\n       DCL-S posW uns(3) inz(1);\n       DCL-S line uns(3) inz(1);\n\n       exec sql\n                select listagg(digits(GPS030) concat\n                               digits(GPS150))\n                within group(order by GPS150) as List\n                into :Claims.List\n                from HSGPSPF\n                where GPS000 = :dealerId and GPS010 = :claimNo;\n\n       Dow Claims.Record(x) <> *Blanks;\n           line = Claims.LineNo(x);\n           If x = 1 Or Claims.Pos(x) <> posW;\n              posW = Claims.Pos(x);\n              posN += 1;\n           EndIf;\n           exec sql\n                update HSGPSPF set GPS150 = :posN\n                where GPS000 = :dealerId and GPS010 = :claimNo and\n                      GPS030 = :line;\n           x += 1;\n       EnDDo;\n     P                 E",
+  "rpgSnippet": "",
   "dbContracts": [],
   "symbolMetadata": {},
   "statementNodes": [

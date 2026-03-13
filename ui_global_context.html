@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <script>window.APP_PORT='__APP_PORT__';</script>
   <title>Global Context / Knowledge Graph Builder</title>
   <style>
     body {
@@ -145,29 +146,40 @@
   </style>
 </head>
 <body>
+  <div id="fetch-error-banner" style="display:none; background:#7f1d1d; color:#fecaca; padding:10px 20px; font-size:13px;">
+    <div style="text-align:center;">
+      <strong>Failed to connect.</strong> Page: <code id="diag-origin"></code> → API: <code id="diag-api"></code>
+      <br>Ensure <code>python3 ui_global_context_server.py</code> is running. Open
+      <a href="http://127.0.0.1:8003/" target="_blank" style="color:#fef08a; font-weight:bold;">http://127.0.0.1:8003/</a>
+      and verify the URL bar shows exactly that.
+    </div>
+    <div id="diag-detail" style="margin-top:8px; font-size:11px; font-family:monospace;"></div>
+  </div>
   <header>
     <div>
       <h1>Global Context / Knowledge Graph Builder</h1>
       <span>Build DB registry, program-level context, and call graph from AST + RPG.</span>
     </div>
-    <span style="font-size: 10px; color: #9ca3af;">Backend: /api/build-global-context</span>
+    <span style="font-size: 10px; color: #9ca3af;">
+      Backend: /api/build-global-context
+      <span id="server-hint" style="margin-left:8px;"></span>
+    </span>
   </header>
 
   <div class="container">
     <div class="tabs" style="display: flex; gap: 8px; margin-bottom: 12px;">
       <div class="tab active" data-tab="step1" style="padding: 6px 10px; cursor: pointer; font-size: 12px; border-radius: 4px; background: #111827; border: 1px solid #1f2937;">1. Build Global Context</div>
-      <div class="tab" data-tab="step2" style="padding: 6px 10px; cursor: pointer; font-size: 12px; border-radius: 4px; background: #020617; border: 1px solid #1f2937; color: #9ca3af;">2. Knowledge Graph View</div>
-      <div class="tab" data-tab="step3" style="padding: 6px 10px; cursor: pointer; font-size: 12px; border-radius: 4px; background: #020617; border: 1px solid #1f2937; color: #9ca3af;">3. Migrate Feature</div>
-      <div class="tab" data-tab="step4" style="padding: 6px 10px; cursor: pointer; font-size: 12px; border-radius: 4px; background: #020617; border: 1px solid #1f2937; color: #9ca3af;">4. Validation</div>
-      <div class="tab" data-tab="step5" style="padding: 6px 10px; cursor: pointer; font-size: 12px; border-radius: 4px; background: #020617; border: 1px solid #1f2937; color: #9ca3af;">5. Build Application</div>
-      <div class="tab" data-tab="step6" style="padding: 6px 10px; cursor: pointer; font-size: 12px; border-radius: 4px; background: #020617; border: 1px solid #1f2937; color: #9ca3af;">6. Run & Demo</div>
+      <div class="tab" data-tab="step2" style="padding: 6px 10px; cursor: pointer; font-size: 12px; border-radius: 4px; background: #020617; border: 1px solid #1f2937; color: #9ca3af;">2. Migrate Feature</div>
+      <div class="tab" data-tab="step3" style="padding: 6px 10px; cursor: pointer; font-size: 12px; border-radius: 4px; background: #020617; border: 1px solid #1f2937; color: #9ca3af;">3. Validation</div>
+      <div class="tab" data-tab="step4" style="padding: 6px 10px; cursor: pointer; font-size: 12px; border-radius: 4px; background: #020617; border: 1px solid #1f2937; color: #9ca3af;">4. Build Application</div>
+      <div class="tab" data-tab="step5" style="padding: 6px 10px; cursor: pointer; font-size: 12px; border-radius: 4px; background: #020617; border: 1px solid #1f2937; color: #9ca3af;">5. Run & Demo</div>
     </div>
 
     <div id="tab-step1" class="tab-content" style="display: block;">
       <div class="card">
         <h2>1. Inputs & Global Context</h2>
       <p>Point to your AST directory (with *-ast.json files) and the RPG root directory (e.g. extracted PoC_HS1210).
-         Then click <strong>Build Global Context</strong>. Afterwards you can export a Neo4j Cypher script in step 2.</p>
+         Then click <strong>Build Global Context</strong>. Neo4j Cypher export is written to <code>global_context/neo4j_export.cypher</code>.</p>
 
         <div style="margin-bottom: 8px;">
           <label>AST Directory:</label>
@@ -183,46 +195,14 @@
         </div>
 
         <div id="status"></div>
-        <pre id="output" style="display: none;"></pre>
+        <pre id="output" style="display: none; white-space: pre-wrap; overflow-wrap: break-word; max-width: 100%; max-height: 400px; overflow: auto; padding: 10px; background: #111827; border: 1px solid #1f2937; border-radius: 6px; font-size: 12px; line-height: 1.4;"></pre>
       </div>
     </div>
 
     <div id="tab-step2" class="tab-content" style="display: none;">
       <div class="card">
-        <h2>2. Knowledge Graph</h2>
-        <p>Build and preview the application knowledge graph. Programs, procedures, and DB files are shown as an
-           interactive graph. Drag nodes to rearrange, scroll to zoom, click a node for details.</p>
-        <div style="margin-bottom: 8px; display: flex; gap: 8px; align-items: center;">
-          <button class="primary" id="export-btn">Build Knowledge Graph View</button>
-          <button class="primary" id="preview-graph-btn" style="background:#6366f1;border-color:#4f46e5;">Preview Graph</button>
-          <span id="graph-legend" style="font-size:10px;color:#6b7280;margin-left:8px;display:none;">
-            <span style="color:#3b82f6;">⬡ Program</span> &nbsp;
-            <span style="color:#a855f7;">● Procedure</span> &nbsp;
-            <span style="color:#10b981;">● Subroutine</span> &nbsp;
-            <span style="color:#f59e0b;">◆ DB File</span> &nbsp;
-            <span style="color:#ef4444;">● External</span>
-          </span>
-        </div>
-        <div id="export-status"></div>
-        <pre id="export-output" style="display: none;"></pre>
-        <div id="graph-container" style="display:none; margin-top:10px; border:1px solid #1f2937; border-radius:8px; overflow:hidden; position:relative;">
-          <canvas id="graph-canvas" width="1400" height="700" style="background:#020617; display:block; width:100%; cursor:grab;"></canvas>
-          <div id="graph-tooltip" style="display:none; position:absolute; background:#111827; border:1px solid #374151; border-radius:6px; padding:8px 12px; font-size:11px; color:#e5e7eb; max-width:300px; pointer-events:none; z-index:10; white-space:pre-line;"></div>
-          <div id="graph-controls" style="position:absolute;top:8px;right:12px;display:flex;gap:4px;">
-            <button onclick="graphZoom(1.2)" style="padding:2px 8px;font-size:14px;background:#1e293b;color:#e5e7eb;border:1px solid #374151;border-radius:4px;cursor:pointer;">+</button>
-            <button onclick="graphZoom(0.83)" style="padding:2px 8px;font-size:14px;background:#1e293b;color:#e5e7eb;border:1px solid #374151;border-radius:4px;cursor:pointer;">−</button>
-            <button onclick="graphFit()" style="padding:2px 8px;font-size:11px;background:#1e293b;color:#e5e7eb;border:1px solid #374151;border-radius:4px;cursor:pointer;">Fit</button>
-          </div>
-          <div id="graph-stats" style="position:absolute;bottom:8px;right:12px;font-size:10px;color:#4b5563;"></div>
-        </div>
-      </div>
-    </div>
-
-    <div id="tab-step3" class="tab-content" style="display: none;">
-      <div class="card">
-        <h2>3. Migrate Feature</h2>
-        <p>Select a program and a starting point (procedure or subroutine), then migrate that feature using the
-           global context. A short explanation and a manifest will be created for traceability.</p>
+        <h2>2. Migrate Feature</h2>
+        <p>Code generation only. Select a program and entry point, then generate Java from RPG. Also generates <code>ui-schemas/&lt;ScreenId&gt;.json</code> from display files (function keys, columns). Focus: correctness, DB mapping, logic mapping. <strong>Build/compile errors are fixed in tab 4.</strong></p>
         <div style="margin-bottom: 8px;">
           <label>Program:</label>
           <select id="mf-program" style="width: 220px;"></select>
@@ -231,18 +211,19 @@
           <label>Feature:</label>
           <select id="mf-node" style="width: 320px;"></select>
         </div>
-        <div style="margin-bottom: 8px;">
+        <div style="margin-bottom: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
           <button class="primary" id="mf-refresh-btn">Refresh Feature List</button>
           <button class="primary" id="mf-run-btn">Migrate Feature</button>
+          <button id="mf-regen-ui-btn" style="background: #374151; border: 1px solid #4b5563; color: #e5e7eb; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;" title="Regenerate ui-schemas from display files (no LLM)">Regenerate UI Schema</button>
         </div>
         <div id="mf-status"></div>
-        <pre id="mf-output" style="display: none;"></pre>
+        <pre id="mf-output" style="display: none; white-space: pre-wrap; overflow-wrap: break-word; max-width: 100%; max-height: 400px; overflow: auto; padding: 10px; background: #111827; border: 1px solid #1f2937; border-radius: 6px; font-size: 12px; line-height: 1.4;"></pre>
       </div>
     </div>
 
-    <div id="tab-step4" class="tab-content" style="display: none;">
+    <div id="tab-step3" class="tab-content" style="display: none;">
       <div class="card">
-        <h2>4. Validation</h2>
+        <h2>3. Validation</h2>
         <p>Review generated code and validation results for client review. Run validation after migrating a feature.</p>
         <div style="margin-bottom: 8px; display: flex; gap: 8px; align-items: center;">
           <label>Project:</label>
@@ -252,8 +233,10 @@
           <label style="width:auto;">Feature:</label>
           <select id="val-node" style="width: 200px;"></select>
           <button class="primary" id="val-run-btn">Run Validation</button>
+          <button class="primary" id="val-push-btn" style="background: #059669; border-color: #047857; display: none;">Push to Repository</button>
         </div>
         <div id="val-status"></div>
+        <div id="val-push-status" style="display: none; margin-top: 8px;"></div>
         <div id="val-results" style="display: none; margin-top: 12px;">
           <h4 style="margin: 0 0 8px 0; font-size: 13px;">Validation Results</h4>
           <div id="val-metrics" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;"></div>
@@ -276,10 +259,10 @@
       </div>
     </div>
 
-    <div id="tab-step5" class="tab-content" style="display: none;">
+    <div id="tab-step4" class="tab-content" style="display: none;">
       <div class="card">
-        <h2>5. Build Application</h2>
-        <p>Build the integrated Java application after migrating one or more features. Maven compiles <strong>all</strong> Java sources in the project—including the latest migrated feature and existing features.</p>
+        <h2>4. Build Application</h2>
+        <p>Compile and fix build errors. Runs Maven with an LLM-based autofix loop (up to 4 passes) to resolve compilation errors. Run after migrating features in tab 2. When build succeeds, use <strong>Push to Repository</strong> to push the generated code to <code>scania-java-v2</code> — GitHub Actions will run tests on the pushed code.</p>
         <div id="build-context" style="margin-bottom: 12px; padding: 10px 12px; background: #111827; border: 1px solid #1f2937; border-radius: 6px; font-size: 11px;">
           <div style="color: #9ca3af;">Loading build context…</div>
         </div>
@@ -287,20 +270,41 @@
           <label>Project Directory:</label>
           <input type="text" id="build-project-dir" style="width: 260px;" value="warranty_demo" readonly>
         </div>
-        <div style="margin-bottom: 8px;">
+        <div style="margin-bottom: 8px; display: flex; gap: 8px; align-items: center;">
           <button class="primary" id="build-app-btn">Build Application</button>
+          <button class="primary" id="build-push-code-btn" style="background: #059669; border-color: #047857; display: none;">Push to Repository</button>
         </div>
+        <div id="build-push-code-status" style="display: none; margin-top: 8px;"></div>
         <div id="build-status"></div>
-        <pre id="build-output" style="display: none;"></pre>
+        <pre id="build-output" style="display: none; white-space: pre-wrap; overflow-wrap: break-word; max-width: 100%; max-height: 400px; overflow: auto; padding: 10px; background: #111827; border: 1px solid #1f2937; border-radius: 6px; font-size: 12px; line-height: 1.4;"></pre>
+        <div id="build-success-link" style="display: none; margin-top: 12px;">
+          <a href="#" id="go-to-demo-from-build" style="color: #34d399; font-size: 13px;">✓ Build succeeded → Open Migrated Demo (Tab 5)</a>
+        </div>
+        <div id="hitl-section" style="margin-top: 16px; padding: 16px; background: #0f172a; border: 1px solid #334155; border-radius: 8px;">
+          <h4 style="margin: 0 0 8px 0; font-size: 14px; color: #e2e8f0;">Human-in-the-Loop (HITL)</h4>
+          <p id="hitl-info" style="margin: 0 0 12px 0; font-size: 11px; color: #94a3b8;">When a build fails, the LLM proposes fixes. This panel shows the suggested changes so you can review before applying. Click <strong>Apply All</strong> to accept, or <strong>Reject</strong> to discard.</p>
+          <div id="hitl-panel" style="display: none;">
+            <p id="hitl-summary" style="margin: 0 0 12px 0; font-size: 12px; color: #94a3b8;"></p>
+            <div id="hitl-files" style="margin-bottom: 12px; font-size: 11px; color: #94a3b8;"></div>
+            <div style="display: flex; gap: 8px;">
+              <button id="hitl-apply-btn" class="primary" style="background: #059669; border-color: #047857;">Apply All</button>
+              <button id="hitl-reject-btn" style="background: #374151; border: 1px solid #4b5563; color: #e5e7eb; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">Reject</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div id="tab-step6" class="tab-content" style="display: none;">
+    <div id="tab-step5" class="tab-content" style="display: none;">
       <div class="card">
-        <h2>6. Run & Demo</h2>
-        <p>Start the migrated application and demonstrate that the capability was successfully migrated. Customize the code in <code>warranty_demo/</code> as needed.</p>
+        <h2>5. Run & Demo — Migrated UI</h2>
+        <p>Start the migrated application and open the <strong>migrated UI</strong> (warranty claim demo). Customize the code in <code>warranty_demo/</code> as needed.</p>
         <div id="run-context" style="margin-bottom: 12px; padding: 10px 12px; background: #111827; border: 1px solid #1f2937; border-radius: 6px; font-size: 11px;">
-          <div style="color: #9ca3af;">App URL: <code>http://localhost:8081</code> · Demo: <code>/demo.html</code></div>
+          <div style="color: #9ca3af;">App URL: <code>http://localhost:__APP_PORT__</code></div>
+          <div style="margin-top: 6px; color: #e5e7eb;">Migrated UIs: <a href="http://localhost:__APP_PORT__/demo.html" target="_blank" rel="noopener" style="color: #34d399;">demo.html</a> · <a href="http://localhost:__APP_PORT__/hs1210d.html" target="_blank" rel="noopener" style="color: #34d399;">hs1210d.html</a> · <a href="http://localhost:__APP_PORT__/" target="_blank" rel="noopener" style="color: #34d399;">index</a></div>
+        </div>
+        <div style="margin-bottom: 8px; display: flex; gap: 8px; align-items: center;">
+          <span style="font-size: 12px; color: #9ca3af;">Database: PostgreSQL (RDS). Set <code>RUN_PROFILE=""</code> for H2 local.</span>
         </div>
         <div style="margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
           <button class="primary" id="run-app-btn">Run Application</button>
@@ -324,6 +328,17 @@
   </div>
 
   <script>
+    // API base: same-origin when on http://localhost:8003 or http://127.0.0.1:8003, else explicit URL
+    function getApiBase() {
+      const params = new URLSearchParams(location.search);
+      const override = params.get('server');
+      if (override) return override.replace(/\/$/, '');
+      if (location.protocol === 'http:' && (location.hostname === 'localhost' || location.hostname === '127.0.0.1') && (location.port === '8003' || location.port === ''))
+        return '';
+      return 'http://127.0.0.1:8003';
+    }
+    const API_BASE = getApiBase();
+
     async function discoverGlobalDirs() {
       const statusDiv = document.getElementById('status');
       const discoverBtn = document.getElementById('discover-btn');
@@ -333,7 +348,7 @@
       statusDiv.innerHTML = '';
 
       try {
-        const res = await fetch('/api/discover-directories');
+        const res = await fetch(API_BASE + '/api/discover-directories');
         const data = await res.json();
 
         // AST dirs
@@ -368,7 +383,8 @@
         setTimeout(() => { discoverBtn.textContent = originalText; }, 2000);
       } catch (e) {
         console.error('discoverGlobalDirs error', e);
-        statusDiv.innerHTML = '<div class="status error">✗ Failed to discover directories: ' + e.message + '</div>';
+        showFetchErrorBanner(e);
+        statusDiv.innerHTML = '<div class="status error">✗ Failed to fetch: ' + e.message + '. Ensure the server is running: <code>python3 ui_global_context_server.py</code>. Open <a href="http://127.0.0.1:8003/" target="_blank" style="color:#60a5fa">http://127.0.0.1:8003/</a> in your browser.</div>';
         discoverBtn.textContent = originalText;
       } finally {
         discoverBtn.disabled = false;
@@ -393,7 +409,7 @@
       outputPre.textContent = 'Running global_context scripts...';
 
       try {
-        const res = await fetch('/api/build-global-context', {
+        const res = await fetch(API_BASE + '/api/build-global-context', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({ astDir, rpgDir })
@@ -412,324 +428,6 @@
       } finally {
         buildBtn.disabled = false;
       }
-    }
-
-    async function exportNeo4j() {
-      const statusDiv = document.getElementById('export-status');
-      const outputPre = document.getElementById('export-output');
-      const exportBtn = document.getElementById('export-btn');
-
-      exportBtn.disabled = true;
-      statusDiv.innerHTML = '<div class="status info">Building knowledge graph view from global context artifacts...</div>';
-      outputPre.style.display = 'block';
-      outputPre.textContent = 'Running export_neo4j_cypher.py...';
-
-      try {
-        const res = await fetch('/api/export-neo4j', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({})
-        });
-        const result = await res.json();
-        if (result.success) {
-          statusDiv.innerHTML = '<div class="status success">✓ Knowledge graph view created successfully!</div>';
-          outputPre.textContent = result.output || 'Success';
-        } else {
-          statusDiv.innerHTML = '<div class="status error">✗ Knowledge graph view build failed</div>';
-          outputPre.textContent = result.error || 'Unknown error';
-        }
-      } catch (e) {
-        statusDiv.innerHTML = '<div class="status error">✗ Error: ' + e.message + '</div>';
-        outputPre.textContent = 'Error: ' + e.message;
-      } finally {
-        exportBtn.disabled = false;
-      }
-    }
-
-    /* ───── Interactive knowledge-graph preview (force-directed, pure canvas) ───── */
-    let _gZoom = 1, _gPanX = 0, _gPanY = 0;
-    let _gNodes = [], _gEdges = [], _gCanvas, _gCtx, _gW, _gH;
-    function graphZoom(f) { _gZoom *= f; }
-    function graphFit() {
-      if (!_gNodes.length) return;
-      let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
-      for (const n of _gNodes) { minX=Math.min(minX,n.x); maxX=Math.max(maxX,n.x); minY=Math.min(minY,n.y); maxY=Math.max(maxY,n.y); }
-      const pw = maxX-minX||1, ph = maxY-minY||1;
-      _gZoom = Math.min(_gW/pw, _gH/ph) * 0.85;
-      _gPanX = _gW/2 - (minX+maxX)/2 * _gZoom;
-      _gPanY = _gH/2 - (minY+maxY)/2 * _gZoom;
-    }
-
-    async function previewGraph() {
-      const container = document.getElementById('graph-container');
-      const canvas    = document.getElementById('graph-canvas');
-      const tooltip   = document.getElementById('graph-tooltip');
-      const stats     = document.getElementById('graph-stats');
-      const legend    = document.getElementById('graph-legend');
-      const statusDiv = document.getElementById('export-status');
-
-      container.style.display = 'block';
-      legend.style.display = 'inline';
-      statusDiv.innerHTML = '<div class="status info">Loading graph data…</div>';
-
-      let resp;
-      try { resp = await fetch('/api/knowledge-graph-data'); } catch (e) {
-        statusDiv.innerHTML = '<div class="status error">✗ Could not reach server: ' + e.message + '</div>';
-        return;
-      }
-      const data = await resp.json();
-      if (!data.nodes || data.nodes.length === 0) {
-        statusDiv.innerHTML = '<div class="status error">✗ No graph data. Build global context first.</div>';
-        return;
-      }
-      statusDiv.innerHTML = '<div class="status success">✓ Graph loaded — ' + data.nodes.length + ' nodes, ' + data.edges.length + ' edges</div>';
-      stats.textContent = data.nodes.length + ' nodes · ' + data.edges.length + ' edges';
-
-      _gCanvas = canvas;
-      _gW = canvas.width; _gH = canvas.height;
-      _gCtx = canvas.getContext('2d');
-      const W = _gW, H = _gH, ctx = _gCtx;
-
-      const TYPE_COLORS = { program:'#3b82f6', procedure:'#a855f7', subroutine:'#10b981', dbfile:'#f59e0b', external:'#ef4444' };
-      const TYPE_RADIUS = { program:22, procedure:11, subroutine:10, dbfile:14, external:9 };
-      const TYPE_SHAPE  = { program:'hex', procedure:'circle', subroutine:'circle', dbfile:'diamond', external:'circle' };
-      const EDGE_COLORS = { HAS_NODE:'#1e293b', USES_FILE:'#78350f', CALLS:'#818cf8' };
-      const EDGE_ALPHAS = { HAS_NODE:0.25, USES_FILE:0.45, CALLS:0.8 };
-
-      const nodes = data.nodes.map((n, i) => {
-        const angle = (2 * Math.PI * i) / data.nodes.length;
-        const spread = Math.min(W, H) * 0.4;
-        return {
-          ...n,
-          x: W/2 + spread * Math.cos(angle) + (Math.random()-0.5)*80,
-          y: H/2 + spread * Math.sin(angle) + (Math.random()-0.5)*80,
-          vx: 0, vy: 0,
-          r: TYPE_RADIUS[n.type] || 12,
-          color: TYPE_COLORS[n.type] || '#6b7280',
-          shape: TYPE_SHAPE[n.type] || 'circle',
-        };
-      });
-      _gNodes = nodes;
-      const nodeMap = {};
-      nodes.forEach(n => { nodeMap[n.id] = n; });
-
-      const edges = data.edges.filter(e => nodeMap[e.from] && nodeMap[e.to]).map(e => ({
-        ...e, source: nodeMap[e.from], target: nodeMap[e.to],
-        color: EDGE_COLORS[e.type] || '#374151',
-        alpha: EDGE_ALPHAS[e.type] || 0.5,
-      }));
-      _gEdges = edges;
-
-      /* Physics simulation */
-      const REPULSION = 6000, ATTRACT = 0.004, DAMP = 0.86, CENTER_PULL = 0.008;
-      let simIter = 0;
-
-      function tick() {
-        for (const n of nodes) { n.vx = 0; n.vy = 0; }
-        for (let i = 0; i < nodes.length; i++) {
-          for (let j = i + 1; j < nodes.length; j++) {
-            let dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
-            let d2 = dx*dx + dy*dy || 1;
-            let f = REPULSION / d2;
-            nodes[i].vx += dx * f; nodes[i].vy += dy * f;
-            nodes[j].vx -= dx * f; nodes[j].vy -= dy * f;
-          }
-        }
-        for (const e of edges) {
-          let dx = e.target.x - e.source.x, dy = e.target.y - e.source.y;
-          let d = Math.sqrt(dx*dx + dy*dy) || 1;
-          let idealLen = e.type === 'USES_FILE' ? 180 : (e.type === 'HAS_NODE' ? 80 : 120);
-          let f = ATTRACT * (d - idealLen);
-          let fx = dx/d * f, fy = dy/d * f;
-          e.source.vx += fx; e.source.vy += fy;
-          e.target.vx -= fx; e.target.vy -= fy;
-        }
-        const cx = W / 2, cy = H / 2;
-        for (const n of nodes) {
-          n.vx += (cx - n.x) * CENTER_PULL;
-          n.vy += (cy - n.y) * CENTER_PULL;
-          n.vx *= DAMP; n.vy *= DAMP;
-          if (!n._dragging) { n.x += n.vx; n.y += n.vy; }
-        }
-        simIter++;
-      }
-
-      function drawHex(cx, cy, r) {
-        ctx.beginPath();
-        for (let i = 0; i < 6; i++) {
-          const a = Math.PI/6 + i * Math.PI/3;
-          const px = cx + r * Math.cos(a), py = cy + r * Math.sin(a);
-          i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-        }
-        ctx.closePath();
-      }
-
-      function drawDiamond(cx, cy, r) {
-        ctx.beginPath();
-        ctx.moveTo(cx, cy - r);
-        ctx.lineTo(cx + r*0.8, cy);
-        ctx.lineTo(cx, cy + r);
-        ctx.lineTo(cx - r*0.8, cy);
-        ctx.closePath();
-      }
-
-      function draw() {
-        ctx.save();
-        ctx.clearRect(0, 0, W, H);
-        ctx.translate(_gPanX, _gPanY);
-        ctx.scale(_gZoom, _gZoom);
-
-        // Edges
-        for (const e of edges) {
-          const x1=e.source.x, y1=e.source.y, x2=e.target.x, y2=e.target.y;
-          const dx=x2-x1, dy=y2-y1, len=Math.sqrt(dx*dx+dy*dy)||1;
-          const ux=dx/len, uy=dy/len;
-          const r2 = e.target.r;
-          const tx = x2 - ux*(r2+4), ty = y2 - uy*(r2+4);
-          ctx.globalAlpha = e.alpha;
-          ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(tx, ty);
-          ctx.strokeStyle = e.color; ctx.lineWidth = e.type === 'CALLS' ? 1.6 : 0.8;
-          ctx.stroke();
-          if (e.type === 'CALLS') {
-            const sz = 5;
-            ctx.beginPath();
-            ctx.moveTo(tx, ty);
-            ctx.lineTo(tx - ux*sz - uy*sz*0.5, ty - uy*sz + ux*sz*0.5);
-            ctx.lineTo(tx - ux*sz + uy*sz*0.5, ty - uy*sz - ux*sz*0.5);
-            ctx.closePath(); ctx.fillStyle = e.color; ctx.fill();
-          }
-          ctx.globalAlpha = 1;
-        }
-
-        // Highlighted edges (when a node is selected)
-        if (_selectedNode) {
-          for (const e of edges) {
-            if (e.source !== _selectedNode && e.target !== _selectedNode) continue;
-            const x1=e.source.x, y1=e.source.y, x2=e.target.x, y2=e.target.y;
-            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
-            ctx.strokeStyle = '#f472b6'; ctx.lineWidth = 2.5; ctx.globalAlpha = 0.8;
-            ctx.stroke(); ctx.globalAlpha = 1;
-          }
-        }
-
-        // Nodes
-        for (const n of nodes) {
-          const dimmed = _selectedNode && n !== _selectedNode && !edges.some(e => (e.source === _selectedNode && e.target === n) || (e.target === _selectedNode && e.source === n));
-          ctx.globalAlpha = dimmed ? 0.2 : 1;
-
-          // Glow
-          ctx.beginPath(); ctx.arc(n.x, n.y, n.r + 5, 0, Math.PI*2);
-          ctx.fillStyle = n.color; ctx.globalAlpha *= 0.12; ctx.fill();
-          ctx.globalAlpha = dimmed ? 0.2 : 1;
-
-          if (n.shape === 'hex') { drawHex(n.x, n.y, n.r); }
-          else if (n.shape === 'diamond') { drawDiamond(n.x, n.y, n.r); }
-          else { ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI*2); }
-          ctx.fillStyle = n.color; ctx.fill();
-          ctx.strokeStyle = n === _selectedNode ? '#f472b6' : '#e5e7eb';
-          ctx.lineWidth = n === _selectedNode ? 2.5 : 1;
-          ctx.stroke();
-
-          ctx.fillStyle = dimmed ? '#4b5563' : '#f9fafb';
-          ctx.font = (n.type === 'program' ? 'bold 11px' : '9px') + ' monospace';
-          ctx.textAlign = 'center';
-          ctx.fillText(n.label, n.x, n.y + n.r + 13);
-          ctx.globalAlpha = 1;
-        }
-        ctx.restore();
-      }
-
-      let _selectedNode = null, _dragNode = null, _dragOffX = 0, _dragOffY = 0;
-      let _isPanning = false, _panStartX = 0, _panStartY = 0;
-
-      function worldXY(e) {
-        const rect = canvas.getBoundingClientRect();
-        const sx = (e.clientX - rect.left) * (W / rect.width);
-        const sy = (e.clientY - rect.top) * (H / rect.height);
-        return [(sx - _gPanX) / _gZoom, (sy - _gPanY) / _gZoom];
-      }
-
-      function nodeAt(wx, wy) {
-        for (let i = nodes.length - 1; i >= 0; i--) {
-          const n = nodes[i];
-          const dx = wx - n.x, dy = wy - n.y;
-          if (dx*dx + dy*dy < (n.r + 4)*(n.r + 4)) return n;
-        }
-        return null;
-      }
-
-      canvas.addEventListener('mousedown', e => {
-        const [wx, wy] = worldXY(e);
-        const n = nodeAt(wx, wy);
-        if (n) {
-          _dragNode = n; n._dragging = true;
-          _dragOffX = n.x - wx; _dragOffY = n.y - wy;
-          canvas.style.cursor = 'grabbing';
-        } else {
-          _isPanning = true;
-          const rect = canvas.getBoundingClientRect();
-          _panStartX = (e.clientX - rect.left) * (W / rect.width) - _gPanX;
-          _panStartY = (e.clientY - rect.top) * (H / rect.height) - _gPanY;
-          canvas.style.cursor = 'move';
-        }
-      });
-      canvas.addEventListener('mousemove', e => {
-        const rect = canvas.getBoundingClientRect();
-        if (_dragNode) {
-          const [wx, wy] = worldXY(e);
-          _dragNode.x = wx + _dragOffX;
-          _dragNode.y = wy + _dragOffY;
-          return;
-        }
-        if (_isPanning) {
-          _gPanX = (e.clientX - rect.left) * (W / rect.width) - _panStartX;
-          _gPanY = (e.clientY - rect.top) * (H / rect.height) - _panStartY;
-          return;
-        }
-        const [wx, wy] = worldXY(e);
-        const n = nodeAt(wx, wy);
-        canvas.style.cursor = n ? 'pointer' : 'grab';
-        if (n) {
-          tooltip.style.display = 'block';
-          tooltip.textContent = n.title || n.label;
-          tooltip.style.left = (e.clientX - rect.left + 14) + 'px';
-          tooltip.style.top  = (e.clientY - rect.top - 10)  + 'px';
-        } else {
-          tooltip.style.display = 'none';
-        }
-      });
-      canvas.addEventListener('mouseup', () => {
-        if (_dragNode) { _dragNode._dragging = false; _dragNode = null; }
-        _isPanning = false;
-        canvas.style.cursor = 'grab';
-      });
-      canvas.addEventListener('mouseleave', () => {
-        tooltip.style.display = 'none';
-        _isPanning = false;
-        if (_dragNode) { _dragNode._dragging = false; _dragNode = null; }
-      });
-      canvas.addEventListener('click', e => {
-        const [wx, wy] = worldXY(e);
-        _selectedNode = nodeAt(wx, wy);
-      });
-      canvas.addEventListener('wheel', e => {
-        e.preventDefault();
-        const rect = canvas.getBoundingClientRect();
-        const sx = (e.clientX - rect.left) * (W / rect.width);
-        const sy = (e.clientY - rect.top) * (H / rect.height);
-        const factor = e.deltaY < 0 ? 1.1 : 0.9;
-        _gPanX = sx - (sx - _gPanX) * factor;
-        _gPanY = sy - (sy - _gPanY) * factor;
-        _gZoom *= factor;
-      }, {passive: false});
-
-      function loop() {
-        if (simIter < 400) tick();
-        draw();
-        requestAnimationFrame(loop);
-      }
-      loop();
-      setTimeout(graphFit, 1200);
     }
 
     let PROGRAMS_LIST = [];
@@ -756,7 +454,7 @@
       if (!programSelect || !nodeSelect) return;
 
       try {
-        const res = await fetch('/api/list-programs');
+        const res = await fetch(API_BASE + '/api/list-programs');
         const data = await res.json();
         const programs = data.programs || [];
         PROGRAMS_LIST = programs;
@@ -816,6 +514,38 @@
       }
     }
 
+    async function regenerateUiSchema() {
+      const programSelect = document.getElementById('mf-program');
+      const nodeSelect = document.getElementById('mf-node');
+      const statusDiv = document.getElementById('mf-status');
+      const programId = programSelect?.value;
+      const entryNodeId = nodeSelect?.value;
+      if (!programId || !entryNodeId) {
+        alert('Please select both a program and a feature.');
+        return;
+      }
+      const btn = document.getElementById('mf-regen-ui-btn');
+      btn.disabled = true;
+      statusDiv.innerHTML = '<div class="status info">Regenerating UI schema from display files…</div>';
+      try {
+        const res = await fetch(API_BASE + '/api/regenerate-ui-schema', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ programId, entryNodeId })
+        });
+        const data = await res.json();
+        if (data.success) {
+          statusDiv.innerHTML = '<div class="status success">✓ ' + (data.message || 'UI schema generated.') + '</div>';
+        } else {
+          statusDiv.innerHTML = '<div class="status error">✗ ' + (data.error || 'Failed') + '</div>';
+        }
+      } catch (e) {
+        statusDiv.innerHTML = '<div class="status error">✗ Error: ' + e.message + '</div>';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
     async function migrateFeature() {
       const programSelect = document.getElementById('mf-program');
       const nodeSelect = document.getElementById('mf-node');
@@ -830,26 +560,63 @@
       }
 
       runBtn.disabled = true;
-      statusDiv.innerHTML = '<div class="status info">Migrating feature and building application (agentic flow)...</div>';
+      statusDiv.innerHTML = '<div class="status info">Migrating feature (code generation only). Build errors are fixed in tab 5.</div>';
       outputPre.style.display = 'block';
       outputPre.textContent = '';
 
       try {
         const rpgDir = document.getElementById('rpg-dir')?.value?.trim() || null;
-        const res = await fetch('/api/migrate-feature', {
+        const fetchOpts = {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({ programId, entryNodeId, rpgDir })
-        });
-        const result = await res.json();
-        if (result.success) {
-          const buildSuccess = result.buildSuccess === true;
-          const valLink = '<a href="#" id="go-to-validation" style="color:#86efac;margin-left:8px;">→ Go to Validation</a>';
-          if (buildSuccess) {
-            statusDiv.innerHTML = '<div class="status success">✓ Feature migrated and application build succeeded.' + valLink + '</div>';
-          } else {
-            statusDiv.innerHTML = '<div class="status error">⚠ Feature migrated, but application build failed.' + valLink + '</div>';
+        };
+        if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) {
+          fetchOpts.signal = AbortSignal.timeout(35 * 60 * 1000);  // 35 min - migration can take 18+ min
+        }
+        const res = await fetch(API_BASE + '/api/migrate-feature', fetchOpts);
+        // Server streams NDJSON: {"progress":"..."} then {"result":{...}}
+        let result = null;
+        const reader = res.body?.getReader();
+        const decoder = new TextDecoder();
+        if (reader) {
+          let buf = '';
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buf += decoder.decode(value, { stream: true });
+            const lines = buf.split('\n');
+            buf = lines.pop() || '';
+            for (const line of lines) {
+              if (!line.trim()) continue;
+              try {
+                const obj = JSON.parse(line);
+                if (obj.progress) {
+                  statusDiv.innerHTML = '<div class="status info">' + (obj.progress || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
+                }
+                if (obj.result) result = obj.result;
+                else if (obj.success !== undefined || obj.error) result = obj;  // non-streaming error
+              } catch (_) {}
+            }
           }
+          if (buf.trim()) {
+            try {
+              const obj = JSON.parse(buf);
+              if (obj.result) result = obj.result;
+              else if (obj.success !== undefined || obj.error) result = obj;
+            } catch (_) {}
+          }
+        }
+        if (result === null) result = await res.json();
+        if (result.success) {
+          const buildLink = '<a href="#" id="go-to-build" style="color:#86efac;margin-left:8px;">→ Build Application (tab 4)</a>';
+          const valLink = '<a href="#" id="go-to-validation" style="color:#86efac;margin-left:8px;">→ Validation</a>';
+          const uiSchemaNote = (result.uiSchemaGenerated || []).length > 0 ? ' UI schema generated.' : '';
+          statusDiv.innerHTML = '<div class="status success">✓ Feature migrated. Code generated.' + uiSchemaNote + ' Run Build Application (tab 4) to compile and fix errors.' + buildLink + ' ' + valLink + '</div>';
+          document.getElementById('go-to-build')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.querySelector('.tab[data-tab="step4"]')?.click();
+          });
           document.getElementById('go-to-validation')?.addEventListener('click', (e) => {
             e.preventDefault();
             const vp = document.getElementById('val-program');
@@ -859,30 +626,34 @@
               populateValNodes(programId);
               vn.value = entryNodeId;
             }
-            document.querySelector('.tab[data-tab="step4"]')?.click();
+            document.querySelector('.tab[data-tab="step3"]')?.click();
             setTimeout(() => runValidation(), 200);
           });
 
           let text = '';
           if (result.summary) {
-            text += result.summary + '\\n\\n';
+            text += result.summary + '\n\n';
           }
           if (result.manifestPath) {
-            text += 'Manifest: ' + result.manifestPath + '\\n';
+            text += 'Manifest: ' + result.manifestPath + '\n';
           }
           const files = result.generatedFiles || [];
+          const uiSchemas = result.uiSchemaGenerated || [];
           if (files.length > 0) {
-            text += '\\nFiles written under application source (e.g. warranty_demo/src/main/java/):\\n';
+            text += '\nFiles written under application source (e.g. warranty_demo/src/main/java/):\n';
             files.forEach(f => {
-              text += '  - ' + f + '\\n';
+              text += '  - ' + f + '\n';
             });
           }
-          // Append build output
-          if (typeof result.buildExitCode !== 'undefined') {
-            text += '\\nBuild exit code: ' + result.buildExitCode + '\\n';
+          if (uiSchemas.length > 0) {
+            text += '\nUI schema(s) generated (display → backend → UI):\n';
+            uiSchemas.forEach(f => { text += '  - ' + f + '\n'; });
           }
+          // Build output only if build was run (tab 5 does build; tab 3 is code gen only)
           if (result.buildOutput) {
-            text += '\\nBuild output:\\n' + result.buildOutput;
+            text += '\nBuild output:\n' + result.buildOutput;
+          } else {
+            text += '\n\nNext: Go to tab 4 (Build Application) to compile and fix any errors.';
           }
 
           outputPre.textContent = text || (result.output || 'Success');
@@ -917,7 +688,7 @@
       }
 
       try {
-        const res = await fetch('/api/validate', {
+        const res = await fetch(API_BASE + '/api/validate', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({ projectDir, programId, entryNodeId: nodeId })
@@ -933,6 +704,7 @@
         }
         if (!data.success) {
           statusDiv.innerHTML = '<div class="status error">✗ ' + (data.error || 'Validation failed') + '</div>';
+          document.getElementById('val-push-btn')?.style.setProperty('display', 'none');
           return;
         }
 
@@ -943,6 +715,14 @@
 
         statusDiv.innerHTML = '<div class="status success">✓ Validation complete — Overall: ' + (v.overall_score ?? 0) + '%</div>';
         resultsDiv.style.display = 'block';
+        const pushBtn = document.getElementById('val-push-btn');
+        const pushStatus = document.getElementById('val-push-status');
+        if (pushBtn && pushStatus) {
+          const passed = (v.status === 'PASSED' || v.status === 'WARNING');
+          pushBtn.style.display = passed ? 'inline-block' : 'none';
+          pushBtn.disabled = false;
+          pushStatus.style.display = 'none';
+        }
 
         // Metrics grid
         const metricsEl = document.getElementById('val-metrics');
@@ -1091,17 +871,46 @@
       }
     }
 
+    async function pushToRepo() {
+      const pushBtn = document.getElementById('val-push-btn');
+      const pushStatus = document.getElementById('val-push-status');
+      const projectDir = document.getElementById('val-project-dir')?.value?.trim() || 'warranty_demo';
+      if (!pushBtn || !pushStatus) return;
+      pushBtn.disabled = true;
+      pushStatus.style.display = 'block';
+      pushStatus.innerHTML = '<div class="status info">Pushing to repository...</div>';
+      try {
+        const res = await fetch(API_BASE + '/api/push-to-repo', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ projectDir })
+        });
+        const data = await res.json();
+        if (data.success) {
+          pushStatus.innerHTML = '<div class="status success">✓ ' + (data.message || 'Pushed successfully') + '<br><span style="font-size:10px;color:#86efac;">Branch: ' + (data.branch || '') + '</span></div>';
+        } else {
+          pushStatus.innerHTML = '<div class="status error">✗ ' + (data.error || 'Push failed') + '</div>';
+        }
+      } catch (e) {
+        pushStatus.innerHTML = '<div class="status error">✗ ' + e.message + '</div>';
+      } finally {
+        pushBtn.disabled = false;
+      }
+    }
+
     async function loadBuildContext() {
       const ctxEl = document.getElementById('build-context');
       if (!ctxEl) return;
       try {
-        const res = await fetch('/api/build-context');
+        const res = await fetch(API_BASE + '/api/build-context');
         const data = await res.json();
         const lm = data.lastMigrated;
         let html = '<div style="color:#d1d5db;margin-bottom:4px;">✓ Build will compile <strong>' + (data.javaFileCount || 0) + ' Java file(s)</strong> in <code>' + (data.projectDir || 'warranty_demo') + '</code></div>';
         html += '<div style="color:#9ca3af;font-size:10px;">';
         if (lm && lm.programId) {
-          html += 'Latest migrated: <strong>' + lm.programId + '</strong> / <strong>' + lm.entryNodeId + '</strong> (' + (lm.generatedCount || 0) + ' file(s)) — included in this build.';
+          let detail = (lm.generatedCount || 0) + ' Java file(s)';
+          if (lm.uiSchemaCount) detail += ', ' + lm.uiSchemaCount + ' UI schema(s)';
+          html += 'Latest migrated: <strong>' + lm.programId + '</strong> / <strong>' + lm.entryNodeId + '</strong> (' + detail + ') — included in this build.';
         } else {
           html += 'No migrations yet. Migrate a feature first, then build.';
         }
@@ -1112,23 +921,31 @@
       }
     }
 
+    let _pendingSuggestedFixes = null;
+    let _pendingProjectDir = null;
+
     async function buildApplication() {
       const statusDiv = document.getElementById('build-status');
       const outputPre = document.getElementById('build-output');
       const buildBtn = document.getElementById('build-app-btn');
+      const hitlPanel = document.getElementById('hitl-panel');
       const projectDirInput = document.getElementById('build-project-dir');
       const projectDir = projectDirInput?.value?.trim() || 'warranty_demo';
 
       buildBtn.disabled = true;
+      hitlPanel.style.display = 'none';
+      document.getElementById('build-success-link').style.display = 'none';
+      document.getElementById('build-push-code-btn')?.style.setProperty('display', 'none');
+      _pendingSuggestedFixes = null;
       statusDiv.innerHTML = '<div class="status info">Building application (this may take a few minutes)...</div>';
       outputPre.style.display = 'block';
       outputPre.textContent = `Running build in ${projectDir}...`;
 
       try {
-        const res = await fetch('/api/build-application', {
+        const res = await fetch(API_BASE + '/api/build-application', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ projectDir })
+          body: JSON.stringify({ projectDir, hitlMode: true })
         });
         const result = await res.json();
         if (result.success) {
@@ -1137,12 +954,35 @@
           if (bc && bc.javaFileCount != null) {
             msg += ' Compiled ' + bc.javaFileCount + ' Java file(s).';
           }
+          if (result.testSummary) {
+            msg += ' ' + result.testSummary;
+          }
           statusDiv.innerHTML = '<div class="status success">' + msg + '</div>';
+          document.getElementById('build-success-link').style.display = 'block';
+          const pushCodeBtn = document.getElementById('build-push-code-btn');
+          const pushCodeStatus = document.getElementById('build-push-code-status');
+          if (pushCodeBtn && pushCodeStatus) {
+            pushCodeBtn.style.display = 'inline-block';
+            pushCodeBtn.disabled = false;
+            pushCodeStatus.style.display = 'none';
+          }
           loadBuildContext();
+        } else if (result.needsReview && result.suggestedFixes) {
+          _pendingSuggestedFixes = result.suggestedFixes;
+          _pendingProjectDir = projectDir;
+          statusDiv.innerHTML = '<div class="status error">✗ Compilation failed. Review suggested fixes below.</div>';
+          document.getElementById('hitl-summary').textContent = result.errorSummary || 'LLM proposed fixes. Review and apply to continue.';
+          const filesDiv = document.getElementById('hitl-files');
+          filesDiv.innerHTML = 'Files to be changed: ' + Object.keys(result.suggestedFixes).join(', ');
+          hitlPanel.style.display = 'block';
         } else {
-          statusDiv.innerHTML = '<div class="status error">✗ Application build failed</div>';
+          const errHint = (result.output || result.error) ? ' Check the build output below for details.' : '';
+          statusDiv.innerHTML = '<div class="status error">✗ Application build failed.' + errHint + '</div>';
+          document.getElementById('build-success-link').style.display = 'none';
+          document.getElementById('build-push-code-btn')?.style.setProperty('display', 'none');
         }
         outputPre.textContent = (result.output || '') + (result.error ? '\n\nError:\n' + result.error : '');
+        outputPre.style.display = 'block';
       } catch (e) {
         statusDiv.innerHTML = '<div class="status error">✗ Error: ' + e.message + '</div>';
         outputPre.textContent = 'Error: ' + e.message;
@@ -1151,26 +991,106 @@
       }
     }
 
-    const APP_BASE = 'http://localhost:8081';
+    async function applyApprovedFixes() {
+      if (!_pendingSuggestedFixes || !_pendingProjectDir) return;
+      const statusDiv = document.getElementById('build-status');
+      const outputPre = document.getElementById('build-output');
+      const hitlPanel = document.getElementById('hitl-panel');
+      const applyBtn = document.getElementById('hitl-apply-btn');
+
+      applyBtn.disabled = true;
+      statusDiv.innerHTML = '<div class="status info">Applying fixes and rebuilding...</div>';
+      try {
+        const res = await fetch(API_BASE + '/api/apply-approved-fixes', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ projectDir: _pendingProjectDir, suggestedFixes: _pendingSuggestedFixes })
+        });
+        const result = await res.json();
+        hitlPanel.style.display = 'none';
+        _pendingSuggestedFixes = null;
+        _pendingProjectDir = null;
+        if (result.success) {
+          statusDiv.innerHTML = '<div class="status success">✓ Fixes applied. Build succeeded.</div>';
+          loadBuildContext();
+        } else {
+          statusDiv.innerHTML = '<div class="status error">✗ Build still failed after applying fixes.</div>';
+        }
+        outputPre.textContent = (result.output || '') + (result.error ? '\n\nError:\n' + result.error : '');
+      } catch (e) {
+        statusDiv.innerHTML = '<div class="status error">✗ Error: ' + e.message + '</div>';
+        outputPre.textContent = 'Error: ' + e.message;
+      } finally {
+        applyBtn.disabled = false;
+      }
+    }
+
+    document.getElementById('hitl-apply-btn')?.addEventListener('click', applyApprovedFixes);
+    document.getElementById('hitl-reject-btn')?.addEventListener('click', () => {
+      document.getElementById('hitl-panel').style.display = 'none';
+      _pendingSuggestedFixes = null;
+      _pendingProjectDir = null;
+    });
+
+    async function pushCodeToRepo() {
+      const pushBtn = document.getElementById('build-push-code-btn');
+      const pushStatus = document.getElementById('build-push-code-status');
+      const projectDir = document.getElementById('build-project-dir')?.value?.trim() || 'warranty_demo';
+      if (!pushBtn || !pushStatus) return;
+      pushBtn.disabled = true;
+      pushStatus.style.display = 'block';
+      pushStatus.innerHTML = '<div class="status info">Pushing generated code to scania-java-v2...</div>';
+      try {
+        const res = await fetch(API_BASE + '/api/push-to-repo', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ projectDir })
+        });
+        const data = await res.json();
+        if (data.success) {
+          pushStatus.innerHTML = '<div class="status success">✓ ' + (data.message || 'Pushed successfully') + '<br><span style="font-size:10px;color:#86efac;">Branch: ' + (data.branch || '') + '</span><br><span style="font-size:10px;color:#94a3b8;">GitHub Actions will run tests on the pushed code.</span></div>';
+        } else {
+          pushStatus.innerHTML = '<div class="status error">✗ ' + (data.error || 'Push failed') + '</div>';
+        }
+      } catch (e) {
+        pushStatus.innerHTML = '<div class="status error">✗ ' + e.message + '</div>';
+      }
+      pushBtn.disabled = false;
+    }
+    document.getElementById('build-push-code-btn')?.addEventListener('click', pushCodeToRepo);
+
+    const APP_BASE = 'http://localhost:' + (window.APP_PORT || '8081');
     const DEMO_URL = APP_BASE + '/demo.html';
     let _statusPollTimer = null;
-    const STATUS_POLL_INTERVAL = 5000;
-    const STATUS_POLL_MAX_MS = 180000;
+    const STATUS_POLL_INTERVAL = 3000;  // Poll every 3s for faster feedback (H2 local starts in ~30s)
+    const STATUS_POLL_MAX_MS = 300000;  // 5 min max wait
 
     async function checkAppStatus(silent) {
       const statusDiv = document.getElementById('run-status');
       if (!statusDiv) return false;
       if (!silent) statusDiv.innerHTML = '<div class="status info">Checking…</div>';
       try {
-        const res = await fetch(APP_BASE + '/api/demo/migrated-queries', { method: 'GET' });
+        const res = await fetch(APP_BASE + '/demo.html', { method: 'GET' });
         if (res.ok) {
           statusDiv.innerHTML = '<div class="status success">✓ Application is running. Migration demo ready.</div>';
           return true;
         }
-        if (!silent) statusDiv.innerHTML = '<div class="status error">✗ Application not responding (status ' + res.status + '). Run it first.</div>';
+        if (!silent) statusDiv.innerHTML = '<div class="status error">✗ Application returned ' + res.status + '. Run it first.</div>';
         return false;
       } catch (e) {
-        if (!silent) statusDiv.innerHTML = '<div class="status error">✗ Application not running. Click "Run Application" to start.</div>';
+        if (!silent) statusDiv.innerHTML = '<div class="status error">✗ Application not running. Click "Run Application" to start. <a href="#" id="show-log-link" style="color:#60a5fa;">Show last error trace</a></div>';
+        if (!silent) setTimeout(() => {
+          document.getElementById('show-log-link')?.addEventListener('click', async (ev) => {
+            ev.preventDefault();
+            const statusDiv = document.getElementById('run-status');
+            if (statusDiv) statusDiv.innerHTML = '<div class="status info">Fetching log…</div>';
+            const logTail = await fetchAndShowLogTail();
+            const escaped = logTail.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            if (statusDiv) statusDiv.innerHTML = '<div class="status error">✗ Application not running.</div>' +
+              '<details open style="margin-top:8px;"><summary style="cursor:pointer;color:#60a5fa;">Error trace</summary>' +
+              '<pre style="margin-top:8px;padding:8px;background:#111827;border:1px solid #1f2937;border-radius:6px;font-size:10px;max-height:300px;overflow:auto;white-space:pre-wrap;">' + escaped + '</pre></details>';
+          });
+        }, 0);
         return false;
       }
     }
@@ -1182,6 +1102,20 @@
       }
     }
 
+    async function fetchAndShowLogTail() {
+      try {
+        const res = await fetch(API_BASE + '/api/run-application-log?lines=100');
+        const data = await res.json();
+        const tail = (data.logTail || '').trim();
+        const err = data.error || '';
+        if (tail) return tail;
+        if (err) return 'Could not read log: ' + err;
+        return 'Log file empty or not found.';
+      } catch (e) {
+        return 'Could not fetch log: ' + e.message;
+      }
+    }
+
     function startStatusPolling(startedAt) {
       stopStatusPolling();
       _statusPollTimer = setInterval(async () => {
@@ -1189,7 +1123,14 @@
         if (elapsed > STATUS_POLL_MAX_MS) {
           stopStatusPolling();
           const statusDiv = document.getElementById('run-status');
-          if (statusDiv) statusDiv.innerHTML = '<div class="status error">✗ Application did not start within 3 minutes. Check the terminal for errors.</div>';
+          if (statusDiv) {
+            statusDiv.innerHTML = '<div class="status info">Fetching error log…</div>';
+            const logTail = await fetchAndShowLogTail();
+            const escaped = logTail.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            statusDiv.innerHTML = '<div class="status error">✗ Application did not start within 5 minutes.</div>' +
+              '<details style="margin-top:8px;"><summary style="cursor:pointer;color:#60a5fa;">Show error trace</summary>' +
+              '<pre style="margin-top:8px;padding:8px;background:#111827;border:1px solid #1f2937;border-radius:6px;font-size:10px;max-height:300px;overflow:auto;white-space:pre-wrap;">' + escaped + '</pre></details>';
+          }
           return;
         }
         const ok = await checkAppStatus(true);
@@ -1205,7 +1146,7 @@
       btn.disabled = true;
       statusDiv.innerHTML = '<div class="status info">Starting application (this may take 30–60 seconds)…</div>';
       try {
-        const res = await fetch('/api/run-application', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({}) });
+        const res = await fetch(API_BASE + '/api/run-application', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({}) });
         const text = await res.text();
         let data;
         try {
@@ -1219,7 +1160,14 @@
           statusDiv.innerHTML = '<div class="status info">Application starting… Status will update automatically when ready.</div>';
           startStatusPolling(Date.now());
         } else {
-          statusDiv.innerHTML = '<div class="status error">✗ ' + (data.error || 'Failed to start') + '</div>';
+          let errMsg = data.error || 'Failed to start';
+          let html = '<div class="status error">✗ ' + errMsg.replace(/\n/g, '<br>') + '</div>';
+          if (data.logTail && data.logTail.trim()) {
+            const escaped = data.logTail.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            html += '<details open style="margin-top:8px;"><summary style="cursor:pointer;color:#60a5fa;">Error trace</summary>' +
+              '<pre style="margin-top:8px;padding:8px;background:#111827;border:1px solid #1f2937;border-radius:6px;font-size:10px;max-height:300px;overflow:auto;white-space:pre-wrap;">' + escaped + '</pre></details>';
+          }
+          statusDiv.innerHTML = html;
         }
       } catch (e) {
         statusDiv.innerHTML = '<div class="status error">✗ ' + e.message + '</div>';
@@ -1276,7 +1224,42 @@
       }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    function showFetchErrorBanner(err) {
+      const banner = document.getElementById('fetch-error-banner');
+      if (!banner) return;
+      const origin = document.getElementById('diag-origin');
+      const api = document.getElementById('diag-api');
+      const detail = document.getElementById('diag-detail');
+      if (origin) origin.textContent = location.origin || location.href || 'unknown';
+      if (api) api.textContent = (API_BASE || '(same)') + '/api/...';
+      if (detail && err) {
+        let msg = err.message || String(err);
+        if (err.name) msg = err.name + ': ' + msg;
+        if (err.cause) msg += ' (cause: ' + (err.cause?.message || err.cause) + ')';
+        detail.textContent = msg;
+      }
+      banner.style.display = 'block';
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      let connected = false;
+      // If opened from file://, fetch will fail - must use http://localhost:8003/
+      if (location.protocol === 'file:') {
+        showFetchErrorBanner(new Error('Page opened from file:// - open http://127.0.0.1:8003/ instead'));
+      } else {
+      try {
+        const r = await fetch(API_BASE + '/api/build-context', { signal: AbortSignal.timeout(5000) });
+        connected = r.ok;
+        if (!connected) showFetchErrorBanner(new Error('Server returned ' + r.status));
+      } catch (e) {
+        showFetchErrorBanner(e);
+      }
+      }
+      // Show hint when not on expected origin
+      const hint = document.getElementById('server-hint');
+      if (API_BASE && hint) {
+        hint.innerHTML = '| <a href="http://127.0.0.1:8003/" target="_blank" style="color:#60a5fa">Open http://127.0.0.1:8003/</a> if you see "Failed to fetch"';
+      }
       // Tabs
       const tabs = document.querySelectorAll('.tabs .tab');
       const contents = {
@@ -1285,7 +1268,6 @@
         step3: document.getElementById('tab-step3'),
         step4: document.getElementById('tab-step4'),
         step5: document.getElementById('tab-step5'),
-        step6: document.getElementById('tab-step6'),
       };
       tabs.forEach(tab => {
         tab.addEventListener('click', () => {
@@ -1301,22 +1283,32 @@
           Object.keys(contents).forEach(key => {
             contents[key].style.display = key === target ? 'block' : 'none';
           });
-          if (target === 'step5') loadBuildContext();
-          if (target === 'step6') checkAppStatus();
+          if (target === 'step4') loadBuildContext();
+          if (target === 'step5') checkAppStatus();
         });
       });
 
       document.getElementById('discover-btn').addEventListener('click', discoverGlobalDirs);
       document.getElementById('build-btn').addEventListener('click', buildGlobalContext);
-      document.getElementById('export-btn').addEventListener('click', exportNeo4j);
-      document.getElementById('preview-graph-btn').addEventListener('click', previewGraph);
       document.getElementById('mf-refresh-btn').addEventListener('click', loadProgramsAndNodes);
       document.getElementById('mf-run-btn').addEventListener('click', migrateFeature);
+      document.getElementById('mf-regen-ui-btn').addEventListener('click', regenerateUiSchema);
       document.getElementById('val-run-btn').addEventListener('click', runValidation);
+      document.getElementById('val-push-btn')?.addEventListener('click', pushToRepo);
       document.getElementById('build-app-btn').addEventListener('click', buildApplication);
       document.getElementById('run-app-btn').addEventListener('click', runApplication);
       document.getElementById('open-demo-btn').addEventListener('click', openDemo);
       document.getElementById('check-status-btn').addEventListener('click', checkAppStatus);
+      document.getElementById('go-to-demo-from-build')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const tab5 = document.querySelector('.tab[data-tab="step5"]');
+        const contents = { step1: document.getElementById('tab-step1'), step2: document.getElementById('tab-step2'), step3: document.getElementById('tab-step3'), step4: document.getElementById('tab-step4'), step5: document.getElementById('tab-step5') };
+        document.querySelectorAll('.tab').forEach(t => { t.classList.remove('active'); t.style.background = '#020617'; t.style.color = '#9ca3af'; });
+        if (tab5) { tab5.classList.add('active'); tab5.style.background = '#111827'; tab5.style.color = '#e5e7eb'; }
+        Object.keys(contents).forEach(k => { contents[k].style.display = k === 'step5' ? 'block' : 'none'; });
+        checkAppStatus();
+        openDemo();
+      });
       document.getElementById('test-migrated-btn').addEventListener('click', testMigratedQueries);
       document.getElementById('test-search-btn').addEventListener('click', testClaimSearch);
       document.getElementById('customize-link').addEventListener('click', (e) => {
@@ -1324,9 +1316,11 @@
         window.open('/api/customize-guide', '_blank');
       });
 
-      discoverGlobalDirs();
-      loadProgramsAndNodes();
-      loadBuildContext();
+      if (connected) {
+        discoverGlobalDirs();
+        loadProgramsAndNodes();
+        loadBuildContext();
+      }
     });
   </script>
 </body>

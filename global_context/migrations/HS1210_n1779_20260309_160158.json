@@ -1,0 +1,197 @@
+{
+  "programId": "HS1210",
+  "unitId": "qsys:HSSRC/QRPGLESRC/HS1210",
+  "entryNodeId": "n1779",
+  "nodesInSlice": [
+    {
+      "nodeId": "n1779",
+      "kind": "Procedure",
+      "name": "CreateClaim",
+      "procedureName": null,
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+        "startLine": 2798,
+        "endLine": 2887
+      }
+    }
+  ],
+  "contextFiles": [
+    "/Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/context_index/HS1210_n1779.json"
+  ],
+  "dbFiles": [
+    {
+      "name": "AUFWKO",
+      "library": "HSSRC"
+    },
+    {
+      "name": "FISTAM",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HS1210D",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKLF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKLF8",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHPPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHTPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHWPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSBTSLF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSBTSPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSEPAF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSFLALF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG70F",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF2",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF7",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71PF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG73LF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG73PF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG79F",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGFIPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSLF2",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSLF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGSCPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSKAMPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "RWAPRL1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "ITLSMF3",
+      "library": "P400IMS"
+    },
+    {
+      "name": "PIPPMST",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F001",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F002",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F003",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F009",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F085",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3L004H",
+      "library": "S400CAS"
+    }
+  ],
+  "generatedFiles": [
+    "com/scania/warranty/domain/Claim.java",
+    "com/scania/warranty/domain/ClaimId.java",
+    "com/scania/warranty/domain/ClaimFailure.java",
+    "com/scania/warranty/domain/ClaimFailureId.java",
+    "com/scania/warranty/domain/GpsLine.java",
+    "com/scania/warranty/domain/GpsLineId.java",
+    "com/scania/warranty/domain/StandardMaterial.java",
+    "com/scania/warranty/domain/ClaimCreationContext.java",
+    "com/scania/warranty/repository/ClaimRepository.java",
+    "com/scania/warranty/repository/ClaimFailureRepository.java",
+    "com/scania/warranty/repository/GpsLineRepository.java",
+    "com/scania/warranty/repository/StandardMaterialRepository.java",
+    "com/scania/warranty/service/ClaimCreationService.java",
+    "com/scania/warranty/dto/ClaimCreationRequest.java",
+    "com/scania/warranty/dto/ClaimCreationResponse.java",
+    "com/scania/warranty/web/ClaimCreationController.java"
+  ],
+  "uiSchemaGenerated": [],
+  "rpgSnippet": "     P CreateClaim     B\n     D CreateClaim     PI\n     D*----------------------------------------------------------------\n     D create          S               N   Inz(*Off)\n     D maintenance     S               N   Inz(*Off)\n     D groups          S              4A   Inz(*Blanks)\n     D partNo          S              7A   Inz(*Blanks)\n     D partValue       S             11  2 Inz(0)\n     D text            S             65A   Dim(4) Inz(*Blanks)\n     D failureNo       S              2  0 Inz(0)\n     D lineNo          S              1  0 Inz(0)\n     D valueMat        S             11  2 Inz(0)\n     D valueLab        S             11  2 Inz(0)\n     D valueSpe        S             11  2 Inz(0)\n     D*****************************************************************\n      /free\n        FailureNo = 1;\n        SetLl Key_GPS HSGPSLF3;\n        ReadE Key_GPS HSGPSLF3;\n        DoW Not %Eof(HSGPSLF3);\n           If GPS150 > failureNo;\n              createFail(failureNo:groups:partNo:maintenance:text:\n                         valueMat:valueLab:valueSpe);\n              FailureNo = GPS150;\n              Maintenance = *Off;\n              clear text;\n              lineNo = 0;\n              valueMat = 0;\n              valueLab = 0;\n              valueSpe = 0;\n              groups = *Blanks;\n              partNo = *Blanks;\n              partValue = 0;\n           EndIf;\n           If GPS150 > 0;\n              create = *On;\n              GPS020 = %Subst(%EditC(GPS150:'X'):2:2);\n              GPS025 = '00';\n              //Check if Maintenance Standard time\n              If GPS040 = 'MAT';\n                 Chain GPS050 ITLSMF3;\n                 If %Found(ITLSMF3) And SFRAN = 'SC';\n                    If GPS070 > partValue;\n                       partNo = GPS050;\n                       partValue = GPS070;\n                    EndIf;\n                 EndIf;\n              EndIf;\n              Exec SQL Set :GPS080U = Upper(:GPS080);\n              If GPS040 = 'ARB' And %Scan('WARTUNG':GPS080U) > 0;\n                 Maintenance = *On;\n                 groups = %Subst(GPS050:1:4);\n              EndIf;\n              //Retrieve Main and Subgroup\n              If GPS040 = 'ARB' And Groups = *Blanks;\n                 groups = %Subst(GPS050:1:4);\n              EndIf;\n              If GPS040 = 'TXT' And %Subst(GPS080:1:1) <> '+' and lineNo < 4;\n                 lineNo +=1;\n                 text(lineNo) = GPS080;\n              EndIf;\n              Select;\n              When GPS040 = 'ARB';\n                 valueLab += GPS060 * GPS070;\n              When GPS040 = 'MAT';\n                 valueMat += GPS060 * GPS070;\n              When GPS040 = 'TXT';\n              Other;\n                 valueSpe += GPS070;\n              EndSl;\n           EndIf;\n           ReadE Key_GPS HSGPSLF3;\n        EndDo;\n        If create;\n           createFail(failureNo:groups:partNo:maintenance:text:\n                      valueMat:valueLab:valueSpe);\n           Chain (G71000:G71050:G71060) HSG71LF2;\n           If %Found(HSG71LF2);\n              G71170 = 3;\n              Update HSG71LR2;\n           EndIf;\n           If PKZ = 'SNF';\n              //sendClaim(G71000:G71050:*Blanks:*Blanks);\n           EndIf;\n        EndIf;\n        Unlock HSG71PF;\n        Unlock HSG73PF;\n       Return;\n      /end-free\n     P                 E",
+  "primaryServiceFile": "com/scania/warranty/service/ClaimCreationService.java",
+  "runs": [
+    {
+      "contextFile": "/Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/context_index/HS1210_n1779.json",
+      "returnCode": 0,
+      "stdoutPreview": "// === domain/Claim.java ===\npackage com.scania.warranty.domain;\n\nimport jakarta.persistence.*;\nimport java.math.BigDecimal;\nimport java.time.LocalDate;\n\n@Entity\n@Table(name = \"HSG71PF\")\n@IdClass(ClaimId.class)\npublic class Claim {\n    \n    @Id\n    @Column(name = \"PAKZ\", length = 3, nullable = false)\n    private String pakz; // @rpg-trace: schema\n    \n    @Id\n    @Column(name = \"RECH.-NR.\", length = 5, nullable = false)\n    private String rechNr; // @rpg-trace: schema\n    \n    @Id\n    @Column(name = \"RECH.-DATUM\", length = 8, nullable = false)\n    private String rechDatum; // @rpg-trace: schema\n    \n    @Id\n    @Column(name = \"AUFTRAGS-NR.\", length = 5, nullable = false)\n    private String auftragsNr; // @rpg-trace: schema\n    \n    @Id\n    @Column(name = \"WETE\", length = 1, nullable = false)\n    private String wete; // @rpg-trace: schema\n    \n    @Column(name = \"CLAIM-NR.\", length = 8, nullable = false)\n    private String claimNr; // @rpg-trace: schema\n    \n    @Column(name = \"CHASSIS-NR.\", length = 7, nullable = false)\n    private String chassisNr; // @rpg-trace: schema\n    \n    @Column(name = \"KENNZEICHEN\", length = 10, nullable = false)\n    private String kennzeichen; // @rpg-trace: schema\n    \n    @Column(name = \"ZUL.-DATUM\", precision = 8, scale = 0, nullable = false)\n    private Integer zulDatum; // @rpg-trace: schema\n    \n    @Column(name = \"REP.-DATUM\", precision = 8, scale = 0, nullable = false)\n    private Integer repDatum; // @rpg-trace: schema\n    \n    @Column(name = \"KM-STAND\", precision = 3, scale = 0, nullable = false)\n    private Integer kmStand; // @rpg-trace: schema\n    \n    @Column(name = \"PRODUKT-TYP\", precision = 1, scale = 0, nullable = false)\n    private Integer produktTyp; // @rpg-trace: schema\n    \n    @Column(name = \"ANHANG\", length = 1, nullable = false)\n    private String anhang; // @rpg-trace: schema\n    \n    @Column(name = \"AUSL#NDER\", length = 1, nullable = false)\n    private String auslaender; // @rpg-trace: schema\n    \n    @Column(name = \"KD-NR.\", length = 6, nullable = false)\n    private String kdNr; // @rpg-trace: schema\n    \n    @Column(name = \"KD-NAME\", length = 30, nullable = false)\n    private String kdName; // @rpg-trace: schema\n    \n    @Column(name = \"CLAIM-NR. SDE\", length = 8, nullable = false)\n    private String claimNrSde; // @rpg-trace: schema\n    \n    @Column(name = \"STATUS CODE SDE\", precision = 2, scale = 0, nullable = false)\n    private Integer statusCodeSde; // @rpg-trace: schema\n    \n    @Column(name = \"ANZ. FEHLER\", precision = 2, scale = 0, nullable = false)\n    private Integer anzFehler; // @rpg-trace: schema\n    \n    @Column(name = \"BEREICH\", length = 1, nullable = false)\n    private String bereich; // @rpg-trace: schema\n    \n    @Column(name = \"AUF.NR.\", length = 10, nullable = false)\n    private String aufNr; // @rpg-trace: schema\n\n    public Claim() {\n    }\n\n    public String getPakz() {\n        return pakz;\n    }\n\n    public void setPakz(String pakz) {\n        this.pakz = pakz;\n    }\n\n    public String getRechNr() {\n        return rechNr;\n    }\n\n    public void setRechNr(String rechNr) {\n        this.rechNr = rechNr;\n    }\n\n    public String getRechDatum() {\n        return rechDatum;\n    }\n\n    public void setRechDatum(String rechDatum) {\n        this.rechDatum = rechDatum;\n    }\n\n    public String getAuftragsNr() {\n        return auftragsNr;\n    }\n\n    public void setAuftragsNr(String auftragsNr) {\n        this.auftragsNr = auftragsNr;\n    }\n\n    public String getWete() {\n        return wete;\n    }\n\n    public void setWete(String wete) {\n        this.wete = wete;\n    }\n\n    public String getClaimNr() {\n        return claimNr;\n    }\n\n    public void setClaimNr(String claimNr) {\n        this.claimNr = claimNr;\n    }\n\n    public String getChassisNr() {\n        return chassisNr;\n    }\n\n    public void setChassisNr(String chassisNr) {\n        this.chassisNr = chassisNr;\n    }\n\n    public String getKennzeichen() {\n        return kennzeichen;\n    }\n\n    public void setKenn",
+      "stderrPreview": "// Context package size: 35.1 KB\n// DB Contracts: 3, Total columns: 104\n// Extracted 1 embedded SQL statement(s) for translation to repository methods\n// Generating Pure Java (Track B) with layered architecture...\n// This may take 60-120 seconds for large packages...\n// Prompt size: 49.6 KB\n// Integration mode: writing into existing project warranty_demo\n// Starting Pure Java migration (Track B)...\n// Sending request to LLM (this may take 60-120 seconds for large prompts)...\n// LLM response received in 166.7 seconds\n// Parsing multi-file output...\n// Parser extracted 16 files:\n//   - domain/Claim.java\n//   - domain/ClaimCreationContext.java\n//   - domain/ClaimFailure.java\n//   - domain/ClaimFailureId.java\n//   - domain/ClaimId.java\n//   - domain/GpsLine.java\n//   - domain/GpsLineId.java\n//   - domain/StandardMaterial.java\n//   - dto/ClaimCreationRequest.java\n//   - dto/ClaimCreationResponse.java\n//   - repository/ClaimFailureRepository.java\n//   - repository/ClaimRepository.java\n//   - repository/GpsLineRepository.java\n//   - repository/StandardMaterialRepository.java\n//   - service/ClaimCreationService.java\n//   - web/ClaimCreationController.java\n// Found 16 Java files to write\n// \u2705 Wrote com/scania/warranty/domain/Claim.java (6200 chars)\n// \u2705 Wrote com/scania/warranty/domain/ClaimId.java (2169 chars)\n// \u2705 Wrote com/scania/warranty/domain/ClaimFailure.java (15079 chars)\n// \u2705 Wrote com/scania/warranty/domain/ClaimFailureId.java (2860 chars)\n// \u2705 Wrote com/scania/warranty/domain/GpsLine.java (8614 chars)\n// \u2705 Wrote com/scania/warranty/domain/GpsLineId.java (1914 chars)\n// \u2705 Wrote com/scania/warranty/domain/StandardMaterial.java (877 chars)\n// \u2705 Wrote com/scania/warranty/domain/ClaimCreationContext.java (4108 chars)\n// \u2705 Wrote com/scania/warranty/repository/ClaimRepository.java (1359 chars)\n// \u2705 Wrote com/scania/warranty/repository/ClaimFailureRepository.java (501 chars)\n// \u2705 Wrote com/scania/warranty/repository/GpsLineRepository.java (922 chars)\n// \u2705 Wrote com/scania/warranty/repository/StandardMaterialRepository.java (577 chars)\n// \u2705 Wrote com/scania/warranty/service/ClaimCreationService.java (10744 chars)\n// \u2705 Wrote com/scania/warranty/dto/ClaimCreationRequest.java (295 chars)\n// \u2705 Wrote com/scania/warranty/dto/ClaimCreationResponse.java (239 chars)\n// \u2705 Wrote com/scania/warranty/web/ClaimCreationController.java (1498 chars)\n\n// \u2705 Successfully generated 16 Java files\n// \ud83d\udcc1 Output directory: /Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/warranty_demo/src/main/java\n// \ud83d\udce6 Package structure:\n//    com/scania/warranty/domain/Claim.java\n//    com/scania/warranty/domain/ClaimCreationContext.java\n//    com/scania/warranty/domain/ClaimFailure.java\n//    com/scania/warranty/domain/ClaimFailureId.java\n//    com/scania/warranty/domain/ClaimId.java\n//    com/scania/warranty/domain/GpsLine.java\n//    com/scania/warranty/domain/GpsLineId.java\n//    com/scania/warranty/domain/StandardMaterial.java\n//    com/scania/warranty/dto/ClaimCreationRequest.java\n//    com/scania/warranty/dto/ClaimCreationResponse.java\n//    ... and 6 more files\n// \u2705 Migration complete! Files integrated into project: warranty_demo/src\n"
+    }
+  ],
+  "summary": "Migrated feature starting at HS1210 n1779 with 1 node(s); DB files involved:\n  AUFWKO (HSSRC), FISTAM (HSSRC), HS1210D (HSSRC), HSAHKLF3 (HSSRC), HSAHKLF8 (HSSRC), HSAHKPF (HSSRC), HSAHPPF (HSSRC), HSAHTPF (HSSRC)\n  HSAHWPF (HSSRC), HSBTSLF1 (HSSRC), HSBTSPF (HSSRC), HSEPAF (HSSRC), HSFLALF1 (HSSRC), HSG70F (HSSRC), HSG71LF2 (HSSRC), HSG71LF3 (HSSRC)\n  HSG71LF7 (HSSRC), HSG71PF (HSSRC), HSG73LF1 (HSSRC), HSG73PF (HSSRC), HSG79F (HSSRC), HSGFIPF (HSSRC), HSGPSLF2 (HSSRC), HSGPSLF3 (HSSRC)\n  HSGPSPF (HSSRC), HSGSCPF (HSSRC), HSKAMPF (HSSRC), RWAPRL1 (HSSRC), ITLSMF3 (P400IMS), PIPPMST (S400CAS), S3F001 (S400CAS), S3F002 (S400CAS)\n  S3F003 (S400CAS), S3F009 (S400CAS), S3F085 (S400CAS), S3L004H (S400CAS)."
+}

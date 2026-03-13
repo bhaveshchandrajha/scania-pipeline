@@ -16,12 +16,12 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * Repository for ReleaseRequest entity (HSG70F).
+ * Repository for release requests (HSG70F).
  */
 @Repository
 public interface ReleaseRequestRepository extends JpaRepository<ReleaseRequest, ReleaseRequestId> {
 
-    // @origin HS1210 L2838-2838 (CHAIN)
-    @Query("SELECT r FROM ReleaseRequest r WHERE r.companyCode = :companyCode AND r.invoiceNumber = :invoiceNumber AND r.invoiceDate = :invoiceDate")
-    Optional<ReleaseRequest> findByInvoiceKey(@Param("companyCode") String companyCode, @Param("invoiceNumber") String invoiceNumber, @Param("invoiceDate") String invoiceDate);
+    // @origin HS1210 L941-941 (CHAIN)
+    @Query("SELECT r FROM ReleaseRequest r WHERE r.kzl = :kzl AND r.rnr = :rnr AND r.rdat = :rdat")
+    Optional<ReleaseRequest> findByKey(@Param("kzl") String kzl, @Param("rnr") String rnr, @Param("rdat") String rdat);
 }

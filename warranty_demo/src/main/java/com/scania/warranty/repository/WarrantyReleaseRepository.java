@@ -7,7 +7,6 @@
 package com.scania.warranty.repository;
 
 import com.scania.warranty.domain.WarrantyRelease;
-import com.scania.warranty.domain.WarrantyReleaseId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,9 +18,13 @@ import java.util.Optional;
  * Repository for warranty release requests (HSG70F).
  */
 @Repository
-public interface WarrantyReleaseRepository extends JpaRepository<WarrantyRelease, WarrantyReleaseId> {
+public interface WarrantyReleaseRepository extends JpaRepository<WarrantyRelease, Long> {
 
-    // @origin HS1210 L2838-2838 (CHAIN)
-    @Query("SELECT w FROM WarrantyRelease w WHERE w.kzl = :kzl AND w.rNr = :rNr AND w.rDat = :rDat")
-    Optional<WarrantyRelease> findByKey(@Param("kzl") String kzl, @Param("rNr") String rNr, @Param("rDat") String rDat);
+    // @origin HS1210 L941-941 (CHAIN)
+    @Query("SELECT w FROM WarrantyRelease w WHERE w.kzl = :kzl AND w.rnr = :rnr AND w.rdat = :rdat")
+    // @origin HS1210 L1687-1693 (IF)
+    Optional<WarrantyRelease> findByInvoiceKey(@Param("kzl") String kzl, @Param("rnr") String rnr, @Param("rdat") String rdat);
+
+    @Query("SELECT w FROM WarrantyRelease w WHERE w.kzl = :kzl AND w.rnr = :rnr AND w.rdat = :rdat")
+    Optional<WarrantyRelease> findByKey(@Param("kzl") String kzl, @Param("rnr") String rnr, @Param("rdat") String rdat);
 }

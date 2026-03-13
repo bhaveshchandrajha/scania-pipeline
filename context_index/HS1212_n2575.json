@@ -14,7 +14,7 @@
     }
   },
   "narrative": "### Node n2575: Procedure `loadText`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Raw sem JSON**:\n```json\n{}\n```",
-  "rpgSnippet": "     P loadText        B\n     D loadText        PI\n     D   loadType                     3A   value\n     D*----------------------------------------------------------------\n       // Subfile l�schen\n       ZLT = 0;\n       *IN90 = *Off;\n       *IN99 = *On;\n       Write HS1212CT;\n       // Subfile f�llen\n       *IN90 = *On;\n       *IN99 = *Off;\n       If loadType = 'GPT';\n          loadtextGPT(0);\n       EndIf;\n       If loadType = 'GPS';\n          loadtextGPS(0);\n       EndIf;\n       If ZLT = 0;\n          TEXT = G7312A;\n          ZLT += 1;\n          Write HS1212ST;\n          TEXT = G7313A;\n          ZLT += 1;\n          Write HS1212ST;\n          TEXT = G7332A;\n          ZLT += 1;\n          Write HS1212ST;\n          TEXT = G7333A;\n          ZLT += 1;\n          Write HS1212ST;\n          loadtextGPT(ZLT);\n       EndIf;\n       exec sql close ct;\n       DOW ZLT < 99;\n          TEXT = *Blanks;\n          ZLT += 1;\n          Write HS1212ST;\n       EndDo;\n       loadTextFromSfl();\n     P                 E",
+  "rpgSnippet": "",
   "dbContracts": [],
   "symbolMetadata": {},
   "statementNodes": [

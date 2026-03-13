@@ -1,0 +1,21 @@
+# Warranty Claim Management - UAT
+# Run: docker-compose up -d
+# Access: http://localhost:8081/angular/#/claims
+
+services:
+  warranty-uat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: warranty-claim-uat:1.0.0
+    container_name: warranty-claim-uat
+    ports:
+      - "8081:8081"
+    volumes:
+      - warranty_data:/data
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    restart: unless-stopped
+
+volumes:
+  warranty_data:

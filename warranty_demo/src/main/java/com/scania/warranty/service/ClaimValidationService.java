@@ -47,7 +47,7 @@ public class ClaimValidationService {
         List<String> errors = new ArrayList<>();
 
         // Validation 1: Campaign cause requires campaign number
-        // @origin HS1210 L2818-2831 (IF)
+        // @origin HS1210 L830-833 (IF)
         if (isCampaignCause(customerDamageCause) && isBlank(campaignNumber)) {
             errors.add("Ursache Kampagne aber keine Kampagnen-Nr. eingetragen.");
         }
@@ -122,12 +122,13 @@ public class ClaimValidationService {
     }
 
     private boolean checkUncodedSpecialCosts(String kuerzel, String claimNumber, String errorNumber) {
-        // @origin HS1210 L2838-2838 (CHAIN)
+        // @origin HS1210 L941-941 (CHAIN)
         List<ClaimPosition> positions = claimPositionRepository.findByCompanyCodeAndClaimNumberAndErrorNumber(
             kuerzel, claimNumber, errorNumber);
         
-        // @origin HS1210 L2817-2870 (DOW)
+        // @origin HS1210 L884-1012 (DOW)
         for (ClaimPosition position : positions) {
+            // @origin HS1210 L914-916 (IF)
             if (SpecialCostType.SPECIAL_COST.getCode().equals(position.getRecordType())) {
                 if (isBlank(position.getResultCode()) || isBlank(position.getCodeType())) {
                     return true;

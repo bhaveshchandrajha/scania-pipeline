@@ -9,351 +9,356 @@ package com.scania.warranty.domain;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
-/**
- * JPA entity for claim position/line items (HSGPSLF3).
- */
 @Entity
 @Table(name = "HSGPSLF3")
 @IdClass(ClaimPositionId.class)
 public class ClaimPosition {
-
+    
     @Id
-    @Column(name = "KUERZEL", length = 3)
-    private String abbreviation;
-
+    @Column(name = "KUERZEL", length = 3, nullable = false)
+    private String kuerzel; // @rpg-trace: schema
+    
     @Id
-    @Column(name = "CLAIM-NR.", length = 8)
-    private String claimNumber;
-
+    @Column(name = "CLAIM-NR.", length = 8, nullable = false)
+    private String claimNr; // @rpg-trace: schema
+    
     @Id
-    @Column(name = "FEHLER-NR.", length = 2)
-    private String errorNumber;
-
+    @Column(name = "FEHLER-NR.", length = 2, nullable = false)
+    private String fehlerNr; // @rpg-trace: schema
+    
     @Id
-    @Column(name = "FOLGE-NR.", length = 2)
-    private String sequenceNumber;
-
+    @Column(name = "FOLGE-NR.", length = 2, nullable = false)
+    private String folgeNr; // @rpg-trace: schema
+    
     @Id
-    @Column(name = "ZEILE", precision = 3, scale = 0)
-    private BigDecimal lineNumber;
-
-    @Column(name = "AUFTEILUNG", precision = 3, scale = 0)
-    private BigDecimal distribution;
-
-    @Column(name = "SATZART", length = 3)
-    private String recordType;
-
-    @Column(name = "NR.", length = 18)
-    private String number;
-
-    @Column(name = "MENGE", precision = 5, scale = 0)
-    private BigDecimal quantity;
-
-    @Column(name = "WERT", precision = 11, scale = 2)
-    private BigDecimal value;
-
-    @Column(name = "STEUER-CODE", length = 40)
-    private String taxCode;
-
-    @Column(name = "HAUPTGRUPPE", length = 2)
-    private String mainGroup;
-
-    @Column(name = "ZEIT", precision = 3, scale = 1)
-    private BigDecimal time;
-
-    @Column(name = "GRUND", precision = 4, scale = 0)
-    private BigDecimal reason;
-
-    @Column(name = "VERG�TUNG", precision = 3, scale = 0)
-    private BigDecimal compensation;
-
-    @Column(name = "MANUELL", length = 1)
-    private String manual;
-
-    @Column(name = "KAMPAGNE", precision = 8, scale = 0)
-    private BigDecimal campaign;
-
-    @Column(name = "POS.-NR.", precision = 3, scale = 0)
-    private BigDecimal positionNumber;
-
-    @Column(name = "RESULTCODE", length = 2)
-    private String resultCode;
-
-    @Column(name = "CODE TYPE", length = 2)
-    private String codeType;
-
-    @Column(name = "CODE ID", length = 5)
-    private String codeId;
-
-    @Column(name = "COMPFAC.", precision = 3, scale = 0)
-    private BigDecimal compensationFactor;
-
-    @Column(name = "GROSSPRICE", precision = 13, scale = 2)
-    private BigDecimal grossPrice;
-
-    @Column(name = "DISCOUNT", precision = 5, scale = 2)
-    private BigDecimal discount;
-
-    @Column(name = "COMPAMOUNT", precision = 15, scale = 2)
-    private BigDecimal compensationAmount;
-
-    @Column(name = "COMPQTY", precision = 7, scale = 0)
-    private BigDecimal compensationQuantity;
-
-    @Column(name = "TYPE", length = 5)
-    private String type;
-
-    @Column(name = "MIA STATUS", length = 1)
-    private String miaStatus;
-
-    @Column(name = "CATEGORYS", length = 2)
-    private String categories;
-
-    @Column(name = "TEXT", length = 2000)
-    private String text;
-
-    // Constructors
+    @Column(name = "ZEILE", precision = 3, scale = 0, nullable = false)
+    private Integer zeile; // @rpg-trace: schema
+    
+    @Id
+    @Column(name = "AUFTEILUNG", precision = 3, scale = 0, nullable = false)
+    private Integer aufteilung; // @rpg-trace: schema
+    
+    @Column(name = "SATZART", length = 3, nullable = false)
+    private String satzart; // @rpg-trace: schema
+    
+    @Column(name = "NR.", length = 18, nullable = false)
+    private String nr; // @rpg-trace: schema
+    
+    @Column(name = "MENGE", precision = 5, scale = 0, nullable = false)
+    private Integer menge; // @rpg-trace: schema
+    
+    @Column(name = "WERT", precision = 11, scale = 2, nullable = false)
+    private BigDecimal wert; // @rpg-trace: schema
+    
+    @Column(name = "STEUER-CODE", length = 40, nullable = false)
+    private String steuerCode; // @rpg-trace: schema
+    
+    @Column(name = "HAUPTGRUPPE", length = 2, nullable = false)
+    private String hauptgruppe; // @rpg-trace: schema
+    
+    @Column(name = "ZEIT", precision = 3, scale = 1, nullable = false)
+    private BigDecimal zeit; // @rpg-trace: schema
+    
+    @Column(name = "GRUND", precision = 4, scale = 0, nullable = false)
+    private Integer grund; // @rpg-trace: schema
+    
+    @Column(name = "VERGÜTUNG", precision = 3, scale = 0, nullable = false)
+    private Integer verguetung; // @rpg-trace: schema
+    
+    @Column(name = "MANUELL", length = 1, nullable = false)
+    private String manuell; // @rpg-trace: schema
+    
+    @Column(name = "KAMPAGNE", precision = 8, scale = 0, nullable = false)
+    private Integer kampagne; // @rpg-trace: schema
+    
+    @Column(name = "POS.-NR.", precision = 3, scale = 0, nullable = false)
+    private Integer posNr; // @rpg-trace: schema
+    
+    @Column(name = "RESULTCODE", length = 2, nullable = false)
+    private String resultcode; // @rpg-trace: schema
+    
+    @Column(name = "CODE TYPE", length = 2, nullable = false)
+    private String codeType; // @rpg-trace: schema
+    
+    @Column(name = "CODE ID", length = 5, nullable = false)
+    private String codeId; // @rpg-trace: schema
+    
+    @Column(name = "COMPFAC.", precision = 3, scale = 0, nullable = false)
+    private Integer compfac; // @rpg-trace: schema
+    
+    @Column(name = "GROSSPRICE", precision = 13, scale = 2, nullable = false)
+    private BigDecimal grossprice; // @rpg-trace: schema
+    
+    @Column(name = "DISCOUNT", precision = 5, scale = 2, nullable = false)
+    private BigDecimal discount; // @rpg-trace: schema
+    
+    @Column(name = "COMPAMOUNT", precision = 15, scale = 2, nullable = false)
+    private BigDecimal compamount; // @rpg-trace: schema
+    
+    @Column(name = "COMPQTY", precision = 7, scale = 0, nullable = false)
+    private Integer compqty; // @rpg-trace: schema
+    
+    @Column(name = "TYPE", length = 5, nullable = false)
+    private String type; // @rpg-trace: schema
+    
+    @Column(name = "MIA STATUS", length = 1, nullable = false)
+    private String miaStatus; // @rpg-trace: schema
+    
+    @Column(name = "CATEGORYS", length = 2, nullable = false)
+    private String categorys; // @rpg-trace: schema
+    
+    @Column(name = "TEXT", length = 2000, nullable = false)
+    private String text; // @rpg-trace: schema
+    
     public ClaimPosition() {
     }
-
+    
     // Getters and Setters
-    public String getAbbreviation() {
-        return abbreviation;
+    public String getKuerzel() {
+        return kuerzel;
     }
-
-    public void setAbbreviation(String abbreviation) {
-        this.abbreviation = abbreviation;
+    
+    public void setKuerzel(String kuerzel) {
+        this.kuerzel = kuerzel;
     }
-
-    public String getClaimNumber() {
-        return claimNumber;
+    
+    public String getClaimNr() {
+        return claimNr;
     }
-
-    public void setClaimNumber(String claimNumber) {
-        this.claimNumber = claimNumber;
+    
+    public void setClaimNr(String claimNr) {
+        this.claimNr = claimNr;
     }
-
-    public String getErrorNumber() {
-        return errorNumber;
+    
+    public String getFehlerNr() {
+        return fehlerNr;
     }
-
-    public void setErrorNumber(String errorNumber) {
-        this.errorNumber = errorNumber;
+    
+    public void setFehlerNr(String fehlerNr) {
+        this.fehlerNr = fehlerNr;
     }
-
-    public String getSequenceNumber() {
-        return sequenceNumber;
+    
+    public String getFolgeNr() {
+        return folgeNr;
     }
-
-    public void setSequenceNumber(String sequenceNumber) {
-        this.sequenceNumber = sequenceNumber;
+    
+    public void setFolgeNr(String folgeNr) {
+        this.folgeNr = folgeNr;
     }
-
-    public BigDecimal getLineNumber() {
-        return lineNumber;
+    
+    public Integer getZeile() {
+        return zeile;
     }
-
-    public void setLineNumber(BigDecimal lineNumber) {
-        this.lineNumber = lineNumber;
+    
+    public void setZeile(Integer zeile) {
+        this.zeile = zeile;
     }
-
-    public BigDecimal getDistribution() {
-        return distribution;
+    
+    public Integer getAufteilung() {
+        return aufteilung;
     }
-
-    public void setDistribution(BigDecimal distribution) {
-        this.distribution = distribution;
+    
+    public void setAufteilung(Integer aufteilung) {
+        this.aufteilung = aufteilung;
     }
-
-    public String getRecordType() {
-        return recordType;
+    
+    public String getSatzart() {
+        return satzart;
     }
-
-    public void setRecordType(String recordType) {
-        this.recordType = recordType;
+    
+    public void setSatzart(String satzart) {
+        this.satzart = satzart;
     }
-
-    public String getNumber() {
-        return number;
+    
+    public String getNr() {
+        return nr;
     }
-
-    public void setNumber(String number) {
-        this.number = number;
+    
+    public void setNr(String nr) {
+        this.nr = nr;
     }
-
-    public BigDecimal getQuantity() {
-        return quantity;
+    
+    public Integer getMenge() {
+        return menge;
     }
-
-    public void setQuantity(BigDecimal quantity) {
-        this.quantity = quantity;
+    
+    public void setMenge(Integer menge) {
+        this.menge = menge;
     }
-
-    public BigDecimal getValue() {
-        return value;
+    
+    public BigDecimal getWert() {
+        return wert;
     }
-
-    public void setValue(BigDecimal value) {
-        this.value = value;
+    
+    public void setWert(BigDecimal wert) {
+        this.wert = wert;
     }
-
-    public String getTaxCode() {
-        return taxCode;
+    
+    public String getSteuerCode() {
+        return steuerCode;
     }
-
-    public void setTaxCode(String taxCode) {
-        this.taxCode = taxCode;
+    
+    public void setSteuerCode(String steuerCode) {
+        this.steuerCode = steuerCode;
     }
-
-    public String getMainGroup() {
-        return mainGroup;
+    
+    public String getHauptgruppe() {
+        return hauptgruppe;
     }
-
-    public void setMainGroup(String mainGroup) {
-        this.mainGroup = mainGroup;
+    
+    public void setHauptgruppe(String hauptgruppe) {
+        this.hauptgruppe = hauptgruppe;
     }
-
-    public BigDecimal getTime() {
-        return time;
+    
+    public BigDecimal getZeit() {
+        return zeit;
     }
-
-    public void setTime(BigDecimal time) {
-        this.time = time;
+    
+    public void setZeit(BigDecimal zeit) {
+        this.zeit = zeit;
     }
-
-    public BigDecimal getReason() {
-        return reason;
+    
+    public Integer getGrund() {
+        return grund;
     }
-
-    public void setReason(BigDecimal reason) {
-        this.reason = reason;
+    
+    public void setGrund(Integer grund) {
+        this.grund = grund;
     }
-
-    public BigDecimal getCompensation() {
-        return compensation;
+    
+    public Integer getVerguetung() {
+        return verguetung;
     }
-
-    public void setCompensation(BigDecimal compensation) {
-        this.compensation = compensation;
+    
+    public void setVerguetung(Integer verguetung) {
+        this.verguetung = verguetung;
     }
-
-    public String getManual() {
-        return manual;
+    
+    public String getManuell() {
+        return manuell;
     }
-
-    public void setManual(String manual) {
-        this.manual = manual;
+    
+    public void setManuell(String manuell) {
+        this.manuell = manuell;
     }
-
-    public BigDecimal getCampaign() {
-        return campaign;
+    
+    public Integer getKampagne() {
+        return kampagne;
     }
-
-    public void setCampaign(BigDecimal campaign) {
-        this.campaign = campaign;
+    
+    public void setKampagne(Integer kampagne) {
+        this.kampagne = kampagne;
     }
-
-    public BigDecimal getPositionNumber() {
-        return positionNumber;
+    
+    public Integer getPosNr() {
+        return posNr;
     }
-
-    public void setPositionNumber(BigDecimal positionNumber) {
-        this.positionNumber = positionNumber;
+    
+    public void setPosNr(Integer posNr) {
+        this.posNr = posNr;
     }
-
-    public String getResultCode() {
-        return resultCode;
+    
+    public String getResultcode() {
+        return resultcode;
     }
-
-    public void setResultCode(String resultCode) {
-        this.resultCode = resultCode;
+    
+    public void setResultcode(String resultcode) {
+        this.resultcode = resultcode;
     }
-
+    
     public String getCodeType() {
         return codeType;
     }
-
+    
     public void setCodeType(String codeType) {
         this.codeType = codeType;
     }
-
+    
     public String getCodeId() {
         return codeId;
     }
-
+    
     public void setCodeId(String codeId) {
         this.codeId = codeId;
     }
-
-    public BigDecimal getCompensationFactor() {
-        return compensationFactor;
+    
+    public Integer getCompfac() {
+        return compfac;
     }
-
-    public void setCompensationFactor(BigDecimal compensationFactor) {
-        this.compensationFactor = compensationFactor;
+    
+    public void setCompfac(Integer compfac) {
+        this.compfac = compfac;
     }
-
-    public BigDecimal getGrossPrice() {
-        return grossPrice;
+    
+    public BigDecimal getGrossprice() {
+        return grossprice;
     }
-
-    public void setGrossPrice(BigDecimal grossPrice) {
-        this.grossPrice = grossPrice;
+    
+    public void setGrossprice(BigDecimal grossprice) {
+        this.grossprice = grossprice;
     }
-
+    
     public BigDecimal getDiscount() {
         return discount;
     }
-
+    
     public void setDiscount(BigDecimal discount) {
         this.discount = discount;
     }
-
-    public BigDecimal getCompensationAmount() {
-        return compensationAmount;
+    
+    public BigDecimal getCompamount() {
+        return compamount;
     }
-
-    public void setCompensationAmount(BigDecimal compensationAmount) {
-        this.compensationAmount = compensationAmount;
+    
+    public void setCompamount(BigDecimal compamount) {
+        this.compamount = compamount;
     }
-
-    public BigDecimal getCompensationQuantity() {
-        return compensationQuantity;
+    
+    public Integer getCompqty() {
+        return compqty;
     }
-
-    public void setCompensationQuantity(BigDecimal compensationQuantity) {
-        this.compensationQuantity = compensationQuantity;
+    
+    public void setCompqty(Integer compqty) {
+        this.compqty = compqty;
     }
-
+    
     public String getType() {
         return type;
     }
-
+    
     public void setType(String type) {
         this.type = type;
     }
-
+    
     public String getMiaStatus() {
         return miaStatus;
     }
-
+    
     public void setMiaStatus(String miaStatus) {
         this.miaStatus = miaStatus;
     }
-
-    public String getCategories() {
-        return categories;
+    
+    public String getCategorys() {
+        return categorys;
     }
-
-    public void setCategories(String categories) {
-        this.categories = categories;
+    
+    public void setCategorys(String categorys) {
+        this.categorys = categorys;
     }
-
+    
     public String getText() {
         return text;
     }
-
+    
     public void setText(String text) {
         this.text = text;
+    }
+    
+    public String getRecordType() {
+        return satzart;
+    }
+    
+    public String getResultCode() {
+        return resultcode;
     }
 }

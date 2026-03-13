@@ -31,11 +31,13 @@ NOTE:
 """
 
 import argparse
+import copy
 import json
 import os
 import re
 import sys
 import time
+from collections import Counter
 from pathlib import Path
 from textwrap import dedent
 from typing import Any, Dict, List, Optional, Set, Tuple
@@ -321,6 +323,54 @@ def _format_embedded_sql_for_prompt(entries: List[Dict[str, Any]]) -> str:
     return "\n".join(lines_out)
 
 
+def check_duplicate_column_names(db_contracts: List[Dict]) -> List[Tuple[str, str, int]]:
+    """
+    Check if AST schema has multiple columns sharing the same logical name.
+    Returns list of (table_name, column_name, count) for each duplicate.
+    Use this to report AST enhancement request (point 1) to PKS.
+    """
+    duplicates: List[Tuple[str, str, int]] = []
+    for contract in db_contracts:
+        table_name = (contract.get("fileName") or contract.get("name") or "?").strip()
+        cols = contract.get("columns") or []
+        if not cols:
+            continue
+        names = [str(c.get("name", "")).strip() for c in cols if c.get("name")]
+        counts = Counter(names)
+        for name, count in counts.items():
+            if name and count > 1:
+                duplicates.append((table_name, name, count))
+    return duplicates
+
+
+def resolve_duplicate_column_names(db_contracts: List[Dict]) -> List[Dict]:
+    """
+    Resolve duplicate column names within each contract.
+    Legacy RPG/DB2 schemas often have multiple columns named RESERVE (or similar).
+    JPA requires unique @Column(name="...") values. When duplicates exist,
+    assign unique names: RESERVE1, RESERVE2, RESERVE3, RESERVE4, etc.
+    """
+    contracts = copy.deepcopy(db_contracts)
+    for contract in contracts:
+        cols = contract.get("columns") or []
+        if not cols:
+            continue
+        # Count occurrences of each base name
+        names = [str(c.get("name", "")).strip() for c in cols]
+        counts = Counter(names)
+        # Assign unique names for duplicates
+        seen: Dict[str, int] = {}
+        for col in cols:
+            base = str(col.get("name", "")).strip()
+            if not base:
+                continue
+            seen[base] = seen.get(base, 0) + 1
+            occurrence = seen[base]
+            if counts[base] > 1:
+                col["name"] = base + str(occurrence)
+    return contracts
+
+
 def extract_domain_entities(db_contracts: List[Dict]) -> List[Dict]:
     """
     Extract domain entities from dbContracts.
@@ -573,6 +623,60 @@ def generate_architecture_guidance(entities: List[Dict], value_objects: List[Dic
     """)
 
 
+def _build_static_system_prompt() -> str:
+    """Build the static system prompt for prompt caching. Same for all migrations; enables 2x+ faster responses on 2nd+ run within 5 min."""
+    return dedent("""
+        You are an expert IBM i (AS/400) RPG and Java architect specializing in **Pure Java application architecture**.
+        Your task is to migrate a single RPG subroutine/procedure to **Pure Java** following modern Java/Spring best practices,
+        with **zero hallucinations** on data structures and **layered architecture**.
+
+        ## RPG Symbol & Indicator Mapping (for semantic accuracy)
+        When translating RPG conditions to Java, use these mappings to preserve meaning:
+
+        **Status codes (map to ClaimStatus enum):**
+        - 99 → ClaimStatus.EXCLUDED (excluded/inactive)
+        - 20 → ClaimStatus.APPROVED
+        - 11 → ClaimStatus.REJECTED
+        - 0 → ClaimStatus.PENDING
+        - 5 → ClaimStatus.MINIMUM
+
+        **Indicators (MARKxx, etc.):** RPG indicators like MARK12, MARK11 often mean "record selected" or "valid for processing" in subfile/list contexts. When the semantic intent is "record is active/valid", translate to Java as:
+          - `status != null && status != ClaimStatus.EXCLUDED` (i.e. statusCodeSde != 99)
+          - Or `existing != null` when checking for presence
+
+        **Common variable mappings:**
+        - STATUS, STATUSCODESDE → statusCodeSde (entity field)
+        - PAKZ → pakz (company code)
+        - RECHNR → rechNr (invoice number)
+        - RECHDATUM, RECH_DATUM → rechDatum (invoice date)
+        - CLAIMNR, CLANO → claimNr (claim number)
+        - FILART, SR_FILART → filter/type fields
+
+        **Error handling:** EXSR (external subroutine) for error paths → Java: throw new IllegalArgumentException(...) or similar.
+
+        ## Traceability Annotations (MANDATORY)
+        For every generated Java statement that corresponds to RPG logic, add an inline comment: `javaStatement; // @rpg-trace: <nodeId>`
+        Use the nodeId from the RPG SOURCE MAP provided in the user message. For entity fields from DB contracts: // @rpg-trace: schema
+
+        ## Logic Completeness (ENFORCED)
+        - **Empty loops** → FAIL. Every loop MUST contain real statements.
+        - **Stub-only methods** (return true/false/constant) → FAIL. Every method MUST implement real logic.
+        - **Missing entities** → FAIL. Every table in dbContracts MUST have a matching @Entity.
+
+        ## Requirements
+        1. **Target**: Pure Java with layered architecture (domain/service/repository/dto/web), domain names, enums, Java Records, Streams, Optional.
+        2. **SQL Translation**: Translate ALL RPG embedded SQL to repository @Query methods. Every SQL statement MUST have a corresponding method.
+        3. **Data structures**: 100% column mapping MANDATORY. @Column(name="EXACT_DB_NAME"). Use camelCase for Java fields.
+        4. **Domain-driven design**: Value objects, enums for magic values, domain language in method names.
+        5. **Modern Java**: Records for DTOs, Streams, Optional, constructor injection, stateless services.
+        6. **Output format**: Raw Java, no markdown. Separate files with // === path/File.java ===
+        7. **Syntax**: Valid compilable Java. Matching braces. Exact setter names.
+        8. **Complete logic**: No empty loops, no stub returns. Full implementation from RPG/narrative.
+        9. **JPA composite keys (MANDATORY)**: Entities with multiple @Id fields MUST have @IdClass(XxxId.class) and a separate XxxId class (Serializable, fields matching @Id names exactly, equals/hashCode). Repositories MUST use JpaRepository<Entity, XxxId> not JpaRepository<Entity, String>. Single @Id uses simple type.
+        10. **Controller mappings (MANDATORY)**: No two @RestController methods may map to the same HTTP method + path. If adding a new endpoint that would duplicate an existing one (e.g. POST /api/claims/create), use a distinct path (e.g. /create-from-request) to avoid "Ambiguous mapping" at startup.
+        """)
+
+
 def _build_trace_source_map(statement_nodes: List[Dict]) -> str:
     """Build a compact RPG source line → AST node ID map for LLM traceability annotations."""
     if not statement_nodes:
@@ -628,6 +732,12 @@ def build_pure_java_prompt(
     narrative = context.get("narrative", "")
     rpg_snippet = context.get("rpgSnippet", "")
     db_contracts = context.get("dbContracts", [])
+    dupes = check_duplicate_column_names(db_contracts)
+    if dupes:
+        for tbl, col, cnt in dupes:
+            print(f"// AST has duplicate column: {tbl}.{col} x{cnt} (pipeline will rewrite to {col}1..{col}{cnt})", file=sys.stderr)
+        print(f"// Consider requesting AST enhancement: unique physical column names for duplicates (see docs/DRAFT_EMAIL_AST_ENHANCEMENTS.md)", file=sys.stderr)
+    db_contracts = resolve_duplicate_column_names(db_contracts)
     symbol_metadata = context.get("symbolMetadata", {})
     display_files = context.get("displayFiles", [])
     
@@ -687,7 +797,6 @@ def build_pure_java_prompt(
 
     db_json = json.dumps(db_contracts, indent=2, ensure_ascii=False)
     symbols_json = json.dumps(symbol_metadata, indent=2, ensure_ascii=False)
-    rpg_symbol_glossary = RPG_SYMBOL_GLOSSARY.strip()
     
     # Build column checklist
     column_checklist_lines = []
@@ -799,119 +908,10 @@ def build_pure_java_prompt(
         {symbols_json}
         --- SYMBOL METADATA END ---
         
-        {rpg_symbol_glossary}
-        ## ⚠️ TRACEABILITY ANNOTATIONS (MANDATORY – semantic accuracy)
-        For every generated Java statement that corresponds to RPG logic, you MUST add an inline
-        comment tracing it back to the **exact** RPG AST node it was derived from. This enables
-        accurate RPG↔Java traceability (not approximate ordinal matching).
-        
-        Use this exact format on the SAME LINE as the statement:
-        
-            javaStatement; // @rpg-trace: <nodeId>
-        
-        Examples (use the CORRECT nodeId from the source map for each statement):
-            claim.setStatusCodeSde(20); // @rpg-trace: n451
-            if (existing.getStatusCodeSde() != null && existing.getStatusCodeSde() != 99) {{ // @rpg-trace: n447
-            return claimRepository.findByPakzAndRechNrAndRechDatum(pakz, rn, rd); // @rpg-trace: n530
-        
-        **CRITICAL:** Match the nodeId to the RPG statement that has the **same semantic meaning**.
-        - IF MARK12 AND MARK11 (record valid) → use the IF node's id; Java condition should mirror the intent
-        - CHAIN/READ → use the CHAIN/Read node's id
-        - EVAL/assignments → use the EVAL node's id
-        - EXSR (error handling) → use the ExSr node's id
-        
-        For multi-line statements, place the annotation on the first line.
-        For entity fields from DB contracts (not from a specific RPG statement): // @rpg-trace: schema
-        For boilerplate (imports, package, class declaration): no annotation needed.
-        
-        The following map shows RPG source lines → AST node IDs. Use it to pick the correct nodeId:
-        
+        ## RPG SOURCE MAP (use these nodeIds for // @rpg-trace: <nodeId> annotations)
         --- RPG SOURCE MAP START ---
         {trace_source_map if trace_source_map else "(No statement nodes available)"}
         --- RPG SOURCE MAP END ---
-        
-        ## ⚠️ LOGIC COMPLETENESS – ENFORCED (validation will fail otherwise)
-        Your generated code will be **automatically validated** for logic completeness. If any of the following are present, the build will **fail validation** and the code will be rejected:
-        - **Empty loops**: Any `for (...)` or `while (...)` with an empty body `{{ }}` → FAIL. Every loop MUST contain real statements (e.g. map, repository.save, field copy).
-        - **Stub-only methods**: Any method whose body is only `return true;`, `return false;`, or `return "X";` (or similar constant) → FAIL. Every method MUST implement real logic using entity fields, parameters, or repository results.
-        - **Missing entities**: Every table in the context dbContracts MUST have a matching `@Entity` with `@Table(name="...")` in domain/.
-        **Before you finish**, self-check: (1) No for/while has empty body. (2) No method returns only a constant. (3) Every context table has an entity. Generate **full implementation** so that logic completeness validation scores 100%.
-        
-        ## Requirements for your answer
-        
-        1. **Target**: Produce **Pure Java** code with **layered architecture**:
-           - Generate **multiple files** organized by package (domain/service/repository/dto/web)
-           - Use **domain names** (Claim, not HSG71LF2) for entities
-           - Use **enums** (ClaimStatus, not magic numbers) for constants
-           - Use **Java Records** for DTOs
-           - Use **modern Java features** (Streams, Optional, dependency injection)
-        
-        2. **Architecture**:
-           - **domain/**: Entities (@Entity), Value Objects (Records), Enums
-           - **repository/**: Spring Data JPA interfaces (extends JpaRepository)
-           - **service/**: Stateless business logic services
-           - **dto/**: Request/response DTOs (Java Records)
-           - **web/**: REST controllers (optional, @RestController)
-        
-        2a. **SQL Query Translation (CRITICAL)**:
-           - **Translate ALL RPG embedded SQL statements** (EXEC SQL SELECT, FETCH, etc.) into repository methods
-           - When the prompt includes an **"EMBEDDED SQL TO TRANSLATE"** checklist, every listed statement MUST have a corresponding repository method (@Query or Spring Data method). Do not skip any.
-           - For each RPG SQL statement, create a corresponding repository method with @Query annotation
-           - Use **JPQL** (Java Persistence Query Language) when possible: `@Query("SELECT c FROM Claim c WHERE c.companyCode = :code")`
-           - Use **native SQL** (`nativeQuery = true`) only when JPQL cannot express the query (e.g., complex IBM i SQL functions, specific DB2 syntax)
-           - Example RPG SQL: `EXEC SQL SELECT * FROM HSG71LF2 WHERE PAKZ = :pakz AND STATUSCODESDE <> 99`
-             → Java: `@Query("SELECT c FROM Claim c WHERE c.companyCode = :pakz AND c.statusCodeSde <> 99") List<Claim> findActiveClaimsByCompanyCode(@Param("pakz") String pakz);`
-           - **Map RPG cursors** (DECLARE CURSOR, OPEN, FETCH, CLOSE) to one repository method that runs the cursor's SELECT and returns List<Entity> or Stream<Entity>
-           - **Preserve WHERE clauses**: Translate RPG WHERE conditions to JPQL WHERE clauses
-           - **Preserve JOINs**: Translate RPG JOINs to JPQL JOINs (e.g., `FROM Claim c JOIN c.errors e`)
-           - **Preserve ORDER BY**: Translate RPG ORDER BY to JPQL ORDER BY (or use Spring Data method naming: `findByXxxOrderByYyyAsc`)
-           - **Preserve aggregate functions**: Translate COUNT, MAX, MIN, SUM, AVG to JPQL equivalents
-           - If RPG uses complex SQL that cannot be expressed in JPQL, use native SQL: `@Query(value = "SELECT * FROM HSG71LF2 WHERE ...", nativeQuery = true)`
-           - **Every RPG SQL SELECT/FETCH should have a corresponding repository method** - do not skip SQL statements
-        
-        3. **Data structures** (CRITICAL – 100% column mapping is MANDATORY):
-           - Create **@Entity** classes in `domain/` package for every file in `dbContracts`
-           - Use **domain names** for entity classes (Claim, not HSG71LF2)
-           - Keep **@Table(name="HSG71LF2")** with original table name
-           - Each entity MUST include **EVERY SINGLE COLUMN** from that contract's "columns" array
-             as a field with @Column annotation
-           - Use **camelCase** for Java field names, but preserve DB names in @Column(name="...")
-           - Example: `@Column(name="RECHNR") private String claimNumber;`
-        
-        4. **Domain-driven design**:
-           - Extract **value objects** from RPG data structures (ClaimSearchCriteria, not SubfileFilter)
-           - Create **enums** for magic values (ClaimStatus.EXCLUDED, not 99)
-           - Use **domain language** in method names (searchClaims, not buildClaimSubfile)
-        
-        5. **Modern Java**:
-           - Use **Java Records** for DTOs: `public record ClaimDto(...)`
-           - Use **Streams** for data processing: `claims.stream().filter(...).map(...).collect(...)`
-           - Use **Optional** properly: `Optional.ofNullable(...).orElseThrow(...)`
-           - Use **dependency injection**: Constructor injection with @Autowired
-           - Services should be **stateless** (no instance variables for business state)
-        
-        6. **Output format**:
-           - Generate **multiple Java files** (one per class/interface)
-           - Start each file with package declaration: `package com.scania.warranty.domain;`
-           - Include all necessary imports
-           - Add a **one-line Javadoc** for each public class, interface, or enum describing its role (e.g. "JPA entity for claim header (HSG71LF2)." or "Service for claim search and list operations.").
-           - Separate files clearly with comments: `// === domain/Claim.java ===`
-           - Use clear file separators: `// ==========================================`
-        
-        7. **Syntax**: Your output must be valid, compilable Java. Every opening brace {{ must
-           have a matching closing brace }}. Before finishing, verify: count of {{ equals count of }}.
-        
-        8. **Display files (when present)**: If the context includes a "Display files (DSPF)" section,
-           use it to inform UI-related code: add comments or DTOs that reflect screen/form structure,
-           or document which service methods correspond to which display operations (EXFMT/READ), so the
-           target application can support UI building.
-        
-        9. **Complete logic (MANDATORY – no stubs or placeholders)**:
-           - Do NOT generate empty loop bodies (e.g. `for (Item i : list) {{ }}`). Every for/while loop MUST contain real logic: map fields, create entities, call repository save, or other operations derived from the RPG or narrative.
-           - Do NOT generate methods that only return a constant (e.g. `return true;` or `return "G";`). Every method MUST implement real logic: compare entity fields (e.g. hauptgruppe, claimArt, nebengruppe, steuerCode), derive value from parameters, or perform a real check.
-           - Copy operations: When the RPG or narrative describes copying data (e.g. from invoice to claim, work positions to claim details, external services to claim), generate FULL Java: iterate source list, map each source entity's fields to the target entity or a new entity, and persist (e.g. claimErrorRepository.save(...)).
-           - Type/scope checks: When filtering by claim type or scope, use the actual entity fields that correspond to the RPG symbols (e.g. hauptgruppe, nebengruppe, claimArt, steuerCode) and return the result of a real comparison, not a constant.
-           - If the RPG source is truncated, infer from the narrative and dbContracts: e.g. "copy work positions to claim" means create claim detail/error records from each work position row; "determine scope" means return a field from the error/claim entity (e.g. hauptgruppe or a derived value), not a literal.
         
         **IMPORTANT FOR LARGE CONTEXTS**: If this context has many dbContracts ({len(db_contracts)} contracts, {total_columns} total columns), 
         you MUST generate COMPLETE entities for ALL contracts, even if the code is very long. Do NOT truncate or skip entities.
@@ -975,6 +975,7 @@ def parse_multi_file_output(java_code: str, output_dir: Path) -> Dict[str, str]:
     current_file = None
     current_content = []
     in_code_block = False
+    after_code_block = False  # True after closing ```; prevents capturing explanatory text
     
     lines = java_code.split("\n")
     i = 0
@@ -999,7 +1000,8 @@ def parse_multi_file_output(java_code: str, output_dir: Path) -> Dict[str, str]:
                 
                 current_file = marker_match.group(1)
                 current_content = []
-                in_code_block = False  # Reset code block state
+                in_code_block = False
+                after_code_block = False
                 file_found = True
                 break
         
@@ -1010,16 +1012,19 @@ def parse_multi_file_output(java_code: str, output_dir: Path) -> Dict[str, str]:
         # Check for markdown code block start/end
         if line.strip().startswith("```"):
             if in_code_block:
-                # End of code block - don't save yet, wait for next file marker
+                if current_file and current_content:
+                    files[current_file] = "\n".join(current_content)
+                current_content = []
                 in_code_block = False
+                after_code_block = True  # Do not capture text until next file marker
             else:
-                # Start of code block
                 in_code_block = True
+                after_code_block = False
             i += 1
             continue
         
-        # If we're in a code block or have a current file, collect content
-        if in_code_block or current_file:
+        # Collect content only when inside code block, or in raw format (current_file set, no markdown)
+        if in_code_block or (current_file and not after_code_block):
             # Skip markdown headers and separators (but only if not in code block)
             if not in_code_block:
                 if line.strip().startswith("#") or line.strip().startswith("---"):
@@ -1278,6 +1283,60 @@ def write_multi_file_output(
     return output_dir, written_files
 
 
+def _run_idclass_fixer(target_root: Path) -> None:
+    """
+    Run post-migration IdClass fixer for entities with composite keys.
+    Part of resilient pipeline: prevents runtime 'does not define an IdClass' failures.
+    """
+    try:
+        from fix_idclass import run_fix
+        count, messages = run_fix(target_root)
+        if count > 0:
+            for m in messages:
+                print(f"// {m}", file=sys.stderr)
+            print(f"// ✅ IdClass fixer: {count} entity(ies) fixed", file=sys.stderr)
+    except ImportError as e:
+        print(f"// ⚠️  IdClass fixer skipped (fix_idclass not found): {e}", file=sys.stderr)
+    except Exception as e:
+        print(f"// ⚠️  IdClass fixer failed: {e}", file=sys.stderr)
+
+
+def _run_ambiguous_mapping_fixer(target_root: Path) -> None:
+    """
+    Run post-migration ambiguous mapping fixer for duplicate controller endpoints.
+    Part of resilient pipeline: prevents Spring 'Ambiguous mapping' startup failures.
+    """
+    try:
+        from fix_ambiguous_mapping import run_fix
+        count, msg = run_fix(target_root)
+        if count > 0:
+            print(f"// ✅ Ambiguous mapping fixer: {msg}", file=sys.stderr)
+    except ImportError as e:
+        print(f"// ⚠️  Ambiguous mapping fixer skipped (fix_ambiguous_mapping not found): {e}", file=sys.stderr)
+    except Exception as e:
+        print(f"// ⚠️  Ambiguous mapping fixer failed: {e}", file=sys.stderr)
+
+
+def _generate_ui_schema_if_applicable(context: dict, target_root: Path, unit_id: str = "") -> None:
+    """
+    Generate ui-schemas/<ScreenId>.json from displayFiles when integrating into a project.
+    Part of the migration pipeline: display → backend → DB → UI.
+    """
+    display_files = context.get("displayFiles", [])
+    if not display_files:
+        return
+    try:
+        from ui_schema_generator import generate_ui_schema, write_ui_schema
+        schema = generate_ui_schema(context, unit_id=unit_id)
+        if schema:
+            out_path = write_ui_schema(schema, target_root)
+            print(f"// ✅ Generated UI schema: {out_path.relative_to(target_root)}", file=sys.stderr)
+    except ImportError as e:
+        print(f"// ⚠️  UI schema generation skipped (ui_schema_generator not found): {e}", file=sys.stderr)
+    except Exception as e:
+        print(f"// ⚠️  UI schema generation failed: {e}", file=sys.stderr)
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Track B: Migrate RPG to Pure Java with layered architecture",
@@ -1416,8 +1475,9 @@ def main():
     
     print(f"// This may take 60-120 seconds for large packages...", file=sys.stderr)
 
+    system_prompt = _build_static_system_prompt()
     user_prompt = build_pure_java_prompt(context, rpg_source_override=rpg_source_override, rpg_range=rpg_range)
-    prompt_size_kb = len(user_prompt) / 1024
+    prompt_size_kb = (len(system_prompt) + len(user_prompt)) / 1024
     print(f"// Prompt size: {prompt_size_kb:.1f} KB", file=sys.stderr)
 
     client = anthropic.Anthropic(api_key=api_key)
@@ -1446,6 +1506,7 @@ def main():
                 model=args.model,
                 max_tokens=args.max_tokens,
                 temperature=0.2,
+                system=system_prompt,
                 messages=[
                     {
                         "role": "user",
@@ -1495,6 +1556,9 @@ def main():
                             print(f"// ⚠️  Inline origin injection skipped: {e}", file=sys.stderr)
                     if integration_mode:
                         print(f"// ✅ Migration complete! Files integrated into project: {output_dir.parent.parent}", file=sys.stderr)
+                        _run_idclass_fixer(target_root)
+                        _run_ambiguous_mapping_fixer(target_root)
+                        _generate_ui_schema_if_applicable(context, target_root, unit_id)
                     else:
                         print(f"// ✅ Migration complete! Files written to: {output_dir}", file=sys.stderr)
                 else:
@@ -1510,6 +1574,7 @@ def main():
                         model=args.model,
                         max_tokens=args.max_tokens,
                         temperature=0.2,
+                        system=system_prompt,
                         messages=[
                             {
                                 "role": "user",
@@ -1568,6 +1633,9 @@ def main():
                         print(f"// ⚠️  Inline origin injection skipped: {e}", file=sys.stderr)
                 if integration_mode:
                     print(f"// ✅ Migration complete! Files integrated into project: {output_dir.parent.parent}", file=sys.stderr)
+                    _run_idclass_fixer(target_root)
+                    _run_ambiguous_mapping_fixer(target_root)
+                    _generate_ui_schema_if_applicable(context, target_root, unit_id)
                 else:
                     print(f"// ✅ Migration complete! Files written to: {output_dir}", file=sys.stderr)
             else:

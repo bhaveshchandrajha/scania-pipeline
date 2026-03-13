@@ -6,6 +6,7 @@
   "message": "Use the links below to open the application screens.",
   "links": [
     { "label": "Warranty Claims (HS1210D)", "url": "/hs1210d.html", "description": "Search and list claims by company" },
-    { "label": "Demo & API info", "url": "/demo.html", "description": "Status, API endpoints, quick start" }
+    { "label": "Demo & API info", "url": "/demo.html", "description": "Status, API endpoints, quick start" },
+    { "label": "H2 Database Console", "url": "/h2-connect.html", "external": true, "description": "One-click connect or paste jdbc:h2:file:./data/warranty_db, User: sa" }
   ]
 }

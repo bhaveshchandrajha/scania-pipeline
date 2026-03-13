@@ -1,0 +1,179 @@
+{
+  "programId": "HS1210",
+  "unitId": "qsys:HSSRC/QRPGLESRC/HS1210",
+  "entryNodeId": "n1983",
+  "nodesInSlice": [
+    {
+      "nodeId": "n1983",
+      "kind": "Procedure",
+      "name": "CheckV4",
+      "procedureName": "CheckClaim",
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+        "startLine": 3035,
+        "endLine": 3058
+      }
+    }
+  ],
+  "contextFiles": [
+    "/Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/context_index/HS1210_n1983.json"
+  ],
+  "dbFiles": [
+    {
+      "name": "AUFWKO",
+      "library": "HSSRC"
+    },
+    {
+      "name": "FISTAM",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HS1210D",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKLF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKLF8",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHPPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHTPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHWPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSBTSLF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSBTSPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSEPAF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSFLALF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG70F",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF2",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF7",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71PF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG73LF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG73PF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG79F",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGFIPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSLF2",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSLF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGSCPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSKAMPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "RWAPRL1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "ITLSMF3",
+      "library": "P400IMS"
+    },
+    {
+      "name": "PIPPMST",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F001",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F002",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F003",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F009",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F085",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3L004H",
+      "library": "S400CAS"
+    }
+  ],
+  "generatedFiles": [],
+  "rpgSnippet": "     P CheckV4         B\n     D CheckV4         PI              N\n     D*****************************************************************\nRM#8   Monitor;\nRM#8      If %Subst(G71200:8:2) = 'V4';\n             Return *Off;\n          EndIf;\nRM#8      Chain (G71000:G71010:G71020:' ':\nRM#8             G71030:G71040:G71190:%Subst(G71200:8:2)) HSAHKPF;\nRM#8      If %Found(HSAHKPF);\nRM#8         SetLl (AHK000:AHK040:AHK050:AHK060:'V4') HSEPAF;\nRM#8         ReadE (AHK000:AHK040:AHK050:AHK060:'V4') HSEPAF;\nRM#8         DoW Not %EoF(HSEPAF);\nRM#8            If EPA_DATV = AHK080;\nRM#8               return *On;\nRM#8            EndIf;\nRM#8            ReadE (AHK000:AHK040:AHK050:AHK060:'V4') HSEPAF;\nRM#8         EndDo;\nRM#8      EndIf;\nRM#8   On-Error *All;\nRM#8\nRM#8   EndMon;\n       Return *Off;\n     P                 E",
+  "primaryServiceFile": null,
+  "runs": [
+    {
+      "contextFile": "/Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/context_index/HS1210_n1983.json",
+      "returnCode": 1,
+      "stdoutPreview": "",
+      "stderrPreview": "// Context package size: 4.4 KB\n// DB Contracts: 0, Total columns: 0\n// Loaded full RPG source from /Users/fkhan/Documents/ScaniaRPG2JavaAgentic/PoC_HS1210/HSSRC/QRPGLESRC/HS1210.sqlrpgle (lines 3035-3058, 817 chars)\n// Generating Pure Java (Track B) with layered architecture...\n// This may take 60-120 seconds for large packages...\n// Prompt size: 12.0 KB (system cached for 2nd+ run within 5 min)\n// Integration mode: writing into existing project warranty_demo\n// Starting Pure Java migration (Track B)...\n// Sending request to LLM (this may take 60-120 seconds for large prompts)...\n// Error after 0.0 seconds: Messages.create() got an unexpected keyword argument 'cache_control'\nTraceback (most recent call last):\n  File \"/Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/migrate_to_pure_java.py\", line 1544, in <module>\n    main()\n    ~~~~^^\n  File \"/Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/migrate_to_pure_java.py\", line 1459, in main\n    response = client.messages.create(\n        model=args.model,\n    ...<10 lines>...\n        timeout=1200.0,  # 20 minutes\n    )\n  File \"/Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/.venv/lib/python3.14/site-packages/anthropic/_utils/_utils.py\", line 282, in wrapper\n    return func(*args, **kwargs)\nTypeError: Messages.create() got an unexpected keyword argument 'cache_control'\n"
+    }
+  ],
+  "summary": "Migrated feature starting at HS1210 n1983 with 1 node(s); DB files involved: AUFWKO (HSSRC), FISTAM (HSSRC), HS1210D (HSSRC), HSAHKLF3 (HSSRC), HSAHKLF8 (HSSRC), HSAHKPF (HSSRC), HSAHPPF (HSSRC), HSAHTPF (HSSRC), HSAHWPF (HSSRC), HSBTSLF1 (HSSRC), HSBTSPF (HSSRC), HSEPAF (HSSRC), HSFLALF1 (HSSRC), HSG70F (HSSRC), HSG71LF2 (HSSRC), HSG71LF3 (HSSRC), HSG71LF7 (HSSRC), HSG71PF (HSSRC), HSG73LF1 (HSSRC), HSG73PF (HSSRC), HSG79F (HSSRC), HSGFIPF (HSSRC), HSGPSLF2 (HSSRC), HSGPSLF3 (HSSRC), HSGPSPF (HSSRC), HSGSCPF (HSSRC), HSKAMPF (HSSRC), RWAPRL1 (HSSRC), ITLSMF3 (P400IMS), PIPPMST (S400CAS), S3F001 (S400CAS), S3F002 (S400CAS), S3F003 (S400CAS), S3F009 (S400CAS), S3F085 (S400CAS), S3L004H (S400CAS)."
+}

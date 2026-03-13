@@ -6,15 +6,12 @@
 
 package com.scania.warranty.domain;
 
-/**
- * Enum for claim status codes (STATUS CODE SDE).
- */
 public enum ClaimStatus {
-    CREATED(0),
-    PENDING(0),
-    MINIMUM(5),
+    EXCLUDED(99),
     APPROVED(20),
-    EXCLUDED(99);
+    REJECTED(11),
+    PENDING(0),
+    MINIMUM(5);
 
     private final int code;
 
@@ -26,24 +23,7 @@ public enum ClaimStatus {
         return code;
     }
 
-    public String getDescription() {
-        switch (this) {
-            case CREATED:
-            case PENDING:
-                return "Pending";
-            case MINIMUM:
-                return "Minimum";
-            case APPROVED:
-                return "Approved";
-            case EXCLUDED:
-                return "Excluded";
-            default:
-                return "";
-        }
-    }
-
-    // @origin HS1210 L919-996 (IF)
-    public static ClaimStatus fromCode(int code) {
+    public static ClaimStatus fromCode(int code) { // @rpg-trace: n408
         for (ClaimStatus status : values()) {
             if (status.code == code) {
                 return status;

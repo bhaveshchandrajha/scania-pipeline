@@ -14,7 +14,7 @@
     }
   },
   "narrative": "### Node n2647: Procedure `loadTextGPS`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Raw sem JSON**:\n```json\n{}\n```",
-  "rpgSnippet": "     P loadTextGPS     B\n     D loadTextGPS     PI\n     D   start                        3  0 value\n     D*----------------------------------------------------------------\n       Chain(N) KEYGPS2 HSGPSPR;\n       DOW Not %EoF(HSGPSPF);\n           If GPS150 = %Dec(G7306A:2:0) And\n              GPS020 = *Blanks And GPS040 = 'TXT';\n              If %Subst(GPS080:1:1) <> '+';\n                 TEXT = GPS080;\n                 ZLT += 1;\n                 If ZLT > start;\n                    Write HS1212ST;\n                 EndIf;\n              EndIf;\n           EndIf;\n           ReadE(N) KEYGPS2 HSGPSPR;\n       EndDo;\n     P                 E",
+  "rpgSnippet": "",
   "dbContracts": [],
   "symbolMetadata": {},
   "statementNodes": [

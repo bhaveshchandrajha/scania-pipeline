@@ -1,5 +1,7 @@
 package com.scania.warranty;
 
+import java.io.File;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -22,7 +24,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan(basePackages = "com.scania.warranty.domain")
 @EnableJpaRepositories(basePackages = "com.scania.warranty.repository")
 public class WarrantyApplication {
-    
+
+    static {
+        new File(System.getProperty("user.dir"), "data").mkdirs();
+    }
+
     public static void main(String[] args) {
         SpringApplication.run(WarrantyApplication.class, args);
         System.out.println("\n" + "=".repeat(70));

@@ -1,0 +1,195 @@
+{
+  "programId": "HS1210",
+  "unitId": "qsys:HSSRC/QRPGLESRC/HS1210",
+  "entryNodeId": "n1779",
+  "nodesInSlice": [
+    {
+      "nodeId": "n1779",
+      "kind": "Procedure",
+      "name": "CreateClaim",
+      "procedureName": null,
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+        "startLine": 2798,
+        "endLine": 2887
+      }
+    }
+  ],
+  "contextFiles": [
+    "/Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/context_index/HS1210_n1779.json"
+  ],
+  "dbFiles": [
+    {
+      "name": "AUFWKO",
+      "library": "HSSRC"
+    },
+    {
+      "name": "FISTAM",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HS1210D",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKLF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKLF8",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHPPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHTPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHWPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSBTSLF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSBTSPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSEPAF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSFLALF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG70F",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF2",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF7",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71PF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG73LF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG73PF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG79F",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGFIPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSLF2",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSLF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGSCPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSKAMPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "RWAPRL1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "ITLSMF3",
+      "library": "P400IMS"
+    },
+    {
+      "name": "PIPPMST",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F001",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F002",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F003",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F009",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F085",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3L004H",
+      "library": "S400CAS"
+    }
+  ],
+  "generatedFiles": [
+    "com/scania/warranty/domain/Claim.java",
+    "com/scania/warranty/domain/ClaimId.java",
+    "com/scania/warranty/domain/ClaimFailure.java",
+    "com/scania/warranty/domain/ClaimFailureId.java",
+    "com/scania/warranty/domain/ClaimPosition.java",
+    "com/scania/warranty/domain/ClaimPositionId.java",
+    "com/scania/warranty/domain/ClaimCreationContext.java",
+    "com/scania/warranty/repository/ClaimRepository.java",
+    "com/scania/warranty/repository/ClaimFailureRepository.java",
+    "com/scania/warranty/repository/ClaimPositionRepository.java",
+    "com/scania/warranty/service/ClaimCreationService.java",
+    "com/scania/warranty/dto/ClaimCreationRequest.java",
+    "com/scania/warranty/dto/ClaimCreationResponse.java",
+    "com/scania/warranty/web/ClaimCreationController.java"
+  ],
+  "uiSchemaGenerated": [],
+  "rpgSnippet": null,
+  "primaryServiceFile": "com/scania/warranty/service/ClaimCreationService.java",
+  "runs": [
+    {
+      "contextFile": "/Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/context_index/HS1210_n1779.json",
+      "returnCode": 1,
+      "stdoutPreview": "",
+      "stderrPreview": "ANTHROPIC_API_KEY env var is not set.\nPlease export your key:\n  export ANTHROPIC_API_KEY='sk-ant-...'\nThen retry this command.\n"
+    }
+  ],
+  "summary": "Migrated feature starting at HS1210 n1779 with 1 node(s); DB files involved:\n  AUFWKO (HSSRC), FISTAM (HSSRC), HS1210D (HSSRC), HSAHKLF3 (HSSRC), HSAHKLF8 (HSSRC), HSAHKPF (HSSRC), HSAHPPF (HSSRC), HSAHTPF (HSSRC)\n  HSAHWPF (HSSRC), HSBTSLF1 (HSSRC), HSBTSPF (HSSRC), HSEPAF (HSSRC), HSFLALF1 (HSSRC), HSG70F (HSSRC), HSG71LF2 (HSSRC), HSG71LF3 (HSSRC)\n  HSG71LF7 (HSSRC), HSG71PF (HSSRC), HSG73LF1 (HSSRC), HSG73PF (HSSRC), HSG79F (HSSRC), HSGFIPF (HSSRC), HSGPSLF2 (HSSRC), HSGPSLF3 (HSSRC)\n  HSGPSPF (HSSRC), HSGSCPF (HSSRC), HSKAMPF (HSSRC), RWAPRL1 (HSSRC), ITLSMF3 (P400IMS), PIPPMST (S400CAS), S3F001 (S400CAS), S3F002 (S400CAS)\n  S3F003 (S400CAS), S3F009 (S400CAS), S3F085 (S400CAS), S3L004H (S400CAS)."
+}

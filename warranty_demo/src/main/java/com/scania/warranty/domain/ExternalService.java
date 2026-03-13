@@ -8,29 +8,27 @@ package com.scania.warranty.domain;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 /**
- * JPA entity for external service records (HSFLALF1).
+ * JPA entity for external service line items (HSFLALF1).
  */
 @Entity
 @Table(name = "HSFLALF1")
-@IdClass(ExternalServiceId.class)
 public class ExternalService {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "PKZ", length = 3, nullable = false)
     private String pkz; // @rpg-trace: schema
 
-    @Id
     @Column(name = "BES-DAT", length = 8, nullable = false)
-    private String besDate; // @rpg-trace: schema
+    private String besDat; // @rpg-trace: schema
 
-    @Id
     @Column(name = "BES-NR", length = 5, nullable = false)
     private String besNr; // @rpg-trace: schema
 
-    @Id
     @Column(name = "LNR-FL", precision = 3, scale = 0, nullable = false)
     private Integer lnrFl; // @rpg-trace: schema
 
@@ -109,11 +107,17 @@ public class ExternalService {
     @Column(name = "SDPS FLA UUID", length = 40, nullable = false)
     private String sdpsFlaUuid; // @rpg-trace: schema
 
-    // Constructors
     public ExternalService() {
     }
 
-    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getPkz() {
         return pkz;
     }
@@ -122,12 +126,12 @@ public class ExternalService {
         this.pkz = pkz;
     }
 
-    public String getBesDate() {
-        return besDate;
+    public String getBesDat() {
+        return besDat;
     }
 
-    public void setBesDate(String besDate) {
-        this.besDate = besDate;
+    public void setBesDat(String besDat) {
+        this.besDat = besDat;
     }
 
     public String getBesNr() {
@@ -344,18 +348,5 @@ public class ExternalService {
 
     public void setSdpsFlaUuid(String sdpsFlaUuid) {
         this.sdpsFlaUuid = sdpsFlaUuid;
-    }
-
-    // Convenience methods for services
-    public String getIndicatorExternal() {
-        return kenFl;
-    }
-
-    public String getDescription() {
-        return beschreibung;
-    }
-
-    public BigDecimal getSalesValue() {
-        return vkWert;
     }
 }

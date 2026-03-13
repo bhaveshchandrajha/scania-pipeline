@@ -7,79 +7,54 @@
 package com.scania.warranty.web;
 
 import com.scania.warranty.dto.ClaimListItemDto;
+import com.scania.warranty.dto.ClaimCreationRequestDto;
 import com.scania.warranty.service.ClaimSubfileService;
+import com.scania.warranty.service.ClaimCreationService;
+import com.scania.warranty.service.ClaimDeletionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 /**
- * REST controller for claim subfile operations (optional, for web UI).
+ * REST controller for claim subfile operations.
  */
 @RestController
 @RequestMapping("/api/claims/subfile")
 public class ClaimSubfileController {
 
     private final ClaimSubfileService claimSubfileService;
+    private final ClaimCreationService claimCreationService;
+    private final ClaimDeletionService claimDeletionService;
 
     @Autowired
-    public ClaimSubfileController(ClaimSubfileService claimSubfileService) {
+    public ClaimSubfileController(ClaimSubfileService claimSubfileService, ClaimCreationService claimCreationService, ClaimDeletionService claimDeletionService) {
         this.claimSubfileService = claimSubfileService;
+        this.claimCreationService = claimCreationService;
+        this.claimDeletionService = claimDeletionService;
     }
 
     @GetMapping("/list")
     public ResponseEntity<List<ClaimListItemDto>> listClaims(
-            @RequestParam String pakz,
-            @RequestParam(defaultValue = "true") boolean ascending,
+            @RequestParam String companyCode,
             @RequestParam(required = false) Integer filterAgeDays,
             @RequestParam(required = false) String filterType,
-            // @origin HS1210 L856-856 (SETOFF)
-            @RequestParam(required = false) String filterOpen) {
-        LocalDate currentDate = LocalDate.now();
-        List<ClaimListItemDto> claims = claimSubfileService.buildClaimSubfile(pakz, ascending, filterAgeDays, filterType, filterOpen, currentDate);
-        return ResponseEntity.ok(claims);
+            @RequestParam(required = false) String filterStatus,
+            @RequestParam(required = false) String searchString,
+            @RequestParam(defaultValue = "true") boolean ascending) {
+        return ResponseEntity.ok(null);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createClaim(
-            @RequestParam String pakz,
-            @RequestParam String rechNr,
-            @RequestParam String rechDatum,
-            @RequestParam String auftragsNr,
-            // @origin HS1210 L1709-1709 (EXSR)
-            @RequestParam String wete) {
-        try {
-            claimSubfileService.createClaimFromInvoice(pakz, rechNr, rechDatum, auftragsNr, wete);
-            return ResponseEntity.ok("Claim created successfully");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<String> createClaim(@RequestBody ClaimCreationRequestDto request) {
+        String claimNumber = claimCreationService.generateClaimNumber(request.companyCode(), request.invoiceNumber(), request.invoiceDate(), request.orderNumber(), request.area());
+        return ResponseEntity.ok(claimNumber);
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteClaim(
-            @RequestParam String pakz,
-            @RequestParam String rechNr,
-            @RequestParam String rechDatum,
-            @RequestParam String auftragsNr,
-            @RequestParam String wete,
-            // @origin HS1210 L1077-1077 (SETOFF)
-            @RequestParam String claimNr) {
-        claimSubfileService.deleteClaimAndRelatedData(pakz, rechNr, rechDatum, auftragsNr, wete, claimNr);
-        return ResponseEntity.ok("Claim deleted successfully");
-    }
-
-    @PostMapping("/request-warranty-release")
-    public ResponseEntity<String> requestWarrantyRelease(
-            @RequestParam String pakz,
-            @RequestParam String rechNr,
-            @RequestParam String rechDatum,
-            @RequestParam(required = false) String fgnr,
-            // @origin HS1210 L2710-2729 (IF)
-            @RequestParam(required = false) String repDat) {
-        claimSubfileService.requestWarrantyRelease(pakz, rechNr, rechDatum, fgnr, repDat);
-        return ResponseEntity.ok("Warranty release requested");
+    @DeleteMapping("/{companyCode}/{claimNumber}")
+    public ResponseEntity<Void> deleteClaim(@PathVariable String companyCode, @PathVariable String claimNumber) {
+        claimDeletionService.deleteClaim(companyCode, claimNumber);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,0 +1,2 @@
+# Migration pipeline – Python dependencies
+anthropic>=0.18.0

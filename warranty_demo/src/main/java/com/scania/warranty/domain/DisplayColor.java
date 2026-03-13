@@ -7,21 +7,21 @@
 package com.scania.warranty.domain;
 
 /**
- * Enum for claim display colors (red/yellow/blue).
+ * Enum for display color codes.
  */
 public enum DisplayColor {
-    RED("ROT"),
-    YELLOW("GELB"),
-    BLUE("BLAU"),
-    NONE("");
+    NONE(0),
+    RED(1),
+    YELLOW(2),
+    BLUE(3);
 
-    private final String code;
+    private final int code;
 
-    DisplayColor(String code) {
+    DisplayColor(int code) {
         this.code = code;
     }
 
-    public String getCode() {
+    public int getCode() {
         return code;
     }
 }

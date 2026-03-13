@@ -28,26 +28,28 @@ from fix_logic_gaps import parse_fixed_files  # reuse robust parser for LLM resp
 
 def extract_error_blocks(build_log: str) -> str:
     """
-    Extract the most relevant error section(s) from a Maven compiler log.
-    Keeps lines between 'COMPILATION ERROR' and the next blank block,
-    plus any trailing '[ERROR] ...' lines.
+    Extract the LAST (most recent) compilation error block from a Maven build log.
+    When the log contains multiple build attempts, only the most recent errors matter.
     """
     lines = build_log.splitlines()
-    in_block = False
-    collected: List[str] = []
+    blocks: List[List[str]] = []
+    current: List[str] = []
     for line in lines:
         if "COMPILATION ERROR" in line:
-            in_block = True
-            collected.append(line)
+            if current:
+                blocks.append(current)
+            current = [line]
             continue
-        if in_block:
-            collected.append(line)
-    # If we didn't detect the marker, fall back to truncating the whole log
+        if current:
+            current.append(line)
+    if current:
+        blocks.append(current)
+    # Use the last block (most recent build's errors)
+    collected = blocks[-1] if blocks else lines
     if not collected:
         collected = lines
-    # Limit to a reasonable number of characters for the prompt
     text = "\n".join(collected)
-    return text[-20000:]
+    return text[-25000:]  # Keep full recent errors
 
 
 def extract_error_files(build_log: str, project_dir: Path) -> List[Path]:
@@ -57,28 +59,29 @@ def extract_error_files(build_log: str, project_dir: Path) -> List[Path]:
     """
     files: List[Path] = []
     seen: Set[Path] = set()
-    # Patterns like:
-    # [ERROR] /path/to/File.java:[line,col] ...
-    # or possibly without the [ERROR] prefix once truncated
-    pattern = re.compile(r"(?:\[\s*ERROR\s*\]\s*)?(?P<path>/[^\s:]+\.java)")
+    # Absolute path: /path/to/File.java or C:\path\File.java
+    abs_pattern = re.compile(r"(?:\[\s*ERROR\s*\]\s*)?(?P<path>[/\\][^\s:]+\.java|[A-Za-z]:[^\s:]+\.java)")
+    # Relative to module dir: src/main/java/.../File.java
+    rel_pattern = re.compile(r"(?:\[\s*ERROR\s*\]\s*)?(?P<path>src/main/java[^\s:]*\.java)")
     for line in build_log.splitlines():
-        m = pattern.search(line)
-        if not m:
-            continue
-        raw_path = m.group("path").strip()
-        p = Path(raw_path)
-        if not p.is_absolute():
-            p = project_dir / p
-        try:
-            p_resolved = p.resolve()
-            # Ensure it's under the project dir
-            p_resolved.relative_to(project_dir.resolve())
-        except Exception:
-            continue
-        if p_resolved in seen:
-            continue
-        seen.add(p_resolved)
-        files.append(p_resolved)
+        for pattern in (abs_pattern, rel_pattern):
+            m = pattern.search(line)
+            if not m:
+                continue
+            raw_path = m.group("path").strip().replace("\\", "/")
+            p = Path(raw_path)
+            if not p.is_absolute():
+                p = project_dir / p
+            try:
+                p_resolved = p.resolve()
+                p_resolved.relative_to(project_dir.resolve())
+            except Exception:
+                continue
+            if p_resolved in seen:
+                continue
+            seen.add(p_resolved)
+            files.append(p_resolved)
+            break
     return files
 
 
@@ -126,48 +129,42 @@ def build_fix_prompt(error_snippet: str, files_with_content: List[Tuple[str, str
         f"### === {rel} ===\n```java\n{content}\n```"
         for rel, content in files_with_content
     )
-    return f"""You are fixing Java compilation errors in an existing Spring Boot application.
+    return f"""You are fixing Java compilation errors. Your output is written directly to files and recompiled. You MUST fix EVERY error so the build succeeds.
 
-## Task
+## CRITICAL: Fix ALL errors in one pass
 
-The Maven compiler plugin produced the following errors. Your job is to fix ONLY
-the compilation issues (missing methods, type mismatches, incorrect filenames,
-etc.) in the provided Java files. Do NOT refactor unrelated code or change
-the overall architecture. Preserve existing semantics as much as possible.
+The build will fail again if you leave ANY error unfixed. Fix every single error listed below.
 
-## Compiler errors
+## Compiler errors (fix every one)
 
 ```
 {error_snippet}
 ```
 
-## Current Java files to correct
-
-These are the current versions of the files mentioned in the errors. Update
-them to resolve the compilation problems.
+## Files to correct
 
 {files_section}
 
-## Important guidelines
+## Mandatory rules
 
-- Prefer to add missing repository methods, getters/setters, or simple type
-  conversions rather than changing service/controller logic flow.
-- When adding Spring Data repository methods, infer the method signatures from
-  the call sites and domain model (e.g. return types like Optional<...> or List<...>).
-- For numeric vs BigDecimal mismatches, prefer using BigDecimal.valueOf(...)
-  or adjusting field types consistently, choosing BigDecimal for monetary amounts.
-- Do not introduce new external dependencies.
+1. **cannot find symbol (setter)**: Use the EXACT setter name from the entity. JavaBean: field `reland` → `setReland`, NOT `setReLand`. Field `motornr` → `setMotornr`, NOT `setMotorNr`. Field `fahrgnr` → `setFahrgnr`, NOT `setFahrgNr`. Match the entity's field name exactly (camelCase).
+
+2. **incompatible types (Integer vs String)**: Use the setter that matches the argument type. If you have `parseDate()` returning Integer, use `setRepDatum(Integer)` or `setZulDatum(Integer)`, NOT `setRepairDate(String)`. Check the entity for both overloads.
+
+3. **Entity files are included**: When fixing DataInitializer or a service that uses Invoice/Claim, the entity file is in the list above. Read it to see the exact setter names (e.g. setReland, setReplz, setRetele, setRgsnetto, setWktid, setFv, setFb, setKampagnenr, setSpoorder, setKenav, setKenpe, setKlrberech, setKlrbetrag).
+
+4. **Minimal edits**: Change ONLY what is broken. Do not refactor. Preserve all other code.
+
+5. **No new text**: Output ONLY file markers and code blocks. No explanations, no summaries. Text after ``` corrupts the file.
 
 ## Response format
 
-Return the FULL corrected Java file(s) in the following format:
-
-### === <path/relative/to/project/src/main/java/...>.java ===
+### === <exact path from above>.java ===
 ```java
 <full corrected content>
 ```
 
-Return ALL files you changed, even if the change is small."""
+Return ALL files that had errors. Use the exact same path strings as in the files section above. Do NOT add any text after the last ```."""
 
 
 def main() -> None:
@@ -178,6 +175,7 @@ def main() -> None:
     parser.add_argument("build_log_file", type=Path, help="Path to a text file with Maven build output")
     parser.add_argument("--model", default="claude-sonnet-4-5", help="Anthropic model")
     parser.add_argument("--max-tokens", type=int, default=32000)
+    parser.add_argument("--propose-only", action="store_true", help="Return suggested fixes as JSON without writing to disk (for HITL)")
     args = parser.parse_args()
 
     api_key = os.environ.get("ANTHROPIC_API_KEY")
@@ -232,9 +230,9 @@ def main() -> None:
     response = client.messages.create(
         model=args.model,
         max_tokens=args.max_tokens,
-        temperature=0.2,
+        temperature=0.0,
         messages=[{"role": "user", "content": prompt}],
-        timeout=600.0,
+        timeout=300.0,
     )
     text = ""
     for block in response.content:
@@ -244,8 +242,21 @@ def main() -> None:
     fixed = parse_fixed_files(text)
     if not fixed:
         print("LLM did not return any parsed files. Check response format.", file=sys.stderr)
-        print(json.dumps({"success": False, "error": "LLM did not return any parsed files.", "files_fixed": []}))
+        print(json.dumps({"success": False, "error": "LLM did not return any parsed files.", "files_fixed": [], "suggestedFixes": None}))
         sys.exit(6)
+
+    if args.propose_only:
+        # HITL mode: return suggested fixes as JSON, do not write
+        suggested = {k.replace("\\", "/"): v for k, v in fixed.items()}
+        out = {
+            "success": True,
+            "proposeOnly": True,
+            "suggestedFixes": suggested,
+            "filesCount": len(suggested),
+            "message": f"Proposed fixes for {len(suggested)} file(s). Apply via HITL to write.",
+        }
+        print(json.dumps(out))
+        return
 
     written: List[str] = []
     for rel_path, content in fixed.items():

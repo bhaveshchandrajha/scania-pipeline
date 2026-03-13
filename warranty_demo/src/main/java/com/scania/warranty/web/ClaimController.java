@@ -42,6 +42,17 @@ public class ClaimController {
         this.claimStatusService = claimStatusService;
     }
 
+    @GetMapping
+    public ResponseEntity<Object> getClaimsInfo() {
+        return ResponseEntity.ok(java.util.Map.of(
+            "message", "Use POST /api/claims/search to search, POST /api/claims/create to create",
+            "endpoints", java.util.List.of(
+                "POST /api/claims/search",
+                "POST /api/claims/create?companyCode=&invoiceNumber=&invoiceDate=&orderNumber=&workshopType="
+            )
+        ));
+    }
+
     @PostMapping("/search")
     public ResponseEntity<List<ClaimListItemDto>> searchClaims(@RequestBody ClaimSearchCriteria criteria) {
         List<ClaimListItemDto> results = claimSearchService.searchClaims(criteria);
@@ -56,7 +67,7 @@ public class ClaimController {
                                              @RequestParam String workshopType) {
         Claim claim = claimManagementService.createClaimFromInvoice(companyCode, invoiceNumber, invoiceDate,
                                                                          orderNumber, workshopType);
-        return ResponseEntity.ok(claim.getClaimNumber());
+        return ResponseEntity.ok(claim.getClaimNr());
     }
 
     @PutMapping("/{companyCode}/{claimNumber}/status")

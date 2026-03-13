@@ -258,14 +258,14 @@
                 
                 <div class="api-endpoint">
                     <span class="method post">POST</span>
-                    <code>/api/claims</code>
-                    <p style="margin-top: 10px;">Create a new warranty claim</p>
+                    <code>/api/claims/create</code>
+                    <p style="margin-top: 10px;">Create a new warranty claim (params: companyCode, invoiceNumber, invoiceDate, orderNumber, workshopType)</p>
                 </div>
                 
                 <div class="api-endpoint">
                     <span class="method get">GET</span>
-                    <code>/h2-console</code>
-                    <p style="margin-top: 10px;">H2 Database Console (JDBC URL: jdbc:h2:mem:warranty_db)</p>
+                    <code><a href="/h2-console" target="_blank" style="color: inherit;">/h2-console</a></code>
+                    <p style="margin-top: 10px;">H2 Console — <a href="/h2-connect.html" target="_blank">one-click connect</a> or paste <code>jdbc:h2:file:./data/warranty_db</code>, User: <code>sa</code>. Select &quot;Generic H2 (Embedded)&quot;.</p>
                 </div>
                 
                 <div class="api-endpoint">
@@ -306,6 +306,7 @@ mvn spring-boot:run
     </div>
     
     <script>
+        const API_BASE = window.location.origin;
         async function checkStatus() {
             const statusEl = document.getElementById('status');
             const responseEl = document.getElementById('response');
@@ -314,7 +315,7 @@ mvn spring-boot:run
             statusEl.className = 'status-badge';
             
             try {
-                const response = await fetch('http://localhost:8081/api/claims/search', {
+                const response = await fetch(API_BASE + '/api/claims/search', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -346,7 +347,7 @@ mvn spring-boot:run
             responseEl.textContent = 'Testing search API...';
             
             try {
-                const response = await fetch('http://localhost:8081/api/claims/search', {
+                const response = await fetch(API_BASE + '/api/claims/search', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -365,7 +366,7 @@ mvn spring-boot:run
         }
         
         function openSwagger() {
-            window.open('http://localhost:8081/swagger-ui.html', '_blank');
+            window.open(API_BASE + '/swagger-ui.html', '_blank');
         }
         
         // Check status on page load

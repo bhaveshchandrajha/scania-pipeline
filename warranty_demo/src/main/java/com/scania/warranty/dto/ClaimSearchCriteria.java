@@ -6,20 +6,21 @@
 
 package com.scania.warranty.dto;
 
-/**
- * Value object for claim search criteria.
- */
+import java.time.LocalDate;
+
 public record ClaimSearchCriteria(
     String companyCode,
+    boolean ascending,
+    Integer filterAgeDays,
+    String filterType,
+    String filterOpen,
+    String searchString,
     String statusFilter,
     String statusOperator,
-    String chassisFilter,
-    String customerFilter,
-    String sdeClaimFilter,
-    String claimTypeFilter,
-    boolean openClaimsOnly,
-    int claimAgeDays,
-    String searchString,
-    boolean sortAscending,
-    boolean sortByClaimNumber
-) {}
+    String filterCompany,
+    String filterVehicle,
+    String filterCustomer,
+    String filterSde,
+    LocalDate currentDate
+) {
+}

@@ -127,7 +127,9 @@ Return the FULL corrected Java file(s) in the same format. For each file use exa
 <full corrected content>
 ```
 
-Use the same path strings as above (e.g. service/ClaimSearchService.java). Return every file that was listed above, with complete implementations (no stubs, no empty loops)."""
+Use the same path strings as above (e.g. service/ClaimSearchService.java). Return every file that was listed above, with complete implementations (no stubs, no empty loops).
+
+CRITICAL: Output ONLY the file markers and code blocks. Do NOT add any explanatory text, summaries, or markdown after the code blocks. Any text after a closing ``` will corrupt the file."""
 
 
 def parse_fixed_files(llm_response: str) -> Dict[str, str]:
@@ -160,13 +162,13 @@ def parse_fixed_files(llm_response: str) -> Dict[str, str]:
             i += 1
             continue
         if line.strip().startswith("```"):
+            if in_code_block and current_file and current_content:
+                files[current_file] = "\n".join(current_content).strip()
             in_code_block = not in_code_block
+            current_content = []  # Reset; next file's content starts after opening ```
             i += 1
             continue
-        if in_code_block or current_file:
-            if not in_code_block and (line.strip().startswith("#") or line.strip().startswith("---")):
-                i += 1
-                continue
+        if in_code_block:
             current_content.append(line)
         i += 1
     if current_file and current_content:

@@ -10,48 +10,43 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 /**
- * JPA entity for work positions (HSAHWPF).
+ * JPA entity for work position line items (HSAHWPF).
  */
 @Entity
 @Table(name = "HSAHWPF")
-@IdClass(WorkPositionId.class)
 public class WorkPosition {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "PAKZ", length = 3, nullable = false)
     private String pakz; // @rpg-trace: schema
 
-    @Id
     @Column(name = "RNR", length = 5, nullable = false)
     private String rnr; // @rpg-trace: schema
 
     @Column(name = "RG-NR. 10A", length = 10, nullable = false)
-    private String rgNr10A; // @rpg-trace: schema
+    private String rgNr10a; // @rpg-trace: schema
 
-    @Id
     @Column(name = "RDAT", length = 8, nullable = false)
     private String rdat; // @rpg-trace: schema
 
     @Column(name = "KZ S", length = 1, nullable = false)
     private String kzS; // @rpg-trace: schema
 
-    @Id
     @Column(name = "ANR", length = 5, nullable = false)
     private String anr; // @rpg-trace: schema
 
-    @Id
     @Column(name = "BEREI", length = 1, nullable = false)
     private String berei; // @rpg-trace: schema
 
-    @Id
     @Column(name = "W/T", length = 1, nullable = false)
     private String wt; // @rpg-trace: schema
 
-    @Id
     @Column(name = "SPLITT", length = 2, nullable = false)
     private String splitt; // @rpg-trace: schema
 
-    @Id
     @Column(name = "POS.", precision = 3, scale = 0, nullable = false)
     private Integer pos; // @rpg-trace: schema
 
@@ -70,13 +65,11 @@ public class WorkPosition {
     @Column(name = "LNR RZ", precision = 3, scale = 0, nullable = false)
     private Integer lnrRz; // @rpg-trace: schema
 
-    @Id
     @Column(name = "AG", length = 8, nullable = false)
     private String ag; // @rpg-trace: schema
 
-    @Id
     @Column(name = "L.NR.", length = 3, nullable = false)
-    private String lNr; // @rpg-trace: schema
+    private String lnr; // @rpg-trace: schema
 
     @Column(name = "BEZ.", length = 40, nullable = false)
     private String bez; // @rpg-trace: schema
@@ -151,7 +144,7 @@ public class WorkPosition {
     private BigDecimal rgNetto; // @rpg-trace: schema
 
     @Column(name = "KEN.RE2SUM", length = 1, nullable = false)
-    private String kenRe2Sum; // @rpg-trace: schema
+    private String kenRe2sum; // @rpg-trace: schema
 
     @Column(name = "URSPR-FAK/H MON", precision = 5, scale = 2, nullable = false)
     private BigDecimal ursprFakHMon; // @rpg-trace: schema
@@ -177,11 +170,17 @@ public class WorkPosition {
     @Column(name = "RECHNUNGSTEXT", length = 2000, nullable = false)
     private String rechnungstext; // @rpg-trace: schema
 
-    // Constructors
     public WorkPosition() {
     }
 
-    // Getters and Setters (all 50 fields)
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getPakz() {
         return pakz;
     }
@@ -198,12 +197,12 @@ public class WorkPosition {
         this.rnr = rnr;
     }
 
-    public String getRgNr10A() {
-        return rgNr10A;
+    public String getRgNr10a() {
+        return rgNr10a;
     }
 
-    public void setRgNr10A(String rgNr10A) {
-        this.rgNr10A = rgNr10A;
+    public void setRgNr10a(String rgNr10a) {
+        this.rgNr10a = rgNr10a;
     }
 
     public String getRdat() {
@@ -310,12 +309,12 @@ public class WorkPosition {
         this.ag = ag;
     }
 
-    public String getlNr() {
-        return lNr;
+    public String getLnr() {
+        return lnr;
     }
 
-    public void setlNr(String lNr) {
-        this.lNr = lNr;
+    public void setLnr(String lnr) {
+        this.lnr = lnr;
     }
 
     public String getBez() {
@@ -510,12 +509,12 @@ public class WorkPosition {
         this.rgNetto = rgNetto;
     }
 
-    public String getKenRe2Sum() {
-        return kenRe2Sum;
+    public String getKenRe2sum() {
+        return kenRe2sum;
     }
 
-    public void setKenRe2Sum(String kenRe2Sum) {
-        this.kenRe2Sum = kenRe2Sum;
+    public void setKenRe2sum(String kenRe2sum) {
+        this.kenRe2sum = kenRe2sum;
     }
 
     public BigDecimal getUrsprFakHMon() {
@@ -580,22 +579,5 @@ public class WorkPosition {
 
     public void setRechnungstext(String rechnungstext) {
         this.rechnungstext = rechnungstext;
-    }
-
-    // Convenience methods for services
-    public String getOperationCode() {
-        return ag;
-    }
-
-    public String getDescription() {
-        return bez;
-    }
-
-    public BigDecimal getPrice() {
-        return preis;
-    }
-
-    public BigDecimal getInvoiceNet() {
-        return rgNetto;
     }
 }

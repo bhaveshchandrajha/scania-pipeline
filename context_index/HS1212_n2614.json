@@ -14,7 +14,7 @@
     }
   },
   "narrative": "### Node n2614: Procedure `loadTextGPT`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Raw sem JSON**:\n```json\n{}\n```",
-  "rpgSnippet": "     P loadTextGPT     B\n     D loadTextGPT     PI\n     D   start                        3  0 value\n     D*----------------------------------------------------------------\n       ZLT = 0;\n       exec sql\n          declare ct Cursor for select GPT_TXT\n            from HSGPTF\n            where GPT_KZL = :G71000 and GPT_CNR = :G71050 and\n                  GPT_FNR = :G7306A\n            order by GPT_ZNR;\n       exec sql open ct;\n       exec sql fetch next from ct into :record_t;\n       If SQLCOD = 100;\n          loadtextGps(start);\n          exec sql close ct;\n          If ZLT < start;\n             ZLT = start;\n          EndIf;\n          return;\n       EndIf;\n       DoW SQLCOD = 0;\n          TEXT = R_TXT;\n          ZLT += 1;\n          If ZLT > start;\n             write HS1212ST;\n          EndIf;\n          exec sql fetch next from ct into :record_t;\n       EndDo;\n       exec sql close ct;\n       If ZLT < start;\n          ZLT = start;\n       EndIf;\n     P                 E",
+  "rpgSnippet": "",
   "dbContracts": [],
   "symbolMetadata": {},
   "statementNodes": [

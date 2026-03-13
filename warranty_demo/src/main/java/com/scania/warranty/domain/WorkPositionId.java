@@ -54,8 +54,8 @@ public class WorkPositionId implements Serializable {
     public void setPos(Integer pos) { this.pos = pos; }
     public String getAg() { return ag; }
     public void setAg(String ag) { this.ag = ag; }
-    public String getLnr() { return lNr; }
-    public void setLnr(String lNr) { this.lNr = lNr; }
+    public String getlNr() { return lNr; }
+    public void setlNr(String lNr) { this.lNr = lNr; }
 
     @Override
     public boolean equals(Object o) {

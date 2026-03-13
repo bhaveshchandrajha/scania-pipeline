@@ -1,91 +1,98 @@
+/**
+ * Domain entity or value object for the warranty claims model.
+ * <p>
+ * Generated from RPG: unit {@code HS1210}, node {@code n1779}.
+ */
+
 package com.scania.warranty.domain;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Objects;
 
-/**
- * Composite primary key for {@link ClaimPosition} based on its natural key fields.
- * This is a temporary mapping until the final DB schema is available.
- */
 public class ClaimPositionId implements Serializable {
-
-    private String abbreviation;
-    private String claimNumber;
-    private String errorNumber;
-    private String sequenceNumber;
-    private BigDecimal lineNumber;
-
+    
+    private String kuerzel; // @rpg-trace: schema
+    private String claimNr; // @rpg-trace: schema
+    private String fehlerNr; // @rpg-trace: schema
+    private String folgeNr; // @rpg-trace: schema
+    private Integer zeile; // @rpg-trace: schema
+    private Integer aufteilung; // @rpg-trace: schema
+    
     public ClaimPositionId() {
     }
-
-    public ClaimPositionId(String abbreviation,
-                           String claimNumber,
-                           String errorNumber,
-                           String sequenceNumber,
-                           BigDecimal lineNumber) {
-        this.abbreviation = abbreviation;
-        this.claimNumber = claimNumber;
-        this.errorNumber = errorNumber;
-        this.sequenceNumber = sequenceNumber;
-        this.lineNumber = lineNumber;
+    
+    public ClaimPositionId(String kuerzel, String claimNr, String fehlerNr, String folgeNr, Integer zeile, Integer aufteilung) {
+        this.kuerzel = kuerzel;
+        this.claimNr = claimNr;
+        this.fehlerNr = fehlerNr;
+        this.folgeNr = folgeNr;
+        this.zeile = zeile;
+        this.aufteilung = aufteilung;
     }
-
-    public String getAbbreviation() {
-        return abbreviation;
+    
+    public String getKuerzel() {
+        return kuerzel;
     }
-
-    public void setAbbreviation(String abbreviation) {
-        this.abbreviation = abbreviation;
+    
+    public void setKuerzel(String kuerzel) {
+        this.kuerzel = kuerzel;
     }
-
-    public String getClaimNumber() {
-        return claimNumber;
+    
+    public String getClaimNr() {
+        return claimNr;
     }
-
-    public void setClaimNumber(String claimNumber) {
-        this.claimNumber = claimNumber;
+    
+    public void setClaimNr(String claimNr) {
+        this.claimNr = claimNr;
     }
-
-    public String getErrorNumber() {
-        return errorNumber;
+    
+    public String getFehlerNr() {
+        return fehlerNr;
     }
-
-    public void setErrorNumber(String errorNumber) {
-        this.errorNumber = errorNumber;
+    
+    public void setFehlerNr(String fehlerNr) {
+        this.fehlerNr = fehlerNr;
     }
-
-    public String getSequenceNumber() {
-        return sequenceNumber;
+    
+    public String getFolgeNr() {
+        return folgeNr;
     }
-
-    public void setSequenceNumber(String sequenceNumber) {
-        this.sequenceNumber = sequenceNumber;
+    
+    public void setFolgeNr(String folgeNr) {
+        this.folgeNr = folgeNr;
     }
-
-    public BigDecimal getLineNumber() {
-        return lineNumber;
+    
+    public Integer getZeile() {
+        return zeile;
     }
-
-    public void setLineNumber(BigDecimal lineNumber) {
-        this.lineNumber = lineNumber;
+    
+    public void setZeile(Integer zeile) {
+        this.zeile = zeile;
     }
-
+    
+    public Integer getAufteilung() {
+        return aufteilung;
+    }
+    
+    public void setAufteilung(Integer aufteilung) {
+        this.aufteilung = aufteilung;
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ClaimPositionId that = (ClaimPositionId) o;
-        return Objects.equals(abbreviation, that.abbreviation)
-                && Objects.equals(claimNumber, that.claimNumber)
-                && Objects.equals(errorNumber, that.errorNumber)
-                && Objects.equals(sequenceNumber, that.sequenceNumber)
-                && Objects.equals(lineNumber, that.lineNumber);
+        return Objects.equals(kuerzel, that.kuerzel) &&
+               Objects.equals(claimNr, that.claimNr) &&
+               Objects.equals(fehlerNr, that.fehlerNr) &&
+               Objects.equals(folgeNr, that.folgeNr) &&
+               Objects.equals(zeile, that.zeile) &&
+               Objects.equals(aufteilung, that.aufteilung);
     }
-
+    
     @Override
     public int hashCode() {
-        return Objects.hash(abbreviation, claimNumber, errorNumber, sequenceNumber, lineNumber);
+        return Objects.hash(kuerzel, claimNr, fehlerNr, folgeNr, zeile, aufteilung);
     }
 }
-

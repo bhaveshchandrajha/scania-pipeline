@@ -6,9 +6,11 @@
 
 package com.scania.warranty.service;
 
+import com.scania.warranty.domain.Claim;
 import com.scania.warranty.domain.ClaimError;
 import com.scania.warranty.dto.FailureCreationRequest;
 import com.scania.warranty.repository.ClaimErrorRepository;
+import com.scania.warranty.repository.ClaimRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,26 +24,37 @@ import java.util.List;
 public class ClaimFailureService {
 
     private final ClaimErrorRepository claimErrorRepository;
+    private final ClaimRepository claimRepository;
 
-    public ClaimFailureService(ClaimErrorRepository claimErrorRepository) {
+    public ClaimFailureService(ClaimErrorRepository claimErrorRepository, ClaimRepository claimRepository) {
         this.claimErrorRepository = claimErrorRepository;
+        this.claimRepository = claimRepository;
     }
 
     @Transactional
     public void createFailure(String companyCode, String claimNumber, FailureCreationRequest request) {
+        Claim claim = claimRepository.findByPakzAndClaimNr(companyCode, claimNumber)
+                .orElseThrow(() -> new IllegalArgumentException("Claim not found: " + companyCode + "/" + claimNumber));
+
         ClaimError error = new ClaimError();
 
-        error.setCompanyCode(companyCode);
-        error.setClaimNumber(claimNumber);
-        error.setErrorNumber(formatErrorNumber(request.failureNumber()));
-        error.setSequenceNumber("00");
+        // @origin HS1210 L887-887 (EVAL) - all composite key fields must be set
+        error.setPakz(companyCode);
+        error.setRechNr(claim.getRechNr() != null ? claim.getRechNr() : "");
+        error.setRechDatum(claim.getRechDatum() != null ? claim.getRechDatum() : "");
+        error.setAuftragsNr(claim.getAuftragsNr() != null ? claim.getAuftragsNr() : "");
+        error.setBereich(claim.getBereich() != null ? claim.getBereich() : "");
+        error.setClaimNr(claimNumber);
+        error.setFehlerNr(formatErrorNumber(request.failureNumber()));
+        error.setFolgeNr("00");
 
         String mainGroup = extractMainGroup(request.groups());
         String subGroup = extractSubGroup(request.groups());
-        error.setMainGroup(mainGroup);
-        error.setSubGroup(subGroup);
+        // @origin HS1210 L906-906 (EVAL)
+        error.setHauptgruppe(mainGroup);
+        error.setNebengruppe(subGroup);
 
-        error.setErrorPart(request.partNumber() != null ? request.partNumber() : "");
+        error.setFehlerTeil(request.partNumber() != null ? request.partNumber() : "");
 
         List<String> textLines = request.textLines();
         error.setText1(textLines.size() > 0 ? textLines.get(0) : "");
@@ -49,41 +62,37 @@ public class ClaimFailureService {
         error.setText3(textLines.size() > 2 ? textLines.get(2) : "");
         error.setText4(textLines.size() > 3 ? textLines.get(3) : "");
 
-        error.setRequestedMaterial(request.valueMaterial() != null ? request.valueMaterial() : BigDecimal.ZERO);
-        error.setRequestedLabor(request.valueLabor() != null ? request.valueLabor() : BigDecimal.ZERO);
-        error.setRequestedSpecial(request.valueSpecial() != null ? request.valueSpecial() : BigDecimal.ZERO);
+        error.setBeantrMat(request.valueMaterial() != null ? request.valueMaterial() : BigDecimal.ZERO);
+        error.setBeantrgArb(request.valueLabor() != null ? request.valueLabor() : BigDecimal.ZERO);
+        error.setBeantrgSpez(request.valueSpecial() != null ? request.valueSpecial() : BigDecimal.ZERO);
 
-        error.setInvoiceNumber("");
-        error.setInvoiceDate("");
-        error.setOrderNumber("");
-        error.setArea("");
-        error.setDamageCode1("");
-        error.setDamageCode2("");
-        error.setControlCode("");
-        error.setAssessmentCode1("");
-        error.setAssessmentCode2(0);
-        error.setAssessmentDate(0);
-        error.setCompensatedMaterial(0);
-        error.setCompensatedLabor(0);
-        error.setCompensatedSpecial(0);
-        error.setClaimType(0);
-        error.setPreviousRepairDate(0);
-        error.setPreviousMileage(0);
-        error.setFieldTestNumber(0);
-        error.setCampaignNumber("");
+        error.setSchadC1("");
+        error.setSchadC2("");
+        error.setSteuerCode("");
+        error.setBewCode1("");
+        error.setBewCode2(0);
+        error.setBewDatum(0);
+        error.setVergMat(0);
+        error.setVergArb(0);
+        error.setVergSpez(0);
+        error.setClaimArt(0);
+        error.setvRepDatum(0);
+        error.setvKmStand(0);
+        error.setFeldtestNr(0);
+        error.setKampagnenNr("");
         error.setEps("");
         error.setStatusCode(0);
         error.setVariantCode(0);
         error.setActionCode(0);
-        error.setErrorNumberSde("");
-        error.setAttachment("");
+        error.setFehlerNrSde("");
+        error.setAnhang("");
         error.setSource("");
         error.setComplain("");
         error.setSymptom("");
         error.setFailure("");
         error.setLocation("");
         error.setRepair("");
-        error.setResultCode("");
+        error.setErgCode("");
         error.setResult1("");
         error.setResult2("");
         error.setFault1("");
@@ -93,12 +102,12 @@ public class ClaimFailureService {
         error.setExplanation1("");
         error.setExplanation2("");
 
-        // @origin HS1210 L2877-2877 (WRITE)
+        // @origin HS1210 L860-860 (WRITE)
         claimErrorRepository.save(error);
     }
 
     private String formatErrorNumber(Integer failureNumber) {
-        // @origin HS1210 L2818-2831 (IF)
+        // @origin HS1210 L830-833 (IF)
         if (failureNumber == null || failureNumber == 0) {
             return "00";
         }

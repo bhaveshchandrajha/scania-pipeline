@@ -20,407 +20,407 @@ public class InvoiceHeader {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "PAKZ", length = 3)
-    private String companyCode;
+    @Column(name = "PAKZ", length = 3, nullable = false)
+    private String pakz; // @rpg-trace: schema
 
-    @Column(name = "RNR", length = 5)
-    private String invoiceNumber;
+    @Column(name = "RNR", length = 5, nullable = false)
+    private String rnr; // @rpg-trace: schema
 
-    @Column(name = "RG-NR. 10A", length = 10)
-    private String invoiceNumber10;
+    @Column(name = "RG-NR. 10A", length = 10, nullable = false)
+    private String rgNr10a; // @rpg-trace: schema
 
-    @Column(name = "RDAT", length = 8)
-    private String invoiceDate;
+    @Column(name = "RDAT", length = 8, nullable = false)
+    private String rdat; // @rpg-trace: schema
 
-    @Column(name = "KZ S", length = 1)
-    private String stornoIndicator;
+    @Column(name = "KZ S", length = 1, nullable = false)
+    private String kzS; // @rpg-trace: schema
 
-    @Column(name = "ANR", length = 5)
-    private String orderNumber;
+    @Column(name = "ANR", length = 5, nullable = false)
+    private String anr; // @rpg-trace: schema
 
-    @Column(name = "BEREI", length = 1)
-    private String department;
+    @Column(name = "BEREI", length = 1, nullable = false)
+    private String berei; // @rpg-trace: schema
 
-    @Column(name = "W/T", length = 1)
-    private String workshopTheke;
+    @Column(name = "W/T", length = 1, nullable = false)
+    private String wt; // @rpg-trace: schema
 
-    @Column(name = "SPLITT", length = 2)
-    private String split;
+    @Column(name = "SPLITT", length = 2, nullable = false)
+    private String splitt; // @rpg-trace: schema
 
-    @Column(name = "ADAT", length = 8)
-    private String orderDate;
+    @Column(name = "ADAT", length = 8, nullable = false)
+    private String adat; // @rpg-trace: schema
 
-    @Column(name = "ATEXT", length = 40)
-    private String orderText;
+    @Column(name = "ATEXT", length = 40, nullable = false)
+    private String atext; // @rpg-trace: schema
 
-    @Column(name = "L.RNR", length = 5)
-    private String lastInvoiceNumber;
+    @Column(name = "L.RNR", length = 5, nullable = false)
+    private String lrnr; // @rpg-trace: schema
 
-    @Column(name = "STO-BEZ-RE", length = 5)
-    private String stornoReferenceInvoice;
+    @Column(name = "STO-BEZ-RE", length = 5, nullable = false)
+    private String stoBezRe; // @rpg-trace: schema
 
-    @Column(name = "STO-BEZ-REDAT", length = 8)
-    private String stornoReferenceDate;
+    @Column(name = "STO-BEZ-REDAT", length = 8, nullable = false)
+    private String stoBezRedat; // @rpg-trace: schema
 
-    @Column(name = "KOR-BEZ-RE", length = 5)
-    private String correctionReferenceInvoice;
+    @Column(name = "KOR-BEZ-RE", length = 5, nullable = false)
+    private String korBezRe; // @rpg-trace: schema
 
-    @Column(name = "KOR-BEZ-REDAT", length = 8)
-    private String correctionReferenceDate;
+    @Column(name = "KOR-BEZ-REDAT", length = 8, nullable = false)
+    private String korBezRedat; // @rpg-trace: schema
 
-    @Column(name = "BFORT", length = 1)
-    private String carryForward;
+    @Column(name = "BFORT", length = 1, nullable = false)
+    private String bfort; // @rpg-trace: schema
 
-    @Column(name = "MWST Y/N", length = 1)
-    private String vatIndicator;
+    @Column(name = "MWST Y/N", length = 1, nullable = false)
+    private String mwstYn; // @rpg-trace: schema
 
-    @Column(name = "MWST %", precision = 5, scale = 2)
-    private BigDecimal vatPercent;
+    @Column(name = "MWST %", precision = 5, scale = 2, nullable = false)
+    private BigDecimal mwstPercent; // @rpg-trace: schema
 
-    @Column(name = "MWST % R.", precision = 5, scale = 2)
-    private BigDecimal vatPercentReduced;
+    @Column(name = "MWST % R.", precision = 5, scale = 2, nullable = false)
+    private BigDecimal mwstPercentR; // @rpg-trace: schema
 
-    @Column(name = "BA-SCHLÜSSEL", length = 2)
-    private String accountingKey;
+    @Column(name = "BA-SCHLÜSSEL", length = 2, nullable = false)
+    private String baSchluessel; // @rpg-trace: schema
 
-    @Column(name = "KST LOHN", length = 5)
-    private String costCenterLabor;
+    @Column(name = "KST LOHN", length = 5, nullable = false)
+    private String kstLohn; // @rpg-trace: schema
 
-    @Column(name = "KST TEILE", length = 5)
-    private String costCenterParts;
+    @Column(name = "KST TEILE", length = 5, nullable = false)
+    private String kstTeile; // @rpg-trace: schema
 
-    @Column(name = "FIBU MWST", length = 6)
-    private String glAccountVat;
+    @Column(name = "FIBU MWST", length = 6, nullable = false)
+    private String fibuMwst; // @rpg-trace: schema
 
-    @Column(name = "FIBU MWST AT", length = 6)
-    private String glAccountVatAustria;
+    @Column(name = "FIBU MWST AT", length = 6, nullable = false)
+    private String fibuMwstAt; // @rpg-trace: schema
 
-    @Column(name = "FIBU INTERIM", length = 6)
-    private String glAccountInterim;
+    @Column(name = "FIBU INTERIM", length = 6, nullable = false)
+    private String fibuInterim; // @rpg-trace: schema
 
-    @Column(name = "KTO INTAUF.", length = 6)
-    private String accountInternalOrder;
+    @Column(name = "KTO INTAUF.", length = 6, nullable = false)
+    private String ktoIntauf; // @rpg-trace: schema
 
-    @Column(name = "KTR INT AUF.", length = 7)
-    private String costCenterInternalOrder;
+    @Column(name = "KTR INT AUF.", length = 7, nullable = false)
+    private String ktrIntAuf; // @rpg-trace: schema
 
-    @Column(name = "KST INT AUF.", length = 5)
-    private String costCenterInternalOrderShort;
+    @Column(name = "KST INT AUF.", length = 5, nullable = false)
+    private String kstIntAuf; // @rpg-trace: schema
 
-    @Column(name = "SPEZ-CODE", length = 10)
-    private String specialCode;
+    @Column(name = "SPEZ-CODE", length = 10, nullable = false)
+    private String spezCode; // @rpg-trace: schema
 
-    @Column(name = "BRANCH", length = 3)
-    private String branch;
+    @Column(name = "BRANCH", length = 3, nullable = false)
+    private String branch; // @rpg-trace: schema
 
-    @Column(name = "PROD-CODE", length = 10)
-    private String productCode;
+    @Column(name = "PROD-CODE", length = 10, nullable = false)
+    private String prodCode; // @rpg-trace: schema
 
-    @Column(name = "PROJEKT", length = 10)
-    private String project;
+    @Column(name = "PROJEKT", length = 10, nullable = false)
+    private String projekt; // @rpg-trace: schema
 
-    @Column(name = "DOKUMENTENNUMMER", length = 20)
-    private String documentNumber;
+    @Column(name = "DOKUMENTENNUMMER", length = 20, nullable = false)
+    private String dokumentennummer; // @rpg-trace: schema
 
-    @Column(name = "KOSTENCODE KONZINT.", length = 3)
-    private String costCodeConcern;
+    @Column(name = "KOSTENCODE KONZINT.", length = 3, nullable = false)
+    private String kostencodeKonzint; // @rpg-trace: schema
 
-    @Column(name = "KUNDEN-NR.", length = 6)
-    private String customerNumber;
+    @Column(name = "KUNDEN-NR.", length = 6, nullable = false)
+    private String kundenNr; // @rpg-trace: schema
 
-    @Column(name = "ANREDE", length = 1)
-    private String salutation;
+    @Column(name = "ANREDE", length = 1, nullable = false)
+    private String anrede; // @rpg-trace: schema
 
-    @Column(name = "NAME", length = 30)
-    private String name;
+    @Column(name = "NAME", length = 30, nullable = false)
+    private String name; // @rpg-trace: schema
 
-    @Column(name = "BRANCHE", length = 25)
-    private String industry;
+    @Column(name = "BRANCHE", length = 25, nullable = false)
+    private String branche; // @rpg-trace: schema
 
-    @Column(name = "MATCH", length = 5)
-    private String matchCode;
+    @Column(name = "MATCH", length = 5, nullable = false)
+    private String match; // @rpg-trace: schema
 
-    @Column(name = "STRASSE", length = 25)
-    private String street;
+    @Column(name = "STRASSE", length = 25, nullable = false)
+    private String strasse; // @rpg-trace: schema
 
-    @Column(name = "LAND", length = 3)
-    private String country;
+    @Column(name = "LAND", length = 3, nullable = false)
+    private String land; // @rpg-trace: schema
 
-    @Column(name = "PLZ", length = 5)
-    private String postalCode;
+    @Column(name = "PLZ", length = 5, nullable = false)
+    private String plz; // @rpg-trace: schema
 
-    @Column(name = "ORT", length = 20)
-    private String city;
+    @Column(name = "ORT", length = 20, nullable = false)
+    private String ort; // @rpg-trace: schema
 
-    @Column(name = "TELEFON", length = 17)
-    private String phone;
+    @Column(name = "TELEFON", length = 17, nullable = false)
+    private String telefon; // @rpg-trace: schema
 
-    @Column(name = "BESTELLER KUNDE", length = 20)
-    private String orderingCustomer;
+    @Column(name = "BESTELLER KUNDE", length = 20, nullable = false)
+    private String bestellerKunde; // @rpg-trace: schema
 
-    @Column(name = "VALUTA", length = 1)
-    private String currency;
+    @Column(name = "VALUTA", length = 1, nullable = false)
+    private String valuta; // @rpg-trace: schema
 
-    @Column(name = "BONIT#T", length = 1)
-    private String creditRating;
+    @Column(name = "BONIT#T", length = 1, nullable = false)
+    private String bonitaet; // @rpg-trace: schema
 
-    @Column(name = "ZAHLUNGSART", length = 1)
-    private String paymentMethod;
+    @Column(name = "ZAHLUNGSART", length = 1, nullable = false)
+    private String zahlungsart; // @rpg-trace: schema
 
-    @Column(name = "RC", length = 3)
-    private String responsibilityCenter;
+    @Column(name = "RC", length = 3, nullable = false)
+    private String rc; // @rpg-trace: schema
 
-    @Column(name = "RE KUNDEN-NR.", length = 6)
-    private String invoiceCustomerNumber;
+    @Column(name = "RE KUNDEN-NR.", length = 6, nullable = false)
+    private String reKundenNr; // @rpg-trace: schema
 
-    @Column(name = "RE ANREDE", length = 1)
-    private String invoiceSalutation;
+    @Column(name = "RE ANREDE", length = 1, nullable = false)
+    private String reAnrede; // @rpg-trace: schema
 
-    @Column(name = "RE NAME", length = 30)
-    private String invoiceName;
+    @Column(name = "RE NAME", length = 30, nullable = false)
+    private String reName; // @rpg-trace: schema
 
-    @Column(name = "RE BRANCHE", length = 25)
-    private String invoiceIndustry;
+    @Column(name = "RE BRANCHE", length = 25, nullable = false)
+    private String reBranche; // @rpg-trace: schema
 
-    @Column(name = "RE MATCH", length = 5)
-    private String invoiceMatchCode;
+    @Column(name = "RE MATCH", length = 5, nullable = false)
+    private String reMatch; // @rpg-trace: schema
 
-    @Column(name = "RE STRASSE", length = 25)
-    private String invoiceStreet;
+    @Column(name = "RE STRASSE", length = 25, nullable = false)
+    private String reStrasse; // @rpg-trace: schema
 
-    @Column(name = "RE LAND", length = 3)
-    private String invoiceCountry;
+    @Column(name = "RE LAND", length = 3, nullable = false)
+    private String reland; // @rpg-trace: schema
 
-    @Column(name = "RE PLZ", length = 5)
-    private String invoicePostalCode;
+    @Column(name = "RE PLZ", length = 5, nullable = false)
+    private String rePlz; // @rpg-trace: schema
 
-    @Column(name = "RE ORT", length = 20)
-    private String invoiceCity;
+    @Column(name = "RE ORT", length = 20, nullable = false)
+    private String reOrt; // @rpg-trace: schema
 
-    @Column(name = "RE TELE.", length = 17)
-    private String invoicePhone;
+    @Column(name = "RE TELE.", length = 17, nullable = false)
+    private String reTele; // @rpg-trace: schema
 
-    @Column(name = "RE VALUTA", length = 1)
-    private String invoiceCurrency;
+    @Column(name = "RE VALUTA", length = 1, nullable = false)
+    private String reValuta; // @rpg-trace: schema
 
-    @Column(name = "RE BONIT#T", length = 1)
-    private String invoiceCreditRating;
+    @Column(name = "RE BONIT#T", length = 1, nullable = false)
+    private String reBonitaet; // @rpg-trace: schema
 
-    @Column(name = "RE ZART", length = 1)
-    private String invoicePaymentMethod;
+    @Column(name = "RE ZART", length = 1, nullable = false)
+    private String reZart; // @rpg-trace: schema
 
-    @Column(name = "RE RC", length = 3)
-    private String invoiceResponsibilityCenter;
+    @Column(name = "RE RC", length = 3, nullable = false)
+    private String reRc; // @rpg-trace: schema
 
-    @Column(name = "UST-ID-NR/OK", length = 20)
-    private String vatIdNumber;
+    @Column(name = "UST-ID-NR/OK", length = 20, nullable = false)
+    private String ustIdNrOk; // @rpg-trace: schema
 
-    @Column(name = "FAHRG.-NR.", length = 17)
-    private String vehicleNumber;
+    @Column(name = "FAHRG.-NR.", length = 17, nullable = false)
+    private String fahrgnr; // @rpg-trace: schema
 
-    @Column(name = "KZ", length = 12)
-    private String licensePlate;
+    @Column(name = "KZ", length = 12, nullable = false)
+    private String kz; // @rpg-trace: schema
 
-    @Column(name = "TYP", length = 15)
-    private String vehicleType;
+    @Column(name = "TYP", length = 15, nullable = false)
+    private String typ; // @rpg-trace: schema
 
-    @Column(name = "BJ", length = 4)
-    private String buildYear;
+    @Column(name = "BJ", length = 4, nullable = false)
+    private String bj; // @rpg-trace: schema
 
-    @Column(name = "ZDAT", length = 8)
-    private String registrationDate;
+    @Column(name = "ZDAT", length = 8, nullable = false)
+    private String zdat; // @rpg-trace: schema
 
-    @Column(name = "WRG.", length = 3)
-    private String warrantyGroup;
+    @Column(name = "WRG.", length = 3, nullable = false)
+    private String wrg; // @rpg-trace: schema
 
-    @Column(name = "AU", length = 6)
-    private String inspectionDate;
+    @Column(name = "AU", length = 6, nullable = false)
+    private String au; // @rpg-trace: schema
 
-    @Column(name = "GA", length = 8)
-    private String warrantyDate;
+    @Column(name = "GA", length = 8, nullable = false)
+    private String ga; // @rpg-trace: schema
 
-    @Column(name = "SP", length = 6)
-    private String servicePackage;
+    @Column(name = "SP", length = 6, nullable = false)
+    private String sp; // @rpg-trace: schema
 
-    @Column(name = "TACHO", length = 8)
-    private String odometer;
+    @Column(name = "TACHO", length = 8, nullable = false)
+    private String tacho; // @rpg-trace: schema
 
-    @Column(name = "KM", length = 8)
-    private String mileage;
+    @Column(name = "KM", length = 8, nullable = false)
+    private String km; // @rpg-trace: schema
 
-    @Column(name = "HU", length = 6)
-    private String mainInspection;
+    @Column(name = "HU", length = 6, nullable = false)
+    private String hu; // @rpg-trace: schema
 
-    @Column(name = "AN-TAG", length = 8)
-    private String acceptanceDate;
+    @Column(name = "AN-TAG", length = 8, nullable = false)
+    private String anTag; // @rpg-trace: schema
 
-    @Column(name = "AN-ZEIT", length = 4)
-    private String acceptanceTime;
+    @Column(name = "AN-ZEIT", length = 4, nullable = false)
+    private String anZeit; // @rpg-trace: schema
 
-    @Column(name = "FERT-TAG", length = 8)
-    private String completionDate;
+    @Column(name = "FERT-TAG", length = 8, nullable = false)
+    private String fertTag; // @rpg-trace: schema
 
-    @Column(name = "FERT-ZEIT", length = 4)
-    private String completionTime;
+    @Column(name = "FERT-ZEIT", length = 4, nullable = false)
+    private String fertZeit; // @rpg-trace: schema
 
-    @Column(name = "BERATER", length = 20)
-    private String advisor;
+    @Column(name = "BERATER", length = 20, nullable = false)
+    private String berater; // @rpg-trace: schema
 
-    @Column(name = "LEITZAHL", length = 3)
-    private String routingNumber;
+    @Column(name = "LEITZAHL", length = 3, nullable = false)
+    private String leitzahl; // @rpg-trace: schema
 
-    @Column(name = "TX.ANF", length = 3)
-    private String textStart;
+    @Column(name = "TX.ANF", length = 3, nullable = false)
+    private String txAnf; // @rpg-trace: schema
 
-    @Column(name = "TX.ENDE", length = 3)
-    private String textEnd;
+    @Column(name = "TX.ENDE", length = 3, nullable = false)
+    private String txEnde; // @rpg-trace: schema
 
-    @Column(name = "MOTOR-NR", length = 10)
-    private String engineNumber;
+    @Column(name = "MOTOR-NR", length = 10, nullable = false)
+    private String motornr; // @rpg-trace: schema
 
-    @Column(name = "MOTOR-TYP", length = 20)
-    private String engineType;
+    @Column(name = "MOTOR-TYP", length = 20, nullable = false)
+    private String motorTyp; // @rpg-trace: schema
 
-    @Column(name = "USER AUFTRAG", length = 10)
-    private String userOrder;
+    @Column(name = "USER AUFTRAG", length = 10, nullable = false)
+    private String userAuftrag; // @rpg-trace: schema
 
-    @Column(name = "USER RECHNUNG", length = 10)
-    private String userInvoice;
+    @Column(name = "USER RECHNUNG", length = 10, nullable = false)
+    private String userRechnung; // @rpg-trace: schema
 
-    @Column(name = "RGS NETTO", precision = 9, scale = 2)
-    private BigDecimal invoiceNetAmount;
+    @Column(name = "RGS NETTO", precision = 9, scale = 2, nullable = false)
+    private BigDecimal rgsNetto; // @rpg-trace: schema
 
-    @Column(name = "RGS BASIS AT", precision = 9, scale = 2)
-    private BigDecimal invoiceBasisAustria;
+    @Column(name = "RGS BASIS AT", precision = 9, scale = 2, nullable = false)
+    private BigDecimal rgsBasisAt; // @rpg-trace: schema
 
-    @Column(name = "RGS BASIS MWST", precision = 9, scale = 2)
-    private BigDecimal invoiceBasisVat;
+    @Column(name = "RGS BASIS MWST", precision = 9, scale = 2, nullable = false)
+    private BigDecimal rgsBasisMwst; // @rpg-trace: schema
 
-    @Column(name = "RGS MWST", precision = 9, scale = 2)
-    private BigDecimal invoiceVatAmount;
+    @Column(name = "RGS MWST", precision = 9, scale = 2, nullable = false)
+    private BigDecimal rgsMwst; // @rpg-trace: schema
 
-    @Column(name = "RGS MWST AT", precision = 9, scale = 2)
-    private BigDecimal invoiceVatAmountAustria;
+    @Column(name = "RGS MWST AT", precision = 9, scale = 2, nullable = false)
+    private BigDecimal rgsMwstAt; // @rpg-trace: schema
 
-    @Column(name = "RGS GES BRUTTO", precision = 9, scale = 2)
-    private BigDecimal invoiceGrossAmount;
+    @Column(name = "RGS GES BRUTTO", precision = 9, scale = 2, nullable = false)
+    private BigDecimal rgsGesBrutto; // @rpg-trace: schema
 
-    @Column(name = "EG-UMSATZ", length = 1)
-    private String euSales;
+    @Column(name = "EG-UMSATZ", length = 1, nullable = false)
+    private String egUmsatz; // @rpg-trace: schema
 
-    @Column(name = "STEUERFREI DRITTLAND", length = 1)
-    private String taxFreeThirdCountry;
+    @Column(name = "STEUERFREI DRITTLAND", length = 1, nullable = false)
+    private String steuerfreiDrittland; // @rpg-trace: schema
 
-    @Column(name = "VERBUCHT?", length = 1)
-    private String posted;
+    @Column(name = "VERBUCHT?", length = 1, nullable = false)
+    private String verbucht; // @rpg-trace: schema
 
-    @Column(name = "RESERVE1", precision = 5, scale = 2)
-    private BigDecimal reserve1;
+    @Column(name = "RESERVE1", precision = 5, scale = 2, nullable = false)
+    private BigDecimal reserve1; // @rpg-trace: schema (was RESERVE)
 
-    @Column(name = "RESERVE2", precision = 9, scale = 2)
-    private BigDecimal reserve2;
+    @Column(name = "RESERVE2", precision = 9, scale = 2, nullable = false)
+    private BigDecimal reserve2; // @rpg-trace: schema (was RESERVE)
 
-    @Column(name = "GA-ÜBERN.", length = 8)
-    private String warrantyTakeover;
+    @Column(name = "GA-ÜBERN.", length = 8, nullable = false)
+    private String gaUebern; // @rpg-trace: schema
 
-    @Column(name = "WKT-ID", precision = 9, scale = 0)
-    private Integer workshopId;
+    @Column(name = "WKT-ID", precision = 9, scale = 0, nullable = false)
+    private Integer wktId; // @rpg-trace: schema
 
-    @Column(name = "RESERVE3", precision = 2, scale = 0)
-    private Integer reserve3;
+    @Column(name = "RESERVE3", precision = 2, scale = 0, nullable = false)
+    private Integer reserve3; // @rpg-trace: schema (was RESERVE)
 
-    @Column(name = "RESERVE4", precision = 2, scale = 0)
-    private Integer reserve4;
+    @Column(name = "RESERVE4", precision = 2, scale = 0, nullable = false)
+    private Integer reserve4; // @rpg-trace: schema (was RESERVE)
 
-    @Column(name = "F:V>0", precision = 3, scale = 0)
-    private Integer fvGreaterZero;
+    @Column(name = "F:V>0", precision = 3, scale = 0, nullable = false)
+    private Integer fvGt0; // @rpg-trace: schema
 
-    @Column(name = "F:B>0", precision = 3, scale = 0)
-    private Integer fbGreaterZero;
+    @Column(name = "F:B>0", precision = 3, scale = 0, nullable = false)
+    private Integer fbGt0; // @rpg-trace: schema
 
-    @Column(name = "KAMPAGNE-NR", precision = 6, scale = 0)
-    private Integer campaignNumber;
+    @Column(name = "KAMPAGNE-NR", precision = 6, scale = 0, nullable = false)
+    private Integer kampagneNr; // @rpg-trace: schema
 
-    @Column(name = "SPO ORDER", length = 10)
-    private String spoOrder;
+    @Column(name = "SPO ORDER", length = 10, nullable = false)
+    private String spoOrder; // @rpg-trace: schema
 
-    @Column(name = "KEN-AV", length = 2)
-    private String kenAv;
+    @Column(name = "KEN-AV", length = 2, nullable = false)
+    private String kenAv; // @rpg-trace: schema
 
-    @Column(name = "KEN-PE", length = 2)
-    private String kenPe;
+    @Column(name = "KEN-PE", length = 2, nullable = false)
+    private String kenPe; // @rpg-trace: schema
 
-    @Column(name = "KLR-BERECH", length = 1)
-    private String costCalculation;
+    @Column(name = "KLR-BERECH", length = 1, nullable = false)
+    private String klrBerech; // @rpg-trace: schema
 
-    @Column(name = "KLR-BETRAG", precision = 5, scale = 2)
-    private BigDecimal costAmount;
+    @Column(name = "KLR-BETRAG", precision = 5, scale = 2, nullable = false)
+    private BigDecimal klrBetrag; // @rpg-trace: schema
 
-    @Column(name = "ASSI-VORGANG-NR", length = 15)
-    private String assistanceProcessNumber;
+    @Column(name = "ASSI-VORGANG-NR", length = 15, nullable = false)
+    private String assiVorgangNr; // @rpg-trace: schema
 
-    @Column(name = "ZAGA-GUELTIG", length = 8)
-    private String additionalWarrantyValid;
+    @Column(name = "ZAGA-GUELTIG", length = 8, nullable = false)
+    private String zagaGueltig; // @rpg-trace: schema
 
-    @Column(name = "R&W FREIGABE-NR", length = 15)
-    private String rwReleaseNumber;
+    @Column(name = "R&W FREIGABE-NR", length = 15, nullable = false)
+    private String rwFreigabeNr; // @rpg-trace: schema
 
-    @Column(name = "KL-ERWEITERUNG", precision = 5, scale = 0)
-    private Integer goodwillExtension;
+    @Column(name = "KL-ERWEITERUNG", precision = 5, scale = 0, nullable = false)
+    private Integer klErweiterung; // @rpg-trace: schema
 
-    @Column(name = "KL-AUSNAHME IDNR", length = 3)
-    private String goodwillExceptionId;
+    @Column(name = "KL-AUSNAHME IDNR", length = 3, nullable = false)
+    private String klAusnahmeIdnr; // @rpg-trace: schema
 
-    @Column(name = "KL-AUSNAHME KLARTEXT", length = 40)
-    private String goodwillExceptionText;
+    @Column(name = "KL-AUSNAHME KLARTEXT", length = 40, nullable = false)
+    private String klAusnahmeKlartext; // @rpg-trace: schema
 
-    @Column(name = "FAHRZEUG-ART", length = 20)
-    private String vehicleCategory;
+    @Column(name = "FAHRZEUG-ART", length = 20, nullable = false)
+    private String fahrzeugArt; // @rpg-trace: schema
 
-    @Column(name = "HERSTELLER", length = 20)
-    private String manufacturer;
+    @Column(name = "HERSTELLER", length = 20, nullable = false)
+    private String hersteller; // @rpg-trace: schema
 
-    @Column(name = "AUFBAUART", length = 20)
-    private String bodyType;
+    @Column(name = "AUFBAUART", length = 20, nullable = false)
+    private String aufbauart; // @rpg-trace: schema
 
-    @Column(name = "HERSTELLER AUFBAU", length = 20)
-    private String bodyManufacturer;
+    @Column(name = "HERSTELLER AUFBAU", length = 20, nullable = false)
+    private String herstellerAufbau; // @rpg-trace: schema
 
-    @Column(name = "ZUSATZAUSRÜSTUNG 1", length = 20)
-    private String additionalEquipment1;
+    @Column(name = "ZUSATZAUSRÜSTUNG 1", length = 20, nullable = false)
+    private String zusatzausruestung1; // @rpg-trace: schema
 
-    @Column(name = "HERSTELLER ZUSATZ 1", length = 20)
-    private String additionalEquipmentManufacturer1;
+    @Column(name = "HERSTELLER ZUSATZ 1", length = 20, nullable = false)
+    private String herstellerZusatz1; // @rpg-trace: schema
 
-    @Column(name = "ZUSATZAUSRÜSTUNG 2", length = 20)
-    private String additionalEquipment2;
+    @Column(name = "ZUSATZAUSRÜSTUNG 2", length = 20, nullable = false)
+    private String zusatzausruestung2; // @rpg-trace: schema
 
-    @Column(name = "HERSTELLER ZUSATZ 2", length = 20)
-    private String additionalEquipmentManufacturer2;
+    @Column(name = "HERSTELLER ZUSATZ 2", length = 20, nullable = false)
+    private String herstellerZusatz2; // @rpg-trace: schema
 
-    @Column(name = "ZUSATZAUSRÜSTUNG 3", length = 20)
-    private String additionalEquipment3;
+    @Column(name = "ZUSATZAUSRÜSTUNG 3", length = 20, nullable = false)
+    private String zusatzausruestung3; // @rpg-trace: schema
 
-    @Column(name = "HERSTELLER ZUSATZ 3", length = 20)
-    private String additionalEquipmentManufacturer3;
+    @Column(name = "HERSTELLER ZUSATZ 3", length = 20, nullable = false)
+    private String herstellerZusatz3; // @rpg-trace: schema
 
-    @Column(name = "EINSATZART", length = 20)
-    private String usageType;
+    @Column(name = "EINSATZART", length = 20, nullable = false)
+    private String einsatzart; // @rpg-trace: schema
 
-    @Column(name = "EURO-NORM", length = 10)
-    private String euroNorm;
+    @Column(name = "EURO-NORM", length = 10, nullable = false)
+    private String euroNorm; // @rpg-trace: schema
 
-    @Column(name = "PARTIKELFILTER", length = 1)
-    private String particleFilter;
+    @Column(name = "PARTIKELFILTER", length = 1, nullable = false)
+    private String partikelfilter; // @rpg-trace: schema
 
-    @Column(name = "IS-ART", length = 5)
-    private String isType;
+    @Column(name = "IS-ART", length = 5, nullable = false)
+    private String isArt; // @rpg-trace: schema
 
-    @Column(name = "MAIL TO", length = 200)
-    private String mailTo;
+    @Column(name = "MAIL TO", length = 200, nullable = false)
+    private String mailTo; // @rpg-trace: schema
 
-    @Column(name = "MAIL CC", length = 200)
-    private String mailCc;
+    @Column(name = "MAIL CC", length = 200, nullable = false)
+    private String mailCc; // @rpg-trace: schema
 
     public InvoiceHeader() {
     }
@@ -434,244 +434,244 @@ public class InvoiceHeader {
         this.id = id;
     }
 
-    public String getCompanyCode() {
-        return companyCode;
+    public String getPakz() {
+        return pakz;
     }
 
-    public void setCompanyCode(String companyCode) {
-        this.companyCode = companyCode;
+    public void setPakz(String pakz) {
+        this.pakz = pakz;
     }
 
-    public String getInvoiceNumber() {
-        return invoiceNumber;
+    public String getRnr() {
+        return rnr;
     }
 
-    public void setInvoiceNumber(String invoiceNumber) {
-        this.invoiceNumber = invoiceNumber;
+    public void setRnr(String rnr) {
+        this.rnr = rnr;
     }
 
-    public String getInvoiceNumber10() {
-        return invoiceNumber10;
+    public String getRgNr10a() {
+        return rgNr10a;
     }
 
-    public void setInvoiceNumber10(String invoiceNumber10) {
-        this.invoiceNumber10 = invoiceNumber10;
+    public void setRgNr10a(String rgNr10a) {
+        this.rgNr10a = rgNr10a;
     }
 
-    public String getInvoiceDate() {
-        return invoiceDate;
+    public String getRdat() {
+        return rdat;
     }
 
-    public void setInvoiceDate(String invoiceDate) {
-        this.invoiceDate = invoiceDate;
+    public void setRdat(String rdat) {
+        this.rdat = rdat;
     }
 
-    public String getStornoIndicator() {
-        return stornoIndicator;
+    public String getKzS() {
+        return kzS;
     }
 
-    public void setStornoIndicator(String stornoIndicator) {
-        this.stornoIndicator = stornoIndicator;
+    public void setKzS(String kzS) {
+        this.kzS = kzS;
     }
 
-    public String getOrderNumber() {
-        return orderNumber;
+    public String getAnr() {
+        return anr;
     }
 
-    public void setOrderNumber(String orderNumber) {
-        this.orderNumber = orderNumber;
+    public void setAnr(String anr) {
+        this.anr = anr;
     }
 
-    public String getDepartment() {
-        return department;
+    public String getBerei() {
+        return berei;
     }
 
-    public void setDepartment(String department) {
-        this.department = department;
+    public void setBerei(String berei) {
+        this.berei = berei;
     }
 
-    public String getWorkshopTheke() {
-        return workshopTheke;
+    public String getWt() {
+        return wt;
     }
 
-    public void setWorkshopTheke(String workshopTheke) {
-        this.workshopTheke = workshopTheke;
+    public void setWt(String wt) {
+        this.wt = wt;
     }
 
-    public String getSplit() {
-        return split;
+    public String getSplitt() {
+        return splitt;
     }
 
-    public void setSplit(String split) {
-        this.split = split;
+    public void setSplitt(String splitt) {
+        this.splitt = splitt;
     }
 
-    public String getOrderDate() {
-        return orderDate;
+    public String getAdat() {
+        return adat;
     }
 
-    public void setOrderDate(String orderDate) {
-        this.orderDate = orderDate;
+    public void setAdat(String adat) {
+        this.adat = adat;
     }
 
-    public String getOrderText() {
-        return orderText;
+    public String getAtext() {
+        return atext;
     }
 
-    public void setOrderText(String orderText) {
-        this.orderText = orderText;
+    public void setAtext(String atext) {
+        this.atext = atext;
     }
 
-    public String getLastInvoiceNumber() {
-        return lastInvoiceNumber;
+    public String getLrnr() {
+        return lrnr;
     }
 
-    public void setLastInvoiceNumber(String lastInvoiceNumber) {
-        this.lastInvoiceNumber = lastInvoiceNumber;
+    public void setLrnr(String lrnr) {
+        this.lrnr = lrnr;
     }
 
-    public String getStornoReferenceInvoice() {
-        return stornoReferenceInvoice;
+    public String getStoBezRe() {
+        return stoBezRe;
     }
 
-    public void setStornoReferenceInvoice(String stornoReferenceInvoice) {
-        this.stornoReferenceInvoice = stornoReferenceInvoice;
+    public void setStoBezRe(String stoBezRe) {
+        this.stoBezRe = stoBezRe;
     }
 
-    public String getStornoReferenceDate() {
-        return stornoReferenceDate;
+    public String getStoBezRedat() {
+        return stoBezRedat;
     }
 
-    public void setStornoReferenceDate(String stornoReferenceDate) {
-        this.stornoReferenceDate = stornoReferenceDate;
+    public void setStoBezRedat(String stoBezRedat) {
+        this.stoBezRedat = stoBezRedat;
     }
 
-    public String getCorrectionReferenceInvoice() {
-        return correctionReferenceInvoice;
+    public String getKorBezRe() {
+        return korBezRe;
     }
 
-    public void setCorrectionReferenceInvoice(String correctionReferenceInvoice) {
-        this.correctionReferenceInvoice = correctionReferenceInvoice;
+    public void setKorBezRe(String korBezRe) {
+        this.korBezRe = korBezRe;
     }
 
-    public String getCorrectionReferenceDate() {
-        return correctionReferenceDate;
+    public String getKorBezRedat() {
+        return korBezRedat;
     }
 
-    public void setCorrectionReferenceDate(String correctionReferenceDate) {
-        this.correctionReferenceDate = correctionReferenceDate;
+    public void setKorBezRedat(String korBezRedat) {
+        this.korBezRedat = korBezRedat;
     }
 
-    public String getCarryForward() {
-        return carryForward;
+    public String getBfort() {
+        return bfort;
     }
 
-    public void setCarryForward(String carryForward) {
-        this.carryForward = carryForward;
+    public void setBfort(String bfort) {
+        this.bfort = bfort;
     }
 
-    public String getVatIndicator() {
-        return vatIndicator;
+    public String getMwstYn() {
+        return mwstYn;
     }
 
-    public void setVatIndicator(String vatIndicator) {
-        this.vatIndicator = vatIndicator;
+    public void setMwstYn(String mwstYn) {
+        this.mwstYn = mwstYn;
     }
 
-    public BigDecimal getVatPercent() {
-        return vatPercent;
+    public BigDecimal getMwstPercent() {
+        return mwstPercent;
     }
 
-    public void setVatPercent(BigDecimal vatPercent) {
-        this.vatPercent = vatPercent;
+    public void setMwstPercent(BigDecimal mwstPercent) {
+        this.mwstPercent = mwstPercent;
     }
 
-    public BigDecimal getVatPercentReduced() {
-        return vatPercentReduced;
+    public BigDecimal getMwstPercentR() {
+        return mwstPercentR;
     }
 
-    public void setVatPercentReduced(BigDecimal vatPercentReduced) {
-        this.vatPercentReduced = vatPercentReduced;
+    public void setMwstPercentR(BigDecimal mwstPercentR) {
+        this.mwstPercentR = mwstPercentR;
     }
 
-    public String getAccountingKey() {
-        return accountingKey;
+    public String getBaSchluessel() {
+        return baSchluessel;
     }
 
-    public void setAccountingKey(String accountingKey) {
-        this.accountingKey = accountingKey;
+    public void setBaSchluessel(String baSchluessel) {
+        this.baSchluessel = baSchluessel;
     }
 
-    public String getCostCenterLabor() {
-        return costCenterLabor;
+    public String getKstLohn() {
+        return kstLohn;
     }
 
-    public void setCostCenterLabor(String costCenterLabor) {
-        this.costCenterLabor = costCenterLabor;
+    public void setKstLohn(String kstLohn) {
+        this.kstLohn = kstLohn;
     }
 
-    public String getCostCenterParts() {
-        return costCenterParts;
+    public String getKstTeile() {
+        return kstTeile;
     }
 
-    public void setCostCenterParts(String costCenterParts) {
-        this.costCenterParts = costCenterParts;
+    public void setKstTeile(String kstTeile) {
+        this.kstTeile = kstTeile;
     }
 
-    public String getGlAccountVat() {
-        return glAccountVat;
+    public String getFibuMwst() {
+        return fibuMwst;
     }
 
-    public void setGlAccountVat(String glAccountVat) {
-        this.glAccountVat = glAccountVat;
+    public void setFibuMwst(String fibuMwst) {
+        this.fibuMwst = fibuMwst;
     }
 
-    public String getGlAccountVatAustria() {
-        return glAccountVatAustria;
+    public String getFibuMwstAt() {
+        return fibuMwstAt;
     }
 
-    public void setGlAccountVatAustria(String glAccountVatAustria) {
-        this.glAccountVatAustria = glAccountVatAustria;
+    public void setFibuMwstAt(String fibuMwstAt) {
+        this.fibuMwstAt = fibuMwstAt;
     }
 
-    public String getGlAccountInterim() {
-        return glAccountInterim;
+    public String getFibuInterim() {
+        return fibuInterim;
     }
 
-    public void setGlAccountInterim(String glAccountInterim) {
-        this.glAccountInterim = glAccountInterim;
+    public void setFibuInterim(String fibuInterim) {
+        this.fibuInterim = fibuInterim;
     }
 
-    public String getAccountInternalOrder() {
-        return accountInternalOrder;
+    public String getKtoIntauf() {
+        return ktoIntauf;
     }
 
-    public void setAccountInternalOrder(String accountInternalOrder) {
-        this.accountInternalOrder = accountInternalOrder;
+    public void setKtoIntauf(String ktoIntauf) {
+        this.ktoIntauf = ktoIntauf;
     }
 
-    public String getCostCenterInternalOrder() {
-        return costCenterInternalOrder;
+    public String getKtrIntAuf() {
+        return ktrIntAuf;
     }
 
-    public void setCostCenterInternalOrder(String costCenterInternalOrder) {
-        this.costCenterInternalOrder = costCenterInternalOrder;
+    public void setKtrIntAuf(String ktrIntAuf) {
+        this.ktrIntAuf = ktrIntAuf;
     }
 
-    public String getCostCenterInternalOrderShort() {
-        return costCenterInternalOrderShort;
+    public String getKstIntAuf() {
+        return kstIntAuf;
     }
 
-    public void setCostCenterInternalOrderShort(String costCenterInternalOrderShort) {
-        this.costCenterInternalOrderShort = costCenterInternalOrderShort;
+    public void setKstIntAuf(String kstIntAuf) {
+        this.kstIntAuf = kstIntAuf;
     }
 
-    public String getSpecialCode() {
-        return specialCode;
+    public String getSpezCode() {
+        return spezCode;
     }
 
-    public void setSpecialCode(String specialCode) {
-        this.specialCode = specialCode;
+    public void setSpezCode(String spezCode) {
+        this.spezCode = spezCode;
     }
 
     public String getBranch() {
@@ -682,52 +682,52 @@ public class InvoiceHeader {
         this.branch = branch;
     }
 
-    public String getProductCode() {
-        return productCode;
+    public String getProdCode() {
+        return prodCode;
     }
 
-    public void setProductCode(String productCode) {
-        this.productCode = productCode;
+    public void setProdCode(String prodCode) {
+        this.prodCode = prodCode;
     }
 
-    public String getProject() {
-        return project;
+    public String getProjekt() {
+        return projekt;
     }
 
-    public void setProject(String project) {
-        this.project = project;
+    public void setProjekt(String projekt) {
+        this.projekt = projekt;
     }
 
-    public String getDocumentNumber() {
-        return documentNumber;
+    public String getDokumentennummer() {
+        return dokumentennummer;
     }
 
-    public void setDocumentNumber(String documentNumber) {
-        this.documentNumber = documentNumber;
+    public void setDokumentennummer(String dokumentennummer) {
+        this.dokumentennummer = dokumentennummer;
     }
 
-    public String getCostCodeConcern() {
-        return costCodeConcern;
+    public String getKostencodeKonzint() {
+        return kostencodeKonzint;
     }
 
-    public void setCostCodeConcern(String costCodeConcern) {
-        this.costCodeConcern = costCodeConcern;
+    public void setKostencodeKonzint(String kostencodeKonzint) {
+        this.kostencodeKonzint = kostencodeKonzint;
     }
 
-    public String getCustomerNumber() {
-        return customerNumber;
+    public String getKundenNr() {
+        return kundenNr;
     }
 
-    public void setCustomerNumber(String customerNumber) {
-        this.customerNumber = customerNumber;
+    public void setKundenNr(String kundenNr) {
+        this.kundenNr = kundenNr;
     }
 
-    public String getSalutation() {
-        return salutation;
+    public String getAnrede() {
+        return anrede;
     }
 
-    public void setSalutation(String salutation) {
-        this.salutation = salutation;
+    public void setAnrede(String anrede) {
+        this.anrede = anrede;
     }
 
     public String getName() {
@@ -738,484 +738,484 @@ public class InvoiceHeader {
         this.name = name;
     }
 
-    public String getIndustry() {
-        return industry;
+    public String getBranche() {
+        return branche;
     }
 
-    public void setIndustry(String industry) {
-        this.industry = industry;
+    public void setBranche(String branche) {
+        this.branche = branche;
     }
 
-    public String getMatchCode() {
-        return matchCode;
+    public String getMatch() {
+        return match;
     }
 
-    public void setMatchCode(String matchCode) {
-        this.matchCode = matchCode;
+    public void setMatch(String match) {
+        this.match = match;
     }
 
-    public String getStreet() {
-        return street;
+    public String getStrasse() {
+        return strasse;
     }
 
-    public void setStreet(String street) {
-        this.street = street;
+    public void setStrasse(String strasse) {
+        this.strasse = strasse;
     }
 
-    public String getCountry() {
-        return country;
+    public String getLand() {
+        return land;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setLand(String land) {
+        this.land = land;
     }
 
-    public String getPostalCode() {
-        return postalCode;
+    public String getPlz() {
+        return plz;
     }
 
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
+    public void setPlz(String plz) {
+        this.plz = plz;
     }
 
-    public String getCity() {
-        return city;
+    public String getOrt() {
+        return ort;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setOrt(String ort) {
+        this.ort = ort;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getTelefon() {
+        return telefon;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setTelefon(String telefon) {
+        this.telefon = telefon;
     }
 
-    public String getOrderingCustomer() {
-        return orderingCustomer;
+    public String getBestellerKunde() {
+        return bestellerKunde;
     }
 
-    public void setOrderingCustomer(String orderingCustomer) {
-        this.orderingCustomer = orderingCustomer;
+    public void setBestellerKunde(String bestellerKunde) {
+        this.bestellerKunde = bestellerKunde;
     }
 
-    public String getCurrency() {
-        return currency;
+    public String getValuta() {
+        return valuta;
     }
 
-    public void setCurrency(String currency) {
-        this.currency = currency;
+    public void setValuta(String valuta) {
+        this.valuta = valuta;
     }
 
-    public String getCreditRating() {
-        return creditRating;
+    public String getBonitaet() {
+        return bonitaet;
     }
 
-    public void setCreditRating(String creditRating) {
-        this.creditRating = creditRating;
+    public void setBonitaet(String bonitaet) {
+        this.bonitaet = bonitaet;
     }
 
-    public String getPaymentMethod() {
-        return paymentMethod;
+    public String getZahlungsart() {
+        return zahlungsart;
     }
 
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
+    public void setZahlungsart(String zahlungsart) {
+        this.zahlungsart = zahlungsart;
     }
 
-    public String getResponsibilityCenter() {
-        return responsibilityCenter;
+    public String getRc() {
+        return rc;
     }
 
-    public void setResponsibilityCenter(String responsibilityCenter) {
-        this.responsibilityCenter = responsibilityCenter;
+    public void setRc(String rc) {
+        this.rc = rc;
     }
 
-    public String getInvoiceCustomerNumber() {
-        return invoiceCustomerNumber;
+    public String getReKundenNr() {
+        return reKundenNr;
     }
 
-    public void setInvoiceCustomerNumber(String invoiceCustomerNumber) {
-        this.invoiceCustomerNumber = invoiceCustomerNumber;
+    public void setReKundenNr(String reKundenNr) {
+        this.reKundenNr = reKundenNr;
     }
 
-    public String getInvoiceSalutation() {
-        return invoiceSalutation;
+    public String getReAnrede() {
+        return reAnrede;
     }
 
-    public void setInvoiceSalutation(String invoiceSalutation) {
-        this.invoiceSalutation = invoiceSalutation;
+    public void setReAnrede(String reAnrede) {
+        this.reAnrede = reAnrede;
     }
 
-    public String getInvoiceName() {
-        return invoiceName;
+    public String getReName() {
+        return reName;
     }
 
-    public void setInvoiceName(String invoiceName) {
-        this.invoiceName = invoiceName;
+    public void setReName(String reName) {
+        this.reName = reName;
     }
 
-    public String getInvoiceIndustry() {
-        return invoiceIndustry;
+    public String getReBranche() {
+        return reBranche;
     }
 
-    public void setInvoiceIndustry(String invoiceIndustry) {
-        this.invoiceIndustry = invoiceIndustry;
+    public void setReBranche(String reBranche) {
+        this.reBranche = reBranche;
     }
 
-    public String getInvoiceMatchCode() {
-        return invoiceMatchCode;
+    public String getReMatch() {
+        return reMatch;
     }
 
-    public void setInvoiceMatchCode(String invoiceMatchCode) {
-        this.invoiceMatchCode = invoiceMatchCode;
+    public void setReMatch(String reMatch) {
+        this.reMatch = reMatch;
     }
 
-    public String getInvoiceStreet() {
-        return invoiceStreet;
+    public String getReStrasse() {
+        return reStrasse;
     }
 
-    public void setInvoiceStreet(String invoiceStreet) {
-        this.invoiceStreet = invoiceStreet;
+    public void setReStrasse(String reStrasse) {
+        this.reStrasse = reStrasse;
     }
 
-    public String getInvoiceCountry() {
-        return invoiceCountry;
+    public String getReland() {
+        return reland;
     }
 
-    public void setInvoiceCountry(String invoiceCountry) {
-        this.invoiceCountry = invoiceCountry;
+    public void setReland(String reland) {
+        this.reland = reland;
     }
 
-    public String getInvoicePostalCode() {
-        return invoicePostalCode;
+    public String getRePlz() {
+        return rePlz;
     }
 
-    public void setInvoicePostalCode(String invoicePostalCode) {
-        this.invoicePostalCode = invoicePostalCode;
+    public void setRePlz(String rePlz) {
+        this.rePlz = rePlz;
     }
 
-    public String getInvoiceCity() {
-        return invoiceCity;
+    public String getReOrt() {
+        return reOrt;
     }
 
-    public void setInvoiceCity(String invoiceCity) {
-        this.invoiceCity = invoiceCity;
+    public void setReOrt(String reOrt) {
+        this.reOrt = reOrt;
     }
 
-    public String getInvoicePhone() {
-        return invoicePhone;
+    public String getReTele() {
+        return reTele;
     }
 
-    public void setInvoicePhone(String invoicePhone) {
-        this.invoicePhone = invoicePhone;
+    public void setReTele(String reTele) {
+        this.reTele = reTele;
     }
 
-    public String getInvoiceCurrency() {
-        return invoiceCurrency;
+    public String getReValuta() {
+        return reValuta;
     }
 
-    public void setInvoiceCurrency(String invoiceCurrency) {
-        this.invoiceCurrency = invoiceCurrency;
+    public void setReValuta(String reValuta) {
+        this.reValuta = reValuta;
     }
 
-    public String getInvoiceCreditRating() {
-        return invoiceCreditRating;
+    public String getReBonitaet() {
+        return reBonitaet;
     }
 
-    public void setInvoiceCreditRating(String invoiceCreditRating) {
-        this.invoiceCreditRating = invoiceCreditRating;
+    public void setReBonitaet(String reBonitaet) {
+        this.reBonitaet = reBonitaet;
     }
 
-    public String getInvoicePaymentMethod() {
-        return invoicePaymentMethod;
+    public String getReZart() {
+        return reZart;
     }
 
-    public void setInvoicePaymentMethod(String invoicePaymentMethod) {
-        this.invoicePaymentMethod = invoicePaymentMethod;
+    public void setReZart(String reZart) {
+        this.reZart = reZart;
     }
 
-    public String getInvoiceResponsibilityCenter() {
-        return invoiceResponsibilityCenter;
+    public String getReRc() {
+        return reRc;
     }
 
-    public void setInvoiceResponsibilityCenter(String invoiceResponsibilityCenter) {
-        this.invoiceResponsibilityCenter = invoiceResponsibilityCenter;
+    public void setReRc(String reRc) {
+        this.reRc = reRc;
     }
 
-    public String getVatIdNumber() {
-        return vatIdNumber;
+    public String getUstIdNrOk() {
+        return ustIdNrOk;
     }
 
-    public void setVatIdNumber(String vatIdNumber) {
-        this.vatIdNumber = vatIdNumber;
+    public void setUstIdNrOk(String ustIdNrOk) {
+        this.ustIdNrOk = ustIdNrOk;
     }
 
-    public String getVehicleNumber() {
-        return vehicleNumber;
+    public String getFahrgnr() {
+        return fahrgnr;
     }
 
-    public void setVehicleNumber(String vehicleNumber) {
-        this.vehicleNumber = vehicleNumber;
+    public void setFahrgnr(String fahrgnr) {
+        this.fahrgnr = fahrgnr;
     }
 
-    public String getLicensePlate() {
-        return licensePlate;
+    public String getKz() {
+        return kz;
     }
 
-    public void setLicensePlate(String licensePlate) {
-        this.licensePlate = licensePlate;
+    public void setKz(String kz) {
+        this.kz = kz;
     }
 
-    public String getVehicleType() {
-        return vehicleType;
+    public String getTyp() {
+        return typ;
     }
 
-    public void setVehicleType(String vehicleType) {
-        this.vehicleType = vehicleType;
+    public void setTyp(String typ) {
+        this.typ = typ;
     }
 
-    public String getBuildYear() {
-        return buildYear;
+    public String getBj() {
+        return bj;
     }
 
-    public void setBuildYear(String buildYear) {
-        this.buildYear = buildYear;
+    public void setBj(String bj) {
+        this.bj = bj;
     }
 
-    public String getRegistrationDate() {
-        return registrationDate;
+    public String getZdat() {
+        return zdat;
     }
 
-    public void setRegistrationDate(String registrationDate) {
-        this.registrationDate = registrationDate;
+    public void setZdat(String zdat) {
+        this.zdat = zdat;
     }
 
-    public String getWarrantyGroup() {
-        return warrantyGroup;
+    public String getWrg() {
+        return wrg;
     }
 
-    public void setWarrantyGroup(String warrantyGroup) {
-        this.warrantyGroup = warrantyGroup;
+    public void setWrg(String wrg) {
+        this.wrg = wrg;
     }
 
-    public String getInspectionDate() {
-        return inspectionDate;
+    public String getAu() {
+        return au;
     }
 
-    public void setInspectionDate(String inspectionDate) {
-        this.inspectionDate = inspectionDate;
+    public void setAu(String au) {
+        this.au = au;
     }
 
-    public String getWarrantyDate() {
-        return warrantyDate;
+    public String getGa() {
+        return ga;
     }
 
-    public void setWarrantyDate(String warrantyDate) {
-        this.warrantyDate = warrantyDate;
+    public void setGa(String ga) {
+        this.ga = ga;
     }
 
-    public String getServicePackage() {
-        return servicePackage;
+    public String getSp() {
+        return sp;
     }
 
-    public void setServicePackage(String servicePackage) {
-        this.servicePackage = servicePackage;
+    public void setSp(String sp) {
+        this.sp = sp;
     }
 
-    public String getOdometer() {
-        return odometer;
+    public String getTacho() {
+        return tacho;
     }
 
-    public void setOdometer(String odometer) {
-        this.odometer = odometer;
+    public void setTacho(String tacho) {
+        this.tacho = tacho;
     }
 
-    public String getMileage() {
-        return mileage;
+    public String getKm() {
+        return km;
     }
 
-    public void setMileage(String mileage) {
-        this.mileage = mileage;
+    public void setKm(String km) {
+        this.km = km;
     }
 
-    public String getMainInspection() {
-        return mainInspection;
+    public String getHu() {
+        return hu;
     }
 
-    public void setMainInspection(String mainInspection) {
-        this.mainInspection = mainInspection;
+    public void setHu(String hu) {
+        this.hu = hu;
     }
 
-    public String getAcceptanceDate() {
-        return acceptanceDate;
+    public String getAnTag() {
+        return anTag;
     }
 
-    public void setAcceptanceDate(String acceptanceDate) {
-        this.acceptanceDate = acceptanceDate;
+    public void setAnTag(String anTag) {
+        this.anTag = anTag;
     }
 
-    public String getAcceptanceTime() {
-        return acceptanceTime;
+    public String getAnZeit() {
+        return anZeit;
     }
 
-    public void setAcceptanceTime(String acceptanceTime) {
-        this.acceptanceTime = acceptanceTime;
+    public void setAnZeit(String anZeit) {
+        this.anZeit = anZeit;
     }
 
-    public String getCompletionDate() {
-        return completionDate;
+    public String getFertTag() {
+        return fertTag;
     }
 
-    public void setCompletionDate(String completionDate) {
-        this.completionDate = completionDate;
+    public void setFertTag(String fertTag) {
+        this.fertTag = fertTag;
     }
 
-    public String getCompletionTime() {
-        return completionTime;
+    public String getFertZeit() {
+        return fertZeit;
     }
 
-    public void setCompletionTime(String completionTime) {
-        this.completionTime = completionTime;
+    public void setFertZeit(String fertZeit) {
+        this.fertZeit = fertZeit;
     }
 
-    public String getAdvisor() {
-        return advisor;
+    public String getBerater() {
+        return berater;
     }
 
-    public void setAdvisor(String advisor) {
-        this.advisor = advisor;
+    public void setBerater(String berater) {
+        this.berater = berater;
     }
 
-    public String getRoutingNumber() {
-        return routingNumber;
+    public String getLeitzahl() {
+        return leitzahl;
     }
 
-    public void setRoutingNumber(String routingNumber) {
-        this.routingNumber = routingNumber;
+    public void setLeitzahl(String leitzahl) {
+        this.leitzahl = leitzahl;
     }
 
-    public String getTextStart() {
-        return textStart;
+    public String getTxAnf() {
+        return txAnf;
     }
 
-    public void setTextStart(String textStart) {
-        this.textStart = textStart;
+    public void setTxAnf(String txAnf) {
+        this.txAnf = txAnf;
     }
 
-    public String getTextEnd() {
-        return textEnd;
+    public String getTxEnde() {
+        return txEnde;
     }
 
-    public void setTextEnd(String textEnd) {
-        this.textEnd = textEnd;
+    public void setTxEnde(String txEnde) {
+        this.txEnde = txEnde;
     }
 
-    public String getEngineNumber() {
-        return engineNumber;
+    public String getMotornr() {
+        return motornr;
     }
 
-    public void setEngineNumber(String engineNumber) {
-        this.engineNumber = engineNumber;
+    public void setMotornr(String motornr) {
+        this.motornr = motornr;
     }
 
-    public String getEngineType() {
-        return engineType;
+    public String getMotorTyp() {
+        return motorTyp;
     }
 
-    public void setEngineType(String engineType) {
-        this.engineType = engineType;
+    public void setMotorTyp(String motorTyp) {
+        this.motorTyp = motorTyp;
     }
 
-    public String getUserOrder() {
-        return userOrder;
+    public String getUserAuftrag() {
+        return userAuftrag;
     }
 
-    public void setUserOrder(String userOrder) {
-        this.userOrder = userOrder;
+    public void setUserAuftrag(String userAuftrag) {
+        this.userAuftrag = userAuftrag;
     }
 
-    public String getUserInvoice() {
-        return userInvoice;
+    public String getUserRechnung() {
+        return userRechnung;
     }
 
-    public void setUserInvoice(String userInvoice) {
-        this.userInvoice = userInvoice;
+    public void setUserRechnung(String userRechnung) {
+        this.userRechnung = userRechnung;
     }
 
-    public BigDecimal getInvoiceNetAmount() {
-        return invoiceNetAmount;
+    public BigDecimal getRgsNetto() {
+        return rgsNetto;
     }
 
-    public void setInvoiceNetAmount(BigDecimal invoiceNetAmount) {
-        this.invoiceNetAmount = invoiceNetAmount;
+    public void setRgsNetto(BigDecimal rgsNetto) {
+        this.rgsNetto = rgsNetto;
     }
 
-    public BigDecimal getInvoiceBasisAustria() {
-        return invoiceBasisAustria;
+    public BigDecimal getRgsBasisAt() {
+        return rgsBasisAt;
     }
 
-    public void setInvoiceBasisAustria(BigDecimal invoiceBasisAustria) {
-        this.invoiceBasisAustria = invoiceBasisAustria;
+    public void setRgsBasisAt(BigDecimal rgsBasisAt) {
+        this.rgsBasisAt = rgsBasisAt;
     }
 
-    public BigDecimal getInvoiceBasisVat() {
-        return invoiceBasisVat;
+    public BigDecimal getRgsBasisMwst() {
+        return rgsBasisMwst;
     }
 
-    public void setInvoiceBasisVat(BigDecimal invoiceBasisVat) {
-        this.invoiceBasisVat = invoiceBasisVat;
+    public void setRgsBasisMwst(BigDecimal rgsBasisMwst) {
+        this.rgsBasisMwst = rgsBasisMwst;
     }
 
-    public BigDecimal getInvoiceVatAmount() {
-        return invoiceVatAmount;
+    public BigDecimal getRgsMwst() {
+        return rgsMwst;
     }
 
-    public void setInvoiceVatAmount(BigDecimal invoiceVatAmount) {
-        this.invoiceVatAmount = invoiceVatAmount;
+    public void setRgsMwst(BigDecimal rgsMwst) {
+        this.rgsMwst = rgsMwst;
     }
 
-    public BigDecimal getInvoiceVatAmountAustria() {
-        return invoiceVatAmountAustria;
+    public BigDecimal getRgsMwstAt() {
+        return rgsMwstAt;
     }
 
-    public void setInvoiceVatAmountAustria(BigDecimal invoiceVatAmountAustria) {
-        this.invoiceVatAmountAustria = invoiceVatAmountAustria;
+    public void setRgsMwstAt(BigDecimal rgsMwstAt) {
+        this.rgsMwstAt = rgsMwstAt;
     }
 
-    public BigDecimal getInvoiceGrossAmount() {
-        return invoiceGrossAmount;
+    public BigDecimal getRgsGesBrutto() {
+        return rgsGesBrutto;
     }
 
-    public void setInvoiceGrossAmount(BigDecimal invoiceGrossAmount) {
-        this.invoiceGrossAmount = invoiceGrossAmount;
+    public void setRgsGesBrutto(BigDecimal rgsGesBrutto) {
+        this.rgsGesBrutto = rgsGesBrutto;
     }
 
-    public String getEuSales() {
-        return euSales;
+    public String getEgUmsatz() {
+        return egUmsatz;
     }
 
-    public void setEuSales(String euSales) {
-        this.euSales = euSales;
+    public void setEgUmsatz(String egUmsatz) {
+        this.egUmsatz = egUmsatz;
     }
 
-    public String getTaxFreeThirdCountry() {
-        return taxFreeThirdCountry;
+    public String getSteuerfreiDrittland() {
+        return steuerfreiDrittland;
     }
 
-    public void setTaxFreeThirdCountry(String taxFreeThirdCountry) {
-        this.taxFreeThirdCountry = taxFreeThirdCountry;
+    public void setSteuerfreiDrittland(String steuerfreiDrittland) {
+        this.steuerfreiDrittland = steuerfreiDrittland;
     }
 
-    public String getPosted() {
-        return posted;
+    public String getVerbucht() {
+        return verbucht;
     }
 
-    public void setPosted(String posted) {
-        this.posted = posted;
+    public void setVerbucht(String verbucht) {
+        this.verbucht = verbucht;
     }
 
     public BigDecimal getReserve1() {
@@ -1234,20 +1234,20 @@ public class InvoiceHeader {
         this.reserve2 = reserve2;
     }
 
-    public String getWarrantyTakeover() {
-        return warrantyTakeover;
+    public String getGaUebern() {
+        return gaUebern;
     }
 
-    public void setWarrantyTakeover(String warrantyTakeover) {
-        this.warrantyTakeover = warrantyTakeover;
+    public void setGaUebern(String gaUebern) {
+        this.gaUebern = gaUebern;
     }
 
-    public Integer getWorkshopId() {
-        return workshopId;
+    public Integer getWktId() {
+        return wktId;
     }
 
-    public void setWorkshopId(Integer workshopId) {
-        this.workshopId = workshopId;
+    public void setWktId(Integer wktId) {
+        this.wktId = wktId;
     }
 
     public Integer getReserve3() {
@@ -1266,28 +1266,28 @@ public class InvoiceHeader {
         this.reserve4 = reserve4;
     }
 
-    public Integer getFvGreaterZero() {
-        return fvGreaterZero;
+    public Integer getFvGt0() {
+        return fvGt0;
     }
 
-    public void setFvGreaterZero(Integer fvGreaterZero) {
-        this.fvGreaterZero = fvGreaterZero;
+    public void setFvGt0(Integer fvGt0) {
+        this.fvGt0 = fvGt0;
     }
 
-    public Integer getFbGreaterZero() {
-        return fbGreaterZero;
+    public Integer getFbGt0() {
+        return fbGt0;
     }
 
-    public void setFbGreaterZero(Integer fbGreaterZero) {
-        this.fbGreaterZero = fbGreaterZero;
+    public void setFbGt0(Integer fbGt0) {
+        this.fbGt0 = fbGt0;
     }
 
-    public Integer getCampaignNumber() {
-        return campaignNumber;
+    public Integer getKampagneNr() {
+        return kampagneNr;
     }
 
-    public void setCampaignNumber(Integer campaignNumber) {
-        this.campaignNumber = campaignNumber;
+    public void setKampagneNr(Integer kampagneNr) {
+        this.kampagneNr = kampagneNr;
     }
 
     public String getSpoOrder() {
@@ -1314,156 +1314,156 @@ public class InvoiceHeader {
         this.kenPe = kenPe;
     }
 
-    public String getCostCalculation() {
-        return costCalculation;
+    public String getKlrBerech() {
+        return klrBerech;
     }
 
-    public void setCostCalculation(String costCalculation) {
-        this.costCalculation = costCalculation;
+    public void setKlrBerech(String klrBerech) {
+        this.klrBerech = klrBerech;
     }
 
-    public BigDecimal getCostAmount() {
-        return costAmount;
+    public BigDecimal getKlrBetrag() {
+        return klrBetrag;
     }
 
-    public void setCostAmount(BigDecimal costAmount) {
-        this.costAmount = costAmount;
+    public void setKlrBetrag(BigDecimal klrBetrag) {
+        this.klrBetrag = klrBetrag;
     }
 
-    public String getAssistanceProcessNumber() {
-        return assistanceProcessNumber;
+    public String getAssiVorgangNr() {
+        return assiVorgangNr;
     }
 
-    public void setAssistanceProcessNumber(String assistanceProcessNumber) {
-        this.assistanceProcessNumber = assistanceProcessNumber;
+    public void setAssiVorgangNr(String assiVorgangNr) {
+        this.assiVorgangNr = assiVorgangNr;
     }
 
-    public String getAdditionalWarrantyValid() {
-        return additionalWarrantyValid;
+    public String getZagaGueltig() {
+        return zagaGueltig;
     }
 
-    public void setAdditionalWarrantyValid(String additionalWarrantyValid) {
-        this.additionalWarrantyValid = additionalWarrantyValid;
+    public void setZagaGueltig(String zagaGueltig) {
+        this.zagaGueltig = zagaGueltig;
     }
 
-    public String getRwReleaseNumber() {
-        return rwReleaseNumber;
+    public String getRwFreigabeNr() {
+        return rwFreigabeNr;
     }
 
-    public void setRwReleaseNumber(String rwReleaseNumber) {
-        this.rwReleaseNumber = rwReleaseNumber;
+    public void setRwFreigabeNr(String rwFreigabeNr) {
+        this.rwFreigabeNr = rwFreigabeNr;
     }
 
-    public Integer getGoodwillExtension() {
-        return goodwillExtension;
+    public Integer getKlErweiterung() {
+        return klErweiterung;
     }
 
-    public void setGoodwillExtension(Integer goodwillExtension) {
-        this.goodwillExtension = goodwillExtension;
+    public void setKlErweiterung(Integer klErweiterung) {
+        this.klErweiterung = klErweiterung;
     }
 
-    public String getGoodwillExceptionId() {
-        return goodwillExceptionId;
+    public String getKlAusnahmeIdnr() {
+        return klAusnahmeIdnr;
     }
 
-    public void setGoodwillExceptionId(String goodwillExceptionId) {
-        this.goodwillExceptionId = goodwillExceptionId;
+    public void setKlAusnahmeIdnr(String klAusnahmeIdnr) {
+        this.klAusnahmeIdnr = klAusnahmeIdnr;
     }
 
-    public String getGoodwillExceptionText() {
-        return goodwillExceptionText;
+    public String getKlAusnahmeKlartext() {
+        return klAusnahmeKlartext;
     }
 
-    public void setGoodwillExceptionText(String goodwillExceptionText) {
-        this.goodwillExceptionText = goodwillExceptionText;
+    public void setKlAusnahmeKlartext(String klAusnahmeKlartext) {
+        this.klAusnahmeKlartext = klAusnahmeKlartext;
     }
 
-    public String getVehicleCategory() {
-        return vehicleCategory;
+    public String getFahrzeugArt() {
+        return fahrzeugArt;
     }
 
-    public void setVehicleCategory(String vehicleCategory) {
-        this.vehicleCategory = vehicleCategory;
+    public void setFahrzeugArt(String fahrzeugArt) {
+        this.fahrzeugArt = fahrzeugArt;
     }
 
-    public String getManufacturer() {
-        return manufacturer;
+    public String getHersteller() {
+        return hersteller;
     }
 
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
+    public void setHersteller(String hersteller) {
+        this.hersteller = hersteller;
     }
 
-    public String getBodyType() {
-        return bodyType;
+    public String getAufbauart() {
+        return aufbauart;
     }
 
-    public void setBodyType(String bodyType) {
-        this.bodyType = bodyType;
+    public void setAufbauart(String aufbauart) {
+        this.aufbauart = aufbauart;
     }
 
-    public String getBodyManufacturer() {
-        return bodyManufacturer;
+    public String getHerstellerAufbau() {
+        return herstellerAufbau;
     }
 
-    public void setBodyManufacturer(String bodyManufacturer) {
-        this.bodyManufacturer = bodyManufacturer;
+    public void setHerstellerAufbau(String herstellerAufbau) {
+        this.herstellerAufbau = herstellerAufbau;
     }
 
-    public String getAdditionalEquipment1() {
-        return additionalEquipment1;
+    public String getZusatzausruestung1() {
+        return zusatzausruestung1;
     }
 
-    public void setAdditionalEquipment1(String additionalEquipment1) {
-        this.additionalEquipment1 = additionalEquipment1;
+    public void setZusatzausruestung1(String zusatzausruestung1) {
+        this.zusatzausruestung1 = zusatzausruestung1;
     }
 
-    public String getAdditionalEquipmentManufacturer1() {
-        return additionalEquipmentManufacturer1;
+    public String getHerstellerZusatz1() {
+        return herstellerZusatz1;
     }
 
-    public void setAdditionalEquipmentManufacturer1(String additionalEquipmentManufacturer1) {
-        this.additionalEquipmentManufacturer1 = additionalEquipmentManufacturer1;
+    public void setHerstellerZusatz1(String herstellerZusatz1) {
+        this.herstellerZusatz1 = herstellerZusatz1;
     }
 
-    public String getAdditionalEquipment2() {
-        return additionalEquipment2;
+    public String getZusatzausruestung2() {
+        return zusatzausruestung2;
     }
 
-    public void setAdditionalEquipment2(String additionalEquipment2) {
-        this.additionalEquipment2 = additionalEquipment2;
+    public void setZusatzausruestung2(String zusatzausruestung2) {
+        this.zusatzausruestung2 = zusatzausruestung2;
     }
 
-    public String getAdditionalEquipmentManufacturer2() {
-        return additionalEquipmentManufacturer2;
+    public String getHerstellerZusatz2() {
+        return herstellerZusatz2;
     }
 
-    public void setAdditionalEquipmentManufacturer2(String additionalEquipmentManufacturer2) {
-        this.additionalEquipmentManufacturer2 = additionalEquipmentManufacturer2;
+    public void setHerstellerZusatz2(String herstellerZusatz2) {
+        this.herstellerZusatz2 = herstellerZusatz2;
     }
 
-    public String getAdditionalEquipment3() {
-        return additionalEquipment3;
+    public String getZusatzausruestung3() {
+        return zusatzausruestung3;
     }
 
-    public void setAdditionalEquipment3(String additionalEquipment3) {
-        this.additionalEquipment3 = additionalEquipment3;
+    public void setZusatzausruestung3(String zusatzausruestung3) {
+        this.zusatzausruestung3 = zusatzausruestung3;
     }
 
-    public String getAdditionalEquipmentManufacturer3() {
-        return additionalEquipmentManufacturer3;
+    public String getHerstellerZusatz3() {
+        return herstellerZusatz3;
     }
 
-    public void setAdditionalEquipmentManufacturer3(String additionalEquipmentManufacturer3) {
-        this.additionalEquipmentManufacturer3 = additionalEquipmentManufacturer3;
+    public void setHerstellerZusatz3(String herstellerZusatz3) {
+        this.herstellerZusatz3 = herstellerZusatz3;
     }
 
-    public String getUsageType() {
-        return usageType;
+    public String getEinsatzart() {
+        return einsatzart;
     }
 
-    public void setUsageType(String usageType) {
-        this.usageType = usageType;
+    public void setEinsatzart(String einsatzart) {
+        this.einsatzart = einsatzart;
     }
 
     public String getEuroNorm() {
@@ -1474,20 +1474,20 @@ public class InvoiceHeader {
         this.euroNorm = euroNorm;
     }
 
-    public String getParticleFilter() {
-        return particleFilter;
+    public String getPartikelfilter() {
+        return partikelfilter;
     }
 
-    public void setParticleFilter(String particleFilter) {
-        this.particleFilter = particleFilter;
+    public void setPartikelfilter(String partikelfilter) {
+        this.partikelfilter = partikelfilter;
     }
 
-    public String getIsType() {
-        return isType;
+    public String getIsArt() {
+        return isArt;
     }
 
-    public void setIsType(String isType) {
-        this.isType = isType;
+    public void setIsArt(String isArt) {
+        this.isArt = isArt;
     }
 
     public String getMailTo() {

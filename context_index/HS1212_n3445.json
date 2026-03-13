@@ -14,7 +14,7 @@
     }
   },
   "narrative": "### Node n3445: Procedure `getDates`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Raw sem JSON**:\n```json\n{}\n```",
-  "rpgSnippet": "     P getDates        B\n     D getDates        PI\n     D*---------------------------------------------------------------\n       dates = *Blanks;\n       exec sql\n          declare c4 Cursor for select AHK080, AHK620\n            from HSAHKPF\n            where AHK000 = :G71000 and AHK010 = :G71010 and AHK020 = :G71020\n            and AHK030 = ' ' and AHK040 = :G71030 and AHK050 = :G71190;\n       exec sql open c4;\n       exec sql fetch next from c4 into :dates;\n       exec sql close c4;\n     P                 E",
+  "rpgSnippet": "",
   "dbContracts": [],
   "symbolMetadata": {},
   "statementNodes": [

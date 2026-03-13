@@ -1,7 +1,7 @@
 /**
  * Domain entity or value object for the warranty claims model.
  * <p>
- * Generated from RPG: unit {@code HS1210}, node {@code n1779}.
+ * Generated from RPG: unit {@code HS1210}, node {@code n404}.
  */
 
 package com.scania.warranty.domain;
@@ -16,170 +16,173 @@ import java.math.BigDecimal;
 @Table(name = "HSG73PF")
 @IdClass(ClaimErrorId.class)
 public class ClaimError {
-    
+
     @Id
     @Column(name = "PAKZ", length = 3, nullable = false)
-    private String pakz;
-    
+    private String pakz; // @rpg-trace: schema
+
     @Id
     @Column(name = "RECH.-NR.", length = 5, nullable = false)
-    private String rechNr;
-    
+    private String rechNr; // @rpg-trace: schema
+
+    @Id
     @Column(name = "RECH.-DATUM", length = 8, nullable = false)
-    private String rechDatum;
-    
+    private String rechDatum; // @rpg-trace: schema
+
+    @Id
     @Column(name = "AUFTRAGS-NR.", length = 5, nullable = false)
-    private String auftragsNr;
-    
+    private String auftragsNr; // @rpg-trace: schema
+
     @Id
     @Column(name = "BEREICH", length = 1, nullable = false)
-    private String bereich;
-    
+    private String bereich; // @rpg-trace: schema
+
+    @Id
     @Column(name = "CLAIM-NR.", length = 8, nullable = false)
-    private String claimNr;
-    
+    private String claimNr; // @rpg-trace: schema
+
     @Id
     @Column(name = "FEHLER-NR.", length = 2, nullable = false)
-    private String fehlerNr;
-    
+    private String fehlerNr; // @rpg-trace: schema
+
     @Id
     @Column(name = "FOLGE-NR.", length = 2, nullable = false)
-    private String folgeNr;
-    
+    private String folgeNr; // @rpg-trace: schema
+
     @Column(name = "FEHLER-TEIL", length = 18, nullable = false)
-    private String fehlerTeil;
-    
+    private String fehlerTeil; // @rpg-trace: schema
+
     @Column(name = "HAUPTGRUPPE", length = 2, nullable = false)
-    private String hauptgruppe;
-    
+    private String hauptgruppe; // @rpg-trace: schema
+
     @Column(name = "NEBENGRUPPE", length = 2, nullable = false)
-    private String nebengruppe;
-    
+    private String nebengruppe; // @rpg-trace: schema
+
     @Column(name = "SCHAD.-C1", length = 2, nullable = false)
-    private String schadC1;
-    
+    private String schadC1; // @rpg-trace: schema
+
     @Column(name = "SCHAD.-C2", length = 2, nullable = false)
-    private String schadC2;
-    
+    private String schadC2; // @rpg-trace: schema
+
     @Column(name = "TEXT1", length = 65, nullable = false)
-    private String text1;
-    
+    private String text1; // @rpg-trace: schema
+
     @Column(name = "TEXT2", length = 65, nullable = false)
-    private String text2;
-    
+    private String text2; // @rpg-trace: schema
+
     @Column(name = "STEUER CODE", length = 2, nullable = false)
-    private String steuerCode;
-    
+    private String steuerCode; // @rpg-trace: schema
+
     @Column(name = "BEW. CODE1", length = 2, nullable = false)
-    private String bewCode1;
-    
+    private String bewCode1; // @rpg-trace: schema
+
     @Column(name = "BEW. CODE2", precision = 4, scale = 0, nullable = false)
-    private BigDecimal bewCode2;
-    
+    private Integer bewCode2; // @rpg-trace: schema
+
     @Column(name = "BEW. DATUM", precision = 8, scale = 0, nullable = false)
-    private BigDecimal bewDatum;
-    
+    private Integer bewDatum; // @rpg-trace: schema
+
     @Column(name = "VERG. MAT.", precision = 3, scale = 0, nullable = false)
-    private BigDecimal vergMat;
-    
+    private Integer vergMat; // @rpg-trace: schema
+
     @Column(name = "VERG. ARB.", precision = 3, scale = 0, nullable = false)
-    private BigDecimal vergArb;
-    
+    private Integer vergArb; // @rpg-trace: schema
+
     @Column(name = "VERG. SPEZ.", precision = 3, scale = 0, nullable = false)
-    private BigDecimal vergSpez;
-    
+    private Integer vergSpez; // @rpg-trace: schema
+
     @Column(name = "BEANTR. MAT.", precision = 11, scale = 2, nullable = false)
-    private BigDecimal beantrMat;
-    
+    private BigDecimal beantrMat; // @rpg-trace: schema
+
     @Column(name = "BEANTRG. ARB.", precision = 11, scale = 2, nullable = false)
-    private BigDecimal beantrArb;
-    
+    private BigDecimal beantrgArb; // @rpg-trace: schema
+
     @Column(name = "BEANTRG. SPEZ.", precision = 11, scale = 2, nullable = false)
-    private BigDecimal beantrSpez;
-    
+    private BigDecimal beantrgSpez; // @rpg-trace: schema
+
     @Column(name = "CLAIM-ART", precision = 1, scale = 0, nullable = false)
-    private BigDecimal claimArt;
-    
+    private Integer claimArt; // @rpg-trace: schema
+
     @Column(name = "V.-REP.-DATUM", precision = 8, scale = 0, nullable = false)
-    private BigDecimal vRepDatum;
-    
+    private Integer vRepDatum; // @rpg-trace: schema
+
     @Column(name = "V.-KM-STAND", precision = 3, scale = 0, nullable = false)
-    private BigDecimal vKmStand;
-    
+    private Integer vKmStand; // @rpg-trace: schema
+
     @Column(name = "FELDTEST-NR.", precision = 6, scale = 0, nullable = false)
-    private BigDecimal feldtestNr;
-    
+    private Integer feldtestNr; // @rpg-trace: schema
+
     @Column(name = "KAMPAGNEN-NR.", length = 8, nullable = false)
-    private String kampagnenNr;
-    
+    private String kampagnenNr; // @rpg-trace: schema
+
     @Column(name = "EPS", length = 20, nullable = false)
-    private String eps;
-    
+    private String eps; // @rpg-trace: schema
+
     @Column(name = "STATUS CODE", precision = 2, scale = 0, nullable = false)
-    private BigDecimal statusCode;
-    
+    private Integer statusCode; // @rpg-trace: schema
+
     @Column(name = "VARIANT CODE", precision = 2, scale = 0, nullable = false)
-    private BigDecimal variantCode;
-    
+    private Integer variantCode; // @rpg-trace: schema
+
     @Column(name = "ACTION CODE", precision = 2, scale = 0, nullable = false)
-    private BigDecimal actionCode;
-    
+    private Integer actionCode; // @rpg-trace: schema
+
     @Column(name = "TEXT3", length = 65, nullable = false)
-    private String text3;
-    
+    private String text3; // @rpg-trace: schema
+
     @Column(name = "TEXT4", length = 65, nullable = false)
-    private String text4;
-    
+    private String text4; // @rpg-trace: schema
+
     @Column(name = "FEHLER-NR. SDE", length = 2, nullable = false)
-    private String fehlerNrSde;
-    
+    private String fehlerNrSde; // @rpg-trace: schema
+
     @Column(name = "ANHANG", length = 1, nullable = false)
-    private String anhang;
-    
+    private String anhang; // @rpg-trace: schema
+
     @Column(name = "SOURCE", length = 5, nullable = false)
-    private String source;
-    
+    private String source; // @rpg-trace: schema
+
     @Column(name = "COMPLAIN", length = 5, nullable = false)
-    private String complain;
-    
+    private String complain; // @rpg-trace: schema
+
     @Column(name = "SYMPTOM", length = 5, nullable = false)
-    private String symptom;
-    
+    private String symptom; // @rpg-trace: schema
+
     @Column(name = "FAILURE", length = 5, nullable = false)
-    private String failure;
-    
+    private String failure; // @rpg-trace: schema
+
     @Column(name = "LOCATION", length = 5, nullable = false)
-    private String location;
-    
+    private String location; // @rpg-trace: schema
+
     @Column(name = "REPAIR", length = 5, nullable = false)
-    private String repair;
-    
+    private String repair; // @rpg-trace: schema
+
     @Column(name = "ERG.CODE", length = 2, nullable = false)
-    private String ergCode;
-    
+    private String ergCode; // @rpg-trace: schema
+
     @Column(name = "RESULT1", length = 2, nullable = false)
-    private String result1;
-    
+    private String result1; // @rpg-trace: schema
+
     @Column(name = "RESULT2", length = 5, nullable = false)
-    private String result2;
-    
+    private String result2; // @rpg-trace: schema
+
     @Column(name = "FAULT1", length = 2, nullable = false)
-    private String fault1;
-    
+    private String fault1; // @rpg-trace: schema
+
     @Column(name = "FAULT2", length = 5, nullable = false)
-    private String fault2;
-    
+    private String fault2; // @rpg-trace: schema
+
     @Column(name = "REPLY1", length = 2, nullable = false)
-    private String reply1;
-    
+    private String reply1; // @rpg-trace: schema
+
     @Column(name = "REPLY2", length = 5, nullable = false)
-    private String reply2;
-    
+    private String reply2; // @rpg-trace: schema
+
     @Column(name = "EXPLANATION1", length = 2, nullable = false)
-    private String explanation1;
-    
+    private String explanation1; // @rpg-trace: schema
+
     @Column(name = "EXPLANATION2", length = 5, nullable = false)
-    private String explanation2;
+    private String explanation2; // @rpg-trace: schema
 
     public ClaimError() {
     }
@@ -320,64 +323,44 @@ public class ClaimError {
         this.bewCode1 = bewCode1;
     }
 
-    public BigDecimal getBewCode2() {
+    public Integer getBewCode2() {
         return bewCode2;
     }
 
-    public void setBewCode2(BigDecimal bewCode2) {
+    public void setBewCode2(Integer bewCode2) {
         this.bewCode2 = bewCode2;
     }
-    
-    public void setBewCode2(int bewCode2) {
-        this.bewCode2 = BigDecimal.valueOf(bewCode2);
-    }
 
-    public BigDecimal getBewDatum() {
+    public Integer getBewDatum() {
         return bewDatum;
     }
 
-    public void setBewDatum(BigDecimal bewDatum) {
+    public void setBewDatum(Integer bewDatum) {
         this.bewDatum = bewDatum;
     }
-    
-    public void setBewDatum(int bewDatum) {
-        this.bewDatum = BigDecimal.valueOf(bewDatum);
-    }
 
-    public BigDecimal getVergMat() {
+    public Integer getVergMat() {
         return vergMat;
     }
 
-    public void setVergMat(BigDecimal vergMat) {
+    public void setVergMat(Integer vergMat) {
         this.vergMat = vergMat;
     }
-    
-    public void setVergMat(int vergMat) {
-        this.vergMat = BigDecimal.valueOf(vergMat);
-    }
 
-    public BigDecimal getVergArb() {
+    public Integer getVergArb() {
         return vergArb;
     }
 
-    public void setVergArb(BigDecimal vergArb) {
+    public void setVergArb(Integer vergArb) {
         this.vergArb = vergArb;
     }
-    
-    public void setVergArb(int vergArb) {
-        this.vergArb = BigDecimal.valueOf(vergArb);
-    }
 
-    public BigDecimal getVergSpez() {
+    public Integer getVergSpez() {
         return vergSpez;
     }
 
-    public void setVergSpez(BigDecimal vergSpez) {
+    public void setVergSpez(Integer vergSpez) {
         this.vergSpez = vergSpez;
-    }
-    
-    public void setVergSpez(int vergSpez) {
-        this.vergSpez = BigDecimal.valueOf(vergSpez);
     }
 
     public BigDecimal getBeantrMat() {
@@ -388,68 +371,52 @@ public class ClaimError {
         this.beantrMat = beantrMat;
     }
 
-    public BigDecimal getBeantrArb() {
-        return beantrArb;
+    public BigDecimal getBeantrgArb() {
+        return beantrgArb;
     }
 
-    public void setBeantrArb(BigDecimal beantrArb) {
-        this.beantrArb = beantrArb;
+    public void setBeantrgArb(BigDecimal beantrgArb) {
+        this.beantrgArb = beantrgArb;
     }
 
-    public BigDecimal getBeantrSpez() {
-        return beantrSpez;
+    public BigDecimal getBeantrgSpez() {
+        return beantrgSpez;
     }
 
-    public void setBeantrSpez(BigDecimal beantrSpez) {
-        this.beantrSpez = beantrSpez;
+    public void setBeantrgSpez(BigDecimal beantrgSpez) {
+        this.beantrgSpez = beantrgSpez;
     }
 
-    public BigDecimal getClaimArt() {
+    public Integer getClaimArt() {
         return claimArt;
     }
 
-    public void setClaimArt(BigDecimal claimArt) {
+    public void setClaimArt(Integer claimArt) {
         this.claimArt = claimArt;
     }
-    
-    public void setClaimArt(int claimArt) {
-        this.claimArt = BigDecimal.valueOf(claimArt);
-    }
 
-    public BigDecimal getvRepDatum() {
+    public Integer getvRepDatum() {
         return vRepDatum;
     }
 
-    public void setvRepDatum(BigDecimal vRepDatum) {
+    public void setvRepDatum(Integer vRepDatum) {
         this.vRepDatum = vRepDatum;
     }
-    
-    public void setvRepDatum(int vRepDatum) {
-        this.vRepDatum = BigDecimal.valueOf(vRepDatum);
-    }
 
-    public BigDecimal getvKmStand() {
+    public Integer getvKmStand() {
         return vKmStand;
     }
 
-    public void setvKmStand(BigDecimal vKmStand) {
+    public void setvKmStand(Integer vKmStand) {
         this.vKmStand = vKmStand;
     }
-    
-    public void setvKmStand(int vKmStand) {
-        this.vKmStand = BigDecimal.valueOf(vKmStand);
-    }
 
-    public BigDecimal getFeldtestNr() {
+    public Integer getFeldtestNr() {
         return feldtestNr;
     }
 
-    public void setFeldtestNr(BigDecimal feldtestNr) {
+    public void setFeldtestNr(Integer feldtestNr) {
         this.feldtestNr = feldtestNr;
-    }
-    
-    public void setFeldtestNr(int feldtestNr) {
-        this.feldtestNr = BigDecimal.valueOf(feldtestNr);
     }
 
     public String getKampagnenNr() {
@@ -468,40 +435,28 @@ public class ClaimError {
         this.eps = eps;
     }
 
-    public BigDecimal getStatusCode() {
+    public Integer getStatusCode() {
         return statusCode;
     }
 
-    public void setStatusCode(BigDecimal statusCode) {
+    public void setStatusCode(Integer statusCode) {
         this.statusCode = statusCode;
     }
-    
-    public void setStatusCode(int statusCode) {
-        this.statusCode = BigDecimal.valueOf(statusCode);
-    }
 
-    public BigDecimal getVariantCode() {
+    public Integer getVariantCode() {
         return variantCode;
     }
 
-    public void setVariantCode(BigDecimal variantCode) {
+    public void setVariantCode(Integer variantCode) {
         this.variantCode = variantCode;
     }
-    
-    public void setVariantCode(int variantCode) {
-        this.variantCode = BigDecimal.valueOf(variantCode);
-    }
 
-    public BigDecimal getActionCode() {
+    public Integer getActionCode() {
         return actionCode;
     }
 
-    public void setActionCode(BigDecimal actionCode) {
+    public void setActionCode(Integer actionCode) {
         this.actionCode = actionCode;
-    }
-    
-    public void setActionCode(int actionCode) {
-        this.actionCode = BigDecimal.valueOf(actionCode);
     }
 
     public String getText3() {
@@ -654,194 +609,5 @@ public class ClaimError {
 
     public void setExplanation2(String explanation2) {
         this.explanation2 = explanation2;
-    }
-    
-    // Convenience getters/setters for compatibility
-    public String getMainGroup() {
-        return hauptgruppe;
-    }
-    
-    public void setMainGroup(String mainGroup) {
-        this.hauptgruppe = mainGroup;
-    }
-    
-    public String getSubGroup() {
-        return nebengruppe;
-    }
-    
-    public void setSubGroup(String subGroup) {
-        this.nebengruppe = subGroup;
-    }
-    
-    public String getControlCode() {
-        return steuerCode;
-    }
-    
-    public void setControlCode(String controlCode) {
-        this.steuerCode = controlCode;
-    }
-    
-    public Integer getClaimType() {
-        return claimArt != null ? claimArt.intValue() : null;
-    }
-    
-    public void setClaimType(Integer claimType) {
-        this.claimArt = claimType != null ? BigDecimal.valueOf(claimType) : BigDecimal.ZERO;
-    }
-    
-    public String getCompanyCode() {
-        return pakz;
-    }
-    
-    public void setCompanyCode(String companyCode) {
-        this.pakz = companyCode;
-    }
-    
-    public String getInvoiceNumber() {
-        return rechNr;
-    }
-    
-    public void setInvoiceNumber(String invoiceNumber) {
-        this.rechNr = invoiceNumber;
-    }
-    
-    public String getInvoiceDate() {
-        return rechDatum;
-    }
-    
-    public void setInvoiceDate(String invoiceDate) {
-        this.rechDatum = invoiceDate;
-    }
-    
-    public String getOrderNumber() {
-        return auftragsNr;
-    }
-    
-    public void setOrderNumber(String orderNumber) {
-        this.auftragsNr = orderNumber;
-    }
-    
-    public String getArea() {
-        return bereich;
-    }
-    
-    public void setArea(String area) {
-        this.bereich = area;
-    }
-    
-    public String getClaimNumber() {
-        return claimNr;
-    }
-    
-    public void setClaimNumber(String claimNumber) {
-        this.claimNr = claimNumber;
-    }
-    
-    public String getErrorNumber() {
-        return fehlerNr;
-    }
-    
-    public void setErrorNumber(String errorNumber) {
-        this.fehlerNr = errorNumber;
-    }
-    
-    public String getSequenceNumber() {
-        return folgeNr;
-    }
-    
-    public void setSequenceNumber(String sequenceNumber) {
-        this.folgeNr = sequenceNumber;
-    }
-    
-    public String getErrorPart() {
-        return fehlerTeil;
-    }
-    
-    public void setErrorPart(String errorPart) {
-        this.fehlerTeil = errorPart;
-    }
-    
-    public String getDamageCode1() {
-        return schadC1;
-    }
-    
-    public void setDamageCode1(String damageCode1) {
-        this.schadC1 = damageCode1;
-    }
-    
-    public String getDamageCode2() {
-        return schadC2;
-    }
-    
-    public void setDamageCode2(String damageCode2) {
-        this.schadC2 = damageCode2;
-    }
-    
-    public String getAssessmentCode1() {
-        return bewCode1;
-    }
-    
-    public void setAssessmentCode1(String assessmentCode1) {
-        this.bewCode1 = assessmentCode1;
-    }
-    
-    public void setAssessmentCode2(int assessmentCode2) {
-        this.bewCode2 = BigDecimal.valueOf(assessmentCode2);
-    }
-    
-    public void setAssessmentDate(int assessmentDate) {
-        this.bewDatum = BigDecimal.valueOf(assessmentDate);
-    }
-    
-    public void setCompensatedMaterial(int compensatedMaterial) {
-        this.vergMat = BigDecimal.valueOf(compensatedMaterial);
-    }
-    
-    public void setCompensatedLabor(int compensatedLabor) {
-        this.vergArb = BigDecimal.valueOf(compensatedLabor);
-    }
-    
-    public void setCompensatedSpecial(int compensatedSpecial) {
-        this.vergSpez = BigDecimal.valueOf(compensatedSpecial);
-    }
-    
-    public void setRequestedMaterial(BigDecimal requestedMaterial) {
-        this.beantrMat = requestedMaterial;
-    }
-    
-    public void setRequestedLabor(BigDecimal requestedLabor) {
-        this.beantrArb = requestedLabor;
-    }
-    
-    public void setRequestedSpecial(BigDecimal requestedSpecial) {
-        this.beantrSpez = requestedSpecial;
-    }
-    
-    public void setPreviousRepairDate(int previousRepairDate) {
-        this.vRepDatum = BigDecimal.valueOf(previousRepairDate);
-    }
-    
-    public void setPreviousMileage(int previousMileage) {
-        this.vKmStand = BigDecimal.valueOf(previousMileage);
-    }
-    
-    public void setFieldTestNumber(int fieldTestNumber) {
-        this.feldtestNr = BigDecimal.valueOf(fieldTestNumber);
-    }
-    
-    public void setCampaignNumber(String campaignNumber) {
-        this.kampagnenNr = campaignNumber;
-    }
-    
-    public void setErrorNumberSde(String errorNumberSde) {
-        this.fehlerNrSde = errorNumberSde;
-    }
-    
-    public void setResultCode(String resultCode) {
-        this.ergCode = resultCode;
-    }
-    
-    public void setAttachment(String attachment) {
-        this.anhang = attachment;
     }
 }

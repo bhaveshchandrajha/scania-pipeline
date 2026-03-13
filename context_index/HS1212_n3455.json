@@ -17,7 +17,7 @@
     }
   },
   "narrative": "### Node n3455: Procedure `getModules`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Variables**:\n  - result (type: t.char.130)\n  - workOrderFull (type: t.char.23)\n\n- **Raw sem JSON**:\n```json\n{\n  \"sym.var.result\": {\n    \"refersTo\": \"sym.var.result\"\n  },\n  \"sym.var.workOrderFull\": {\n    \"refersTo\": \"sym.var.workOrderFull\"\n  }\n}\n```",
-  "rpgSnippet": "     P getModules      B\n     D getModules      PI           130A\n     D*---------------------------------------------------------------\n     D result          S            130A\n     D workOrderFull   S             23A\n     D*---------------------------------------------------------------\n       getDates();\n       workOrderFull = G71000 + '-' + G71030 + '-' + %Subst(G71200:6:4) + '-' +\n                       bookDate;\n       exec sql\n          SELECT LISTAGG(FTM_MT_COD, ', ') into :result\n            FROM HSFTMF\n            WHERE ftm_wkowo = :workOrderFull;\n       If SQLCOD = 0;\n          return result;\n       Else;\n          return *Blanks;\n       EndIf;\n     P                 E",
+  "rpgSnippet": "",
   "dbContracts": [],
   "symbolMetadata": {
     "sym.var.result": {

@@ -6,22 +6,21 @@
 
 package com.scania.warranty.dto;
 
-/**
- * DTO for claim list item (subfile record HS1210S1/S2).
- */
 public record ClaimListItemDto(
-        String pakz,
-        String claimNr,
-        String rechNr,
-        String rechDatum,
-        String auftragsNr,
-        String chassisNr,
-        String kdNr,
-        String kdName,
-        String claimNrSde,
-        String statusCodeSde,
-        String statusText,
-        int errorCount,
-        String color
+    String companyCode,
+    String invoiceNumber,
+    String invoiceDate,
+    String formattedInvoiceDate,
+    String orderNumber,
+    String claimNumber,
+    String chassisNumber,
+    String customerNumber,
+    String customerName,
+    String claimNumberSde,
+    Integer statusCodeSde,
+    String statusDescription,
+    Integer errorCount,
+    String demandCode,
+    String colorIndicator
 ) {
 }

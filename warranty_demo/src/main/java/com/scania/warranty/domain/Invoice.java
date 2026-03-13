@@ -14,40 +14,36 @@ import java.math.BigDecimal;
  */
 @Entity
 @Table(name = "HSAHKLF3")
-@IdClass(InvoiceId.class)
 public class Invoice {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "PAKZ", length = 3, nullable = false)
     private String pakz; // @rpg-trace: schema
 
-    @Id
     @Column(name = "RNR", length = 5, nullable = false)
     private String rnr; // @rpg-trace: schema
 
     @Column(name = "RG-NR. 10A", length = 10, nullable = false)
-    private String rgNr10A; // @rpg-trace: schema
+    private String rgNr10a; // @rpg-trace: schema
 
-    @Id
     @Column(name = "RDAT", length = 8, nullable = false)
     private String rdat; // @rpg-trace: schema
 
     @Column(name = "KZ S", length = 1, nullable = false)
     private String kzS; // @rpg-trace: schema
 
-    @Id
     @Column(name = "ANR", length = 5, nullable = false)
     private String anr; // @rpg-trace: schema
 
-    @Id
     @Column(name = "BEREI", length = 1, nullable = false)
     private String berei; // @rpg-trace: schema
 
-    @Id
     @Column(name = "W/T", length = 1, nullable = false)
     private String wt; // @rpg-trace: schema
 
-    @Id
     @Column(name = "SPLITT", length = 2, nullable = false)
     private String splitt; // @rpg-trace: schema
 
@@ -58,7 +54,7 @@ public class Invoice {
     private String atext; // @rpg-trace: schema
 
     @Column(name = "L.RNR", length = 5, nullable = false)
-    private String lRnr; // @rpg-trace: schema
+    private String lrnr; // @rpg-trace: schema
 
     @Column(name = "STO-BEZ-RE", length = 5, nullable = false)
     private String stoBezRe; // @rpg-trace: schema
@@ -76,7 +72,7 @@ public class Invoice {
     private String bfort; // @rpg-trace: schema
 
     @Column(name = "MWST Y/N", length = 1, nullable = false)
-    private String mwstYN; // @rpg-trace: schema
+    private String mwstYn; // @rpg-trace: schema
 
     @Column(name = "MWST %", precision = 5, scale = 2, nullable = false)
     private BigDecimal mwstPercent; // @rpg-trace: schema
@@ -193,7 +189,7 @@ public class Invoice {
     private String reStrasse; // @rpg-trace: schema
 
     @Column(name = "RE LAND", length = 3, nullable = false)
-    private String reLand; // @rpg-trace: schema
+    private String reland; // @rpg-trace: schema
 
     @Column(name = "RE PLZ", length = 5, nullable = false)
     private String rePlz; // @rpg-trace: schema
@@ -220,7 +216,7 @@ public class Invoice {
     private String ustIdNrOk; // @rpg-trace: schema
 
     @Column(name = "FAHRG.-NR.", length = 17, nullable = false)
-    private String fahrgNr; // @rpg-trace: schema
+    private String fahrgnr; // @rpg-trace: schema
 
     @Column(name = "KZ", length = 12, nullable = false)
     private String kz; // @rpg-trace: schema
@@ -280,7 +276,7 @@ public class Invoice {
     private String txEnde; // @rpg-trace: schema
 
     @Column(name = "MOTOR-NR", length = 10, nullable = false)
-    private String motorNr; // @rpg-trace: schema
+    private String motornr; // @rpg-trace: schema
 
     @Column(name = "MOTOR-TYP", length = 20, nullable = false)
     private String motorTyp; // @rpg-trace: schema
@@ -318,11 +314,11 @@ public class Invoice {
     @Column(name = "VERBUCHT?", length = 1, nullable = false)
     private String verbucht; // @rpg-trace: schema
 
-    @Column(name = "RESERVE_1", precision = 5, scale = 2, nullable = false)
-    private BigDecimal reserve1; // @rpg-trace: schema (RESERVE position 1)
+    @Column(name = "RESERVE1", precision = 5, scale = 2, nullable = false)
+    private BigDecimal reserve1; // @rpg-trace: schema (was RESERVE)
 
-    @Column(name = "RESERVE_2", precision = 9, scale = 2, nullable = false)
-    private BigDecimal reserve2; // @rpg-trace: schema (RESERVE position 2)
+    @Column(name = "RESERVE2", precision = 9, scale = 2, nullable = false)
+    private BigDecimal reserve2; // @rpg-trace: schema (was RESERVE)
 
     @Column(name = "GA-ÜBERN.", length = 8, nullable = false)
     private String gaUebern; // @rpg-trace: schema
@@ -330,11 +326,11 @@ public class Invoice {
     @Column(name = "WKT-ID", precision = 9, scale = 0, nullable = false)
     private Integer wktId; // @rpg-trace: schema
 
-    @Column(name = "RESERVE_3", precision = 2, scale = 0, nullable = false)
-    private Integer reserve3; // @rpg-trace: schema (RESERVE position 3)
+    @Column(name = "RESERVE3", precision = 2, scale = 0, nullable = false)
+    private Integer reserve3; // @rpg-trace: schema (was RESERVE)
 
-    @Column(name = "RESERVE_4", precision = 2, scale = 0, nullable = false)
-    private Integer reserve4; // @rpg-trace: schema (RESERVE position 4)
+    @Column(name = "RESERVE4", precision = 2, scale = 0, nullable = false)
+    private Integer reserve4; // @rpg-trace: schema (was RESERVE)
 
     @Column(name = "F:V>0", precision = 3, scale = 0, nullable = false)
     private Integer fvGt0; // @rpg-trace: schema
@@ -426,11 +422,17 @@ public class Invoice {
     @Column(name = "MAIL CC", length = 200, nullable = false)
     private String mailCc; // @rpg-trace: schema
 
-    // Constructors
     public Invoice() {
     }
 
-    // Getters and Setters (all 134 fields)
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getPakz() {
         return pakz;
     }
@@ -447,12 +449,12 @@ public class Invoice {
         this.rnr = rnr;
     }
 
-    public String getRgNr10A() {
-        return rgNr10A;
+    public String getRgNr10a() {
+        return rgNr10a;
     }
 
-    public void setRgNr10A(String rgNr10A) {
-        this.rgNr10A = rgNr10A;
+    public void setRgNr10a(String rgNr10a) {
+        this.rgNr10a = rgNr10a;
     }
 
     public String getRdat() {
@@ -519,12 +521,12 @@ public class Invoice {
         this.atext = atext;
     }
 
-    public String getlRnr() {
-        return lRnr;
+    public String getLrnr() {
+        return lrnr;
     }
 
-    public void setlRnr(String lRnr) {
-        this.lRnr = lRnr;
+    public void setLrnr(String lrnr) {
+        this.lrnr = lrnr;
     }
 
     public String getStoBezRe() {
@@ -567,12 +569,12 @@ public class Invoice {
         this.bfort = bfort;
     }
 
-    public String getMwstYN() {
-        return mwstYN;
+    public String getMwstYn() {
+        return mwstYn;
     }
 
-    public void setMwstYN(String mwstYN) {
-        this.mwstYN = mwstYN;
+    public void setMwstYn(String mwstYn) {
+        this.mwstYn = mwstYn;
     }
 
     public BigDecimal getMwstPercent() {
@@ -879,12 +881,12 @@ public class Invoice {
         this.reStrasse = reStrasse;
     }
 
-    public String getReLand() {
-        return reLand;
+    public String getReland() {
+        return reland;
     }
 
-    public void setReLand(String reLand) {
-        this.reLand = reLand;
+    public void setReland(String reland) {
+        this.reland = reland;
     }
 
     public String getRePlz() {
@@ -951,12 +953,12 @@ public class Invoice {
         this.ustIdNrOk = ustIdNrOk;
     }
 
-    public String getFahrgNr() {
-        return fahrgNr;
+    public String getFahrgnr() {
+        return fahrgnr;
     }
 
-    public void setFahrgNr(String fahrgNr) {
-        this.fahrgNr = fahrgNr;
+    public void setFahrgnr(String fahrgnr) {
+        this.fahrgnr = fahrgnr;
     }
 
     public String getKz() {
@@ -1111,12 +1113,12 @@ public class Invoice {
         this.txEnde = txEnde;
     }
 
-    public String getMotorNr() {
-        return motorNr;
+    public String getMotornr() {
+        return motornr;
     }
 
-    public void setMotorNr(String motorNr) {
-        this.motorNr = motorNr;
+    public void setMotornr(String motornr) {
+        this.motornr = motornr;
     }
 
     public String getMotorTyp() {
@@ -1501,126 +1503,5 @@ public class Invoice {
 
     public void setMailCc(String mailCc) {
         this.mailCc = mailCc;
-    }
-
-    // Convenience methods for DataInitializer
-    public void setCompanyCode(String companyCode) {
-        this.pakz = companyCode;
-    }
-
-    public String getCompanyCode() {
-        return pakz;
-    }
-
-    public void setInvoiceNumber(String invoiceNumber) {
-        this.rnr = invoiceNumber;
-    }
-
-    public String getInvoiceNumber() {
-        return rnr;
-    }
-
-    public void setInvoiceDate(String invoiceDate) {
-        this.rdat = invoiceDate;
-    }
-
-    public String getInvoiceDate() {
-        return rdat;
-    }
-
-    public void setOrderNumber(String orderNumber) {
-        this.anr = orderNumber;
-    }
-
-    public String getOrderNumber() {
-        return anr;
-    }
-
-    public void setWorkshopType(String workshopType) {
-        this.wt = workshopType;
-    }
-
-    public String getWorkshopType() {
-        return wt;
-    }
-
-    public void setArea(String area) {
-        this.berei = area;
-    }
-
-    public String getArea() {
-        return berei;
-    }
-
-    public void setSplit(String split) {
-        this.splitt = split;
-    }
-
-    public String getSplit() {
-        return splitt;
-    }
-
-    public void setOrderDate(String orderDate) {
-        this.adat = orderDate;
-    }
-
-    public String getOrderDate() {
-        return adat;
-    }
-
-    public void setAcceptanceDate(String acceptanceDate) {
-        this.ga = acceptanceDate;
-    }
-
-    public String getAcceptanceDate() {
-        return ga;
-    }
-
-    public void setVehicleNumber(String vehicleNumber) {
-        this.fahrgNr = vehicleNumber;
-    }
-
-    public String getVehicleNumber() {
-        return fahrgNr;
-    }
-
-    public void setLicensePlate(String licensePlate) {
-        this.kz = licensePlate;
-    }
-
-    public String getLicensePlate() {
-        return kz;
-    }
-
-    public void setRegistrationDate(String registrationDate) {
-        this.zdat = registrationDate;
-    }
-
-    public String getRegistrationDate() {
-        return zdat;
-    }
-
-    public void setCustomerNumber(String customerNumber) {
-        this.kundenNr = customerNumber;
-    }
-
-    public String getCustomerNumber() {
-        return kundenNr;
-    }
-
-    public void setMileage(String mileage) {
-        this.km = mileage;
-    }
-
-    public String getMileage() {
-        return km;
-    }
-
-    public void setCompletionDate(String completionDate) {
-        this.fertTag = completionDate;
-    }
-
-    public String getCompletionDate() {
-        return fertTag;
     }
 }

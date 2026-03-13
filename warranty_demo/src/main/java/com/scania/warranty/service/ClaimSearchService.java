@@ -62,17 +62,16 @@ public class ClaimSearchService {
     }
 
     private List<Claim> fetchClaims(ClaimSearchCriteria criteria) {
-        // @origin HS1210 L2818-2831 (IF)
+        // Fetch all claims for company (include status 99 / NULL for full list display)
         if (criteria.ascending()) {
-            // @origin HS1210 L2838-2838 (CHAIN)
-            return claimRepository.findActiveClaimsByCompanyCodeAscending(criteria.companyCode());
+            return claimRepository.findAllByPakzOrderByClaimNrAsc(criteria.companyCode());
         } else {
-            return claimRepository.findActiveClaimsByCompanyCodeDescending(criteria.companyCode());
+            return claimRepository.findByPakzOrderByClaimNrDescAll(criteria.companyCode());
         }
     }
 
     private boolean applyFilters(Claim claim, ClaimSearchCriteria criteria) {
-        // @origin HS1210 L2832-2868 (IF)
+        // @origin HS1210 L841-844 (IF)
         if (!applyAgeFilter(claim, criteria.ageFilterDays())) {
             return false;
         }
@@ -113,12 +112,16 @@ public class ClaimSearchService {
             return true;
         }
 
-        if (claim.getStatusCodeSde().compareTo(BigDecimal.valueOf(99)) == 0) {
+        if (claim.getStatusCodeSde() != null && claim.getStatusCodeSde().compareTo(99) == 0) {
             return false;
         }
 
         try {
-            LocalDate repairDate = LocalDate.parse(claim.getRepairDate(), ISO_DATE_FORMATTER);
+            Integer repDatumInt = claim.getRepDatum();
+            if (repDatumInt == null || repDatumInt == 0) {
+                return true;
+            }
+            LocalDate repairDate = LocalDate.parse(String.valueOf(repDatumInt), ISO_DATE_FORMATTER);
             LocalDate currentDate = LocalDate.now();
             long daysBetween = ChronoUnit.DAYS.between(repairDate, currentDate);
 
@@ -137,12 +140,13 @@ public class ClaimSearchService {
             return true;
         }
 
-        // @origin HS1210 L2815-2815 (CHAIN)
-        List<ClaimError> errors = claimErrorRepository.findByClaimNumber(claim.getCompanyCode(), claim.getClaimNumber());
+        // @origin HS1210 L1035-1035 (CHAIN)
+        List<ClaimError> errors = claimErrorRepository.findByClaimNumber(claim.getPakz(), claim.getClaimNr());
 
-        // @origin HS1210 L2817-2870 (DOW)
+        // @origin HS1210 L884-1012 (DOW)
         for (ClaimError error : errors) {
             String scope = determineClaimScope(error);
+            // @origin HS1210 L956-958 (IF)
             if (scope != null && scope.startsWith(claimTypeFilter)) {
                 return true;
             }
@@ -152,14 +156,17 @@ public class ClaimSearchService {
     }
 
     private boolean isOpenClaim(Claim claim) {
-        if (claim.getStatusCodeSde().compareTo(BigDecimal.valueOf(20)) < 0 && claim.getStatusCodeSde().compareTo(BigDecimal.valueOf(5)) != 0) {
+        if (claim.getStatusCodeSde() != null && claim.getStatusCodeSde().compareTo(20) < 0 && claim.getStatusCodeSde().compareTo(5) != 0) {
             return true;
         }
 
-        List<ClaimError> errors = claimErrorRepository.findByClaimNumber(claim.getCompanyCode(), claim.getClaimNumber());
+        // @origin HS1210 L1100-1100 (CHAIN)
+        List<ClaimError> errors = claimErrorRepository.findByClaimNumber(claim.getPakz(), claim.getClaimNr());
 
+        // @origin HS1210 L908-913 (DOW)
         for (ClaimError error : errors) {
-            if (error.getStatusCode().compareTo(BigDecimal.ZERO) == 0) {
+            // @origin HS1210 L960-963 (IF)
+            if (error.getStatusCode() != null && error.getStatusCode().compareTo(0) == 0) {
                 return true;
             }
         }
@@ -174,7 +181,7 @@ public class ClaimSearchService {
 
         try {
             int filterStatus = Integer.parseInt(statusFilter);
-            int claimStatus = claim.getStatusCodeSde().intValue();
+            int claimStatus = claim.getStatusCodeSde() != null ? claim.getStatusCodeSde() : 0;
 
             switch (statusOperator) {
                 case "=":
@@ -196,19 +203,19 @@ public class ClaimSearchService {
         if (vehicleFilter == null || vehicleFilter.isBlank()) {
             return true;
         }
-        return claim.getChassisNumber().contains(vehicleFilter);
+        return claim.getChassisNr().contains(vehicleFilter);
     }
 
     private boolean applyCustomerFilter(Claim claim, String customerFilter) {
         if (customerFilter == null || customerFilter.isBlank()) {
             return true;
         }
-        return claim.getCustomerNumber().contains(customerFilter);
+        return claim.getKdNr().contains(customerFilter);
     }
 
     private boolean applySdeClaimFilter(Claim claim, String sdeClaimFilter, boolean minimumOnly) {
         if (minimumOnly) {
-            return "00000000".equals(claim.getClaimNumberSde());
+            return "00000000".equals(claim.getClaimNrSde());
         }
 
         if (sdeClaimFilter == null || sdeClaimFilter.isBlank()) {
@@ -216,10 +223,10 @@ public class ClaimSearchService {
         }
 
         if ("00000000".equals(sdeClaimFilter)) {
-            return "00000000".equals(claim.getClaimNumberSde());
+            return "00000000".equals(claim.getClaimNrSde());
         }
 
-        return claim.getClaimNumberSde().contains(sdeClaimFilter);
+        return claim.getClaimNrSde().contains(sdeClaimFilter);
     }
 
     private boolean applySearchTextFilter(Claim claim, String searchText) {
@@ -229,16 +236,15 @@ public class ClaimSearchService {
 
         String searchLower = searchText.toLowerCase();
 
-        if (claim.getCompanyCode().toLowerCase().contains(searchLower)) return true;
-        if (claim.getOrderNumber().toLowerCase().contains(searchLower)) return true;
-        if (claim.getInvoiceDate().toLowerCase().contains(searchLower)) return true;
-        if (claim.getClaimNumberSde().toLowerCase().contains(searchLower)) return true;
-        if (claim.getChassisNumber().toLowerCase().contains(searchLower)) return true;
-        if (claim.getInvoiceNumber().toLowerCase().contains(searchLower)) return true;
-        if (claim.getInvoiceDate().toLowerCase().contains(searchLower)) return true;
-        if (claim.getLicensePlate().toLowerCase().contains(searchLower)) return true;
-        if (claim.getCustomerNumber().toLowerCase().contains(searchLower)) return true;
-        if (claim.getCustomerName().toLowerCase().contains(searchLower)) return true;
+        if (claim.getPakz().toLowerCase().contains(searchLower)) return true;
+        if (claim.getClaimNr().toLowerCase().contains(searchLower)) return true;
+        if (claim.getRechDatum() != null && claim.getRechDatum().toLowerCase().contains(searchLower)) return true;
+        if (claim.getAuftragsNr().toLowerCase().contains(searchLower)) return true;
+        if (claim.getChassisNr().toLowerCase().contains(searchLower)) return true;
+        if (claim.getRechNr() != null && claim.getRechNr().toLowerCase().contains(searchLower)) return true;
+        if (claim.getKennzeichen() != null && claim.getKennzeichen().toLowerCase().contains(searchLower)) return true;
+        if (claim.getKdNr().toLowerCase().contains(searchLower)) return true;
+        if (claim.getKdName() != null && claim.getKdName().toLowerCase().contains(searchLower)) return true;
 
         return false;
     }
@@ -246,45 +252,52 @@ public class ClaimSearchService {
     private ClaimListItemDto mapToListItem(Claim claim, ClaimSearchCriteria criteria) {
         String statusDescription = getStatusDescription(claim);
         DisplayColor displayColor = determineDisplayColor(claim);
-        int errorCount = claimErrorRepository.findByClaimNumber(claim.getCompanyCode(), claim.getClaimNumber()).size();
+        // @origin HS1210 L1106-1106 (CHAIN)
+        int errorCount = claimErrorRepository.findByClaimNumber(claim.getPakz(), claim.getClaimNr()).size();
         String demandCode = getDemandCode(claim);
+        String formattedDate = formatDate(claim.getRechDatum());
 
         return new ClaimListItemDto(
-            claim.getCompanyCode(),
-            claim.getClaimNumber(),
-            claim.getInvoiceNumber(),
-            formatDate(claim.getInvoiceDate()),
-            claim.getOrderNumber(),
-            claim.getChassisNumber(),
-            claim.getCustomerNumber(),
-            claim.getCustomerName(),
-            claim.getClaimNumberSde(),
-            String.valueOf(claim.getStatusCodeSde().intValue()),
+            claim.getPakz(),
+            claim.getRechNr(),
+            claim.getRechDatum(),
+            formattedDate,
+            claim.getAuftragsNr(),
+            claim.getClaimNr(),
+            claim.getChassisNr(),
+            claim.getKdNr(),
+            claim.getKdName(),
+            claim.getClaimNrSde(),
+            claim.getStatusCodeSde() != null ? claim.getStatusCodeSde() : 0,
             statusDescription,
             errorCount,
-            displayColor.getCode()
+            demandCode,
+            displayColor != null ? String.valueOf(displayColor.getCode()) : ""
         );
     }
 
     private String getStatusDescription(Claim claim) {
-        if ("00000000".equals(claim.getClaimNumberSde())) {
-            if (claim.getStatusCodeSde().compareTo(BigDecimal.valueOf(5)) == 0) {
+        // @origin HS1210 L1118-1122 (IF)
+        if ("00000000".equals(claim.getClaimNrSde())) {
+            if (claim.getStatusCodeSde() != null && claim.getStatusCodeSde().compareTo(5) == 0) {
                 return "Minimumantrag";
-            } else if (claim.getStatusCodeSde().compareTo(BigDecimal.valueOf(20)) == 0) {
+            } else if (claim.getStatusCodeSde() != null && claim.getStatusCodeSde().compareTo(20) == 0) {
                 return "Minimum ausgebucht";
             } else {
                 return "Minimumantrag";
             }
         }
 
-        ClaimStatus status = ClaimStatus.fromCode(claim.getStatusCodeSde().intValue());
-        return status != null ? status.getDescription() : "";
+        ClaimStatus status = ClaimStatus.fromCode(claim.getStatusCodeSde() != null ? claim.getStatusCodeSde() : 0);
+        return status != null ? status.name() : "";
     }
 
     private DisplayColor determineDisplayColor(Claim claim) {
-        List<ClaimError> errors = claimErrorRepository.findByClaimNumber(claim.getCompanyCode(), claim.getClaimNumber());
+        // @origin HS1210 L1129-1129 (CHAIN)
+        List<ClaimError> errors = claimErrorRepository.findByClaimNumber(claim.getPakz(), claim.getClaimNr());
 
-        if (errors.isEmpty() && claim.getStatusCodeSde().compareTo(BigDecimal.valueOf(20)) == 0) {
+        // @origin HS1210 L1130-1147 (IF)
+        if (errors.isEmpty() && claim.getStatusCodeSde() != null && claim.getStatusCodeSde().compareTo(20) == 0) {
             return DisplayColor.RED;
         }
 
@@ -292,21 +305,23 @@ public class ClaimSearchService {
         boolean hasYellow = false;
         boolean hasBlue = false;
 
+        // @origin HS1210 L1028-1036 (DOW)
         for (ClaimError error : errors) {
-            if (error.getStatusCode().compareTo(BigDecimal.valueOf(16)) == 0) {
+            // @origin HS1210 L1152-1162 (IF)
+            if (error.getStatusCode() != null && error.getStatusCode().compareTo(16) == 0) {
                 hasRed = true;
             }
 
-            if (error.getStatusCode().compareTo(BigDecimal.valueOf(30)) == 0 || error.getStatusCode().compareTo(BigDecimal.ZERO) == 0 && !claim.getClaimNumberSde().isBlank() ||
-                claim.getClaimNumberSde().isBlank() && claim.getStatusCodeSde().compareTo(BigDecimal.valueOf(20)) == 0) {
+            if (error.getStatusCode() != null && (error.getStatusCode().compareTo(30) == 0 || error.getStatusCode().compareTo(0) == 0 && !claim.getClaimNrSde().isBlank() ||
+                claim.getClaimNrSde().isBlank() && claim.getStatusCodeSde() != null && claim.getStatusCodeSde().compareTo(20) == 0)) {
                 hasRed = true;
             }
 
-            if (error.getStatusCode().compareTo(BigDecimal.valueOf(11)) == 0) {
+            if (error.getStatusCode() != null && error.getStatusCode().compareTo(11) == 0) {
                 hasYellow = true;
             }
 
-            if (error.getStatusCode().compareTo(BigDecimal.valueOf(3)) == 0 || error.getStatusCode().compareTo(BigDecimal.valueOf(11)) == 0) {
+            if (error.getStatusCode() != null && (error.getStatusCode().compareTo(3) == 0 || error.getStatusCode().compareTo(11) == 0)) {
                 hasBlue = true;
             }
         }
@@ -319,18 +334,20 @@ public class ClaimSearchService {
     }
 
     private String getDemandCode(Claim claim) {
-        List<ClaimError> errors = claimErrorRepository.findByClaimNumber(claim.getCompanyCode(), claim.getClaimNumber());
+        // @origin HS1210 L1135-1135 (CHAIN)
+        List<ClaimError> errors = claimErrorRepository.findByClaimNumber(claim.getPakz(), claim.getClaimNr());
+        // @origin HS1210 L1281-1291 (IF)
         if (errors.isEmpty()) {
             return "";
         }
-        return errors.get(0).getMainGroup();
+        return errors.get(0).getHauptgruppe();
     }
 
     private String determineClaimScope(ClaimError error) {
-        String mainGroup = error.getMainGroup();
-        String subGroup = error.getSubGroup();
-        String controlCode = error.getControlCode();
-        Integer claimType = error.getClaimType();
+        String mainGroup = error.getHauptgruppe();
+        String subGroup = error.getNebengruppe();
+        String controlCode = error.getSteuerCode();
+        Integer claimArt = error.getClaimArt();
 
         if ("01".equals(mainGroup) && "01".equals(subGroup)) {
             return "G";
@@ -340,7 +357,7 @@ public class ClaimSearchService {
             return "K";
         }
 
-        if (claimType != null && claimType == 2) {
+        if (claimArt != null && claimArt == 2) {
             return "K";
         }
 

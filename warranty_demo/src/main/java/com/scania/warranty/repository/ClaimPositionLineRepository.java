@@ -15,16 +15,15 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Repository for ClaimPositionLine entity (HSGPSLF3).
- */
 @Repository
 public interface ClaimPositionLineRepository extends JpaRepository<ClaimPositionLine, ClaimPositionLineId> {
     
-    // @origin HS1210 L2838-2838 (CHAIN)
-    @Query("SELECT cpl FROM ClaimPositionLine cpl WHERE cpl.kuerzel = :kuerzel AND cpl.claimNr = :claimNr ORDER BY cpl.fehlerNr, cpl.folgeNr, cpl.zeile")
-    List<ClaimPositionLine> findByKuerzelAndClaimNrOrderByFehlerNrAndFolgeNrAndZeile(@Param("kuerzel") String kuerzel, @Param("claimNr") String claimNr);
+    @Query("SELECT p FROM ClaimPositionLine p WHERE p.abbreviation = :abbreviation AND p.claimNumber = :claimNumber ORDER BY p.failureNumber, p.sequenceNumber, p.lineNumber, p.distribution")
+    List<ClaimPositionLine> findByAbbreviationAndClaimNumberOrderByKeys(
+        @Param("abbreviation") String abbreviation,
+        @Param("claimNumber") String claimNumber
+    ); // @rpg-trace: n1784, n1785
     
     @Query(value = "SELECT UPPER(:text) FROM SYSIBM.SYSDUMMY1", nativeQuery = true)
-    String upperCase(@Param("text") String text);
+    String toUpperCase(@Param("text") String text); // @rpg-trace: SQL statement 1
 }

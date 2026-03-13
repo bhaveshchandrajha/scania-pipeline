@@ -27,12 +27,12 @@ ROOT = Path(__file__).resolve().parent
 PROJECT_DIR = ROOT / "warranty_demo"
 BUILD_LOG = PROJECT_DIR / "target" / "last_compile_errors.txt"
 FIX_SCRIPT = ROOT / "fix_compile_errors.py"
-MAX_RETRIES = 3
+MAX_RETRIES = 4
 
 
-def run_maven_build() -> int:
+def run_maven_build(clean: bool = True) -> int:
     """Run a Maven build and persist the full log to BUILD_LOG."""
-    cmd = ["mvn", "clean", "compile", "-DskipTests"]
+    cmd = ["mvn", "-T", "1C", "-q", "clean", "compile"] if clean else ["mvn", "-T", "1C", "-q", "compile"]
     print(f"[build] Running: {' '.join(cmd)} (cwd={PROJECT_DIR})")
     proc = subprocess.run(
         cmd,
@@ -75,7 +75,7 @@ def main() -> None:
 
     for attempt in range(1, MAX_RETRIES + 1):
         print(f"\n=== Build attempt {attempt}/{MAX_RETRIES} ===")
-        code = run_maven_build()
+        code = run_maven_build(clean=(attempt == 1))
         if code == 0:
             print("[orchestrator] Build succeeded.")
             return

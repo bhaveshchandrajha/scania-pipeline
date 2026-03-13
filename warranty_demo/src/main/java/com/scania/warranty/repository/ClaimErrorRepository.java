@@ -1,7 +1,7 @@
 /**
  * Spring Data JPA repository for warranty claim data access.
  * <p>
- * Generated from RPG: unit {@code HS1210}, node {@code n1779}.
+ * Generated from RPG: unit {@code HS1210}, node {@code n404}.
  */
 
 package com.scania.warranty.repository;
@@ -16,17 +16,17 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * Repository for ClaimError entity (HSG73PF).
+ * Repository for claim error/failure details (HSG73PF).
  */
 @Repository
 public interface ClaimErrorRepository extends JpaRepository<ClaimError, ClaimErrorId> {
-    
-    @Query("SELECT e FROM ClaimError e WHERE e.pakz = :pakz AND e.rechNr = :rechNr AND e.rechDatum = :rechDatum AND e.auftragsNr = :auftragsNr AND e.bereich = :bereich AND e.claimNr = :claimNr")
-    List<ClaimError> findByClaimKey(@Param("pakz") String pakz, @Param("rechNr") String rechNr, @Param("rechDatum") String rechDatum, @Param("auftragsNr") String auftragsNr, @Param("bereich") String bereich, @Param("claimNr") String claimNr);
-    
-    @Query("SELECT e FROM ClaimError e WHERE e.pakz = :pakz AND e.claimNr = :claimNr")
-    List<ClaimError> findByCompanyCodeAndClaimNr(@Param("pakz") String pakz, @Param("claimNr") String claimNr);
-    
-    @Query("SELECT e FROM ClaimError e WHERE e.pakz = :pakz AND e.claimNr = :claimNr")
+
+    // @origin HS1210 L941-941 (CHAIN)
+    @Query("SELECT e FROM ClaimError e WHERE e.pakz = :pakz AND e.claimNr = :claimNr ORDER BY e.fehlerNr")
+    // @origin HS1210 L905-907 (IF)
     List<ClaimError> findByClaimNumber(@Param("pakz") String pakz, @Param("claimNr") String claimNr);
+
+    @Query("SELECT e FROM ClaimError e WHERE e.pakz = :pakz AND e.rechNr = :rechNr AND e.rechDatum = :rechDatum AND e.auftragsNr = :auftragsNr AND e.bereich = :bereich AND e.claimNr = :claimNr ORDER BY e.fehlerNr")
+    // @origin HS1210 L2560-2562 (IF)
+    List<ClaimError> findByInvoiceAndClaimKey(@Param("pakz") String pakz, @Param("rechNr") String rechNr, @Param("rechDatum") String rechDatum, @Param("auftragsNr") String auftragsNr, @Param("bereich") String bereich, @Param("claimNr") String claimNr);
 }

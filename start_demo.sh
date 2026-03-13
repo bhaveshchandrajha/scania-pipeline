@@ -57,5 +57,8 @@ echo "  - H2 Console: http://localhost:8081/h2-console"
 echo ""
 echo "Press Ctrl+C to stop"
 echo ""
+echo "Tip: Use ./start_demo_rds.sh to run with AWS RDS PostgreSQL"
+echo ""
 
+# Default uses H2 in-memory (robust, no external DB required)
 mvn spring-boot:run

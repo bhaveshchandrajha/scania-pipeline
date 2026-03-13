@@ -8,21 +8,19 @@ package com.scania.warranty.service;
 
 import com.scania.warranty.domain.Claim;
 import com.scania.warranty.domain.ClaimError;
-import com.scania.warranty.repository.ClaimErrorRepository;
 import com.scania.warranty.repository.ClaimRepository;
+import com.scania.warranty.repository.ClaimErrorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Service for claim status updates.
+ * Service for claim status operations (SR109, SR_MINIMUM).
  */
 @Service
-@Transactional
 public class ClaimStatusService {
 
     private final ClaimRepository claimRepository;
@@ -34,59 +32,51 @@ public class ClaimStatusService {
         this.claimErrorRepository = claimErrorRepository;
     }
 
-    public void updateClaimStatus(String companyCode, String claimNumber, int newStatus) {
-        // @origin HS1210 L2838-2838 (CHAIN)
-        Optional<Claim> claimOpt = claimRepository.findByClaimNumber(companyCode, claimNumber);
-
-        // @origin HS1210 L2818-2831 (IF)
-        if (claimOpt.isEmpty()) {
-            throw new IllegalArgumentException("Claim not found");
-        }
-
-        Claim claim = claimOpt.get();
-
-        // @origin HS1210 L2832-2868 (IF)
-        if (claim.getStatusCodeSde().compareTo(BigDecimal.valueOf(2)) == 0) {
-            claim.setStatusCodeSde(3);
-            // @origin HS1210 L2877-2877 (WRITE)
-            claimRepository.save(claim);
+    @Transactional
+    public void updateClaimStatus(String pakz, String claimNr, int newStatus) {
+        // @origin HS1210 L941-941 (CHAIN)
+        Optional<Claim> claimOpt = claimRepository.findByPakzAndClaimNr(pakz, claimNr);
+        // @origin HS1210 L830-833 (IF)
+        if (claimOpt.isPresent()) {
+            Claim claim = claimOpt.get();
+            if (claim.getStatusCodeSde() == 2) {
+                // @origin HS1210 L887-887 (EVAL)
+                claim.setStatusCodeSde(newStatus);
+                // @origin HS1210 L860-860 (WRITE)
+                claimRepository.save(claim);
+            }
         }
     }
 
-    public void deleteClaimAndErrors(String companyCode, String claimNumber) {
-        // @origin HS1210 L2874-2874 (CHAIN)
-        Optional<Claim> claimOpt = claimRepository.findByClaimNumber(companyCode, claimNumber);
-
-        // @origin HS1210 L2837-2845 (IF)
-        if (claimOpt.isEmpty()) {
-            throw new IllegalArgumentException("Claim not found");
-        }
-
-        Claim claim = claimOpt.get();
-        claim.setStatusCodeSde(99);
-        claimRepository.save(claim);
-
-        // @origin HS1210 L2815-2815 (CHAIN)
-        List<ClaimError> errors = claimErrorRepository.findByClaimNumber(companyCode, claimNumber);
-        // @origin HS1210 L2817-2870 (DOW)
-        for (ClaimError error : errors) {
-            claimErrorRepository.delete(error);
+    @Transactional
+    public void deleteClaimAndErrors(String pakz, String claimNr) {
+        // @origin HS1210 L1027-1027 (CHAIN)
+        Optional<Claim> claimOpt = claimRepository.findByPakzAndClaimNr(pakz, claimNr);
+        // @origin HS1210 L845-848 (IF)
+        if (claimOpt.isPresent()) {
+            Claim claim = claimOpt.get();
+            // @origin HS1210 L1035-1035 (CHAIN)
+            List<ClaimError> errors = claimErrorRepository.findByClaimNumber(pakz, claimNr);
+            claimErrorRepository.deleteAll(errors);
+            claimRepository.delete(claim);
         }
     }
 
-    public void postMinimumClaim(String companyCode, String claimNumber) {
-        Optional<Claim> claimOpt = claimRepository.findByClaimNumber(companyCode, claimNumber);
-
-        // @origin HS1210 L2839-2844 (IF)
+    @Transactional
+    public void postMinimumClaim(String pakz, String claimNr) {
+        Optional<Claim> claimOpt = claimRepository.findByPakzAndClaimNr(pakz, claimNr);
+        // @origin HS1210 L864-883 (IF)
         if (claimOpt.isEmpty()) {
-            throw new IllegalArgumentException("Claim not found");
+            // @origin HS1210 L895-895 (EXSR)
+            throw new IllegalArgumentException("Claim not found: " + pakz + "/" + claimNr);
         }
-
-        Claim claim = claimOpt.get();
-
-        // @origin HS1210 L2840-2843 (IF)
-        if (claim.getStatusCodeSde().compareTo(BigDecimal.valueOf(5)) == 0) {
+        claimOpt = claimRepository.findByPakzAndClaimNr(pakz, claimNr);
+        // @origin HS1210 L886-892 (IF)
+        if (claimOpt.isPresent()) {
+            Claim claim = claimOpt.get();
+            // @origin HS1210 L890-890 (EVAL)
             claim.setStatusCodeSde(20);
+            // @origin HS1210 L861-861 (WRITE)
             claimRepository.save(claim);
         }
     }

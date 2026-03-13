@@ -7,41 +7,20 @@
 package com.scania.warranty.domain;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
-/**
- * Value object for claim creation context.
- */
 public record ClaimCreationContext(
-    String companyCode,
-    String claimNumber,
-    String invoiceNumber,
-    String invoiceDate,
-    String orderNumber,
-    List<FailureData> failures
+    String kuerzel, // @rpg-trace: n1779
+    String claimNr, // @rpg-trace: n1779
+    Integer failureNo, // @rpg-trace: n1783
+    boolean create, // @rpg-trace: n1833
+    boolean maintenance, // @rpg-trace: n1791
+    String groups, // @rpg-trace: n1796
+    String partNo, // @rpg-trace: n1797
+    BigDecimal partValue, // @rpg-trace: n1798
+    String text, // @rpg-trace: n1779
+    Integer lineNo, // @rpg-trace: n1792
+    BigDecimal valueMat, // @rpg-trace: n1793
+    BigDecimal valueLab, // @rpg-trace: n1794
+    BigDecimal valueSpe // @rpg-trace: n1795
 ) {
-    public ClaimCreationContext {
-        if (failures == null) {
-            failures = new ArrayList<>();
-        }
-    }
-    
-    public static record FailureData(
-        int failureNumber,
-        String mainGroup,
-        String subGroup,
-        String partNumber,
-        boolean isMaintenance,
-        List<String> textLines,
-        BigDecimal materialValue,
-        BigDecimal laborValue,
-        BigDecimal specialValue
-    ) {
-        public FailureData {
-            if (textLines == null) {
-                textLines = new ArrayList<>();
-            }
-        }
-    }
 }

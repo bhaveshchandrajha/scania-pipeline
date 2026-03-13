@@ -17,78 +17,78 @@ import jakarta.persistence.*;
 public class ReleaseRequest {
 
     @Id
-    @Column(name = "KZL", length = 3)
-    private String companyCode;
+    @Column(name = "KZL", length = 3, nullable = false)
+    private String kzl; // @rpg-trace: schema
 
     @Id
-    @Column(name = "R.NR.", length = 5)
-    private String invoiceNumber;
+    @Column(name = "R.NR.", length = 5, nullable = false)
+    private String rnr; // @rpg-trace: schema
 
     @Id
-    @Column(name = "R.DAT", length = 8)
-    private String invoiceDate;
+    @Column(name = "R.DAT", length = 8, nullable = false)
+    private String rdat; // @rpg-trace: schema
 
-    @Column(name = "FGNR.", length = 17)
-    private String vehicleNumber;
+    @Column(name = "FGNR.", length = 17, nullable = false)
+    private String fgnr; // @rpg-trace: schema
 
-    @Column(name = "REP.DAT.", length = 8)
-    private String repairDate;
+    @Column(name = "REP.DAT.", length = 8, nullable = false)
+    private String repdat; // @rpg-trace: schema
 
-    @Column(name = "STATUS", length = 1)
-    private String status;
+    @Column(name = "STATUS", length = 1, nullable = false)
+    private String status; // @rpg-trace: schema
 
-    @Column(name = "CUS.NO.", precision = 5, scale = 0)
-    private Integer customerNumber;
+    @Column(name = "CUS.NO.", precision = 5, scale = 0, nullable = false)
+    private Integer cusNo; // @rpg-trace: schema
 
-    @Column(name = "D.C.NO.", precision = 8, scale = 0)
-    private Integer dealerClaimNumber;
+    @Column(name = "D.C.NO.", precision = 8, scale = 0, nullable = false)
+    private Integer dcNo; // @rpg-trace: schema
 
-    @Column(name = "D.C.FN.", length = 5)
-    private String dealerClaimFailureNumber;
+    @Column(name = "D.C.FN.", length = 5, nullable = false)
+    private String dcFn; // @rpg-trace: schema
 
     // Constructors
     public ReleaseRequest() {
     }
 
     // Getters and Setters
-    public String getCompanyCode() {
-        return companyCode;
+    public String getKzl() {
+        return kzl;
     }
 
-    public void setCompanyCode(String companyCode) {
-        this.companyCode = companyCode;
+    public void setKzl(String kzl) {
+        this.kzl = kzl;
     }
 
-    public String getInvoiceNumber() {
-        return invoiceNumber;
+    public String getRnr() {
+        return rnr;
     }
 
-    public void setInvoiceNumber(String invoiceNumber) {
-        this.invoiceNumber = invoiceNumber;
+    public void setRnr(String rnr) {
+        this.rnr = rnr;
     }
 
-    public String getInvoiceDate() {
-        return invoiceDate;
+    public String getRdat() {
+        return rdat;
     }
 
-    public void setInvoiceDate(String invoiceDate) {
-        this.invoiceDate = invoiceDate;
+    public void setRdat(String rdat) {
+        this.rdat = rdat;
     }
 
-    public String getVehicleNumber() {
-        return vehicleNumber;
+    public String getFgnr() {
+        return fgnr;
     }
 
-    public void setVehicleNumber(String vehicleNumber) {
-        this.vehicleNumber = vehicleNumber;
+    public void setFgnr(String fgnr) {
+        this.fgnr = fgnr;
     }
 
-    public String getRepairDate() {
-        return repairDate;
+    public String getRepdat() {
+        return repdat;
     }
 
-    public void setRepairDate(String repairDate) {
-        this.repairDate = repairDate;
+    public void setRepdat(String repdat) {
+        this.repdat = repdat;
     }
 
     public String getStatus() {
@@ -99,27 +99,27 @@ public class ReleaseRequest {
         this.status = status;
     }
 
-    public Integer getCustomerNumber() {
-        return customerNumber;
+    public Integer getCusNo() {
+        return cusNo;
     }
 
-    public void setCustomerNumber(Integer customerNumber) {
-        this.customerNumber = customerNumber;
+    public void setCusNo(Integer cusNo) {
+        this.cusNo = cusNo;
     }
 
-    public Integer getDealerClaimNumber() {
-        return dealerClaimNumber;
+    public Integer getDcNo() {
+        return dcNo;
     }
 
-    public void setDealerClaimNumber(Integer dealerClaimNumber) {
-        this.dealerClaimNumber = dealerClaimNumber;
+    public void setDcNo(Integer dcNo) {
+        this.dcNo = dcNo;
     }
 
-    public String getDealerClaimFailureNumber() {
-        return dealerClaimFailureNumber;
+    public String getDcFn() {
+        return dcFn;
     }
 
-    public void setDealerClaimFailureNumber(String dealerClaimFailureNumber) {
-        this.dealerClaimFailureNumber = dealerClaimFailureNumber;
+    public void setDcFn(String dcFn) {
+        this.dcFn = dcFn;
     }
 }

@@ -13,26 +13,26 @@ import jakarta.persistence.*;
  */
 @Entity
 @Table(name = "HSG70F")
-@IdClass(WarrantyReleaseId.class)
 public class WarrantyRelease {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "KZL", length = 3, nullable = false)
     private String kzl; // @rpg-trace: schema
 
-    @Id
     @Column(name = "R.NR.", length = 5, nullable = false)
-    private String rNr; // @rpg-trace: schema
+    private String rnr; // @rpg-trace: schema
 
-    @Id
     @Column(name = "R.DAT", length = 8, nullable = false)
-    private String rDat; // @rpg-trace: schema
+    private String rdat; // @rpg-trace: schema
 
     @Column(name = "FGNR.", length = 17, nullable = false)
     private String fgnr; // @rpg-trace: schema
 
     @Column(name = "REP.DAT.", length = 8, nullable = false)
-    private String repDat; // @rpg-trace: schema
+    private String repdat; // @rpg-trace: schema
 
     @Column(name = "STATUS", length = 1, nullable = false)
     private String status; // @rpg-trace: schema
@@ -46,11 +46,17 @@ public class WarrantyRelease {
     @Column(name = "D.C.FN.", length = 5, nullable = false)
     private String dcFn; // @rpg-trace: schema
 
-    // Constructors
     public WarrantyRelease() {
     }
 
-    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getKzl() {
         return kzl;
     }
@@ -59,20 +65,20 @@ public class WarrantyRelease {
         this.kzl = kzl;
     }
 
-    public String getrNr() {
-        return rNr;
+    public String getRnr() {
+        return rnr;
     }
 
-    public void setrNr(String rNr) {
-        this.rNr = rNr;
+    public void setRnr(String rnr) {
+        this.rnr = rnr;
     }
 
-    public String getrDat() {
-        return rDat;
+    public String getRdat() {
+        return rdat;
     }
 
-    public void setrDat(String rDat) {
-        this.rDat = rDat;
+    public void setRdat(String rdat) {
+        this.rdat = rdat;
     }
 
     public String getFgnr() {
@@ -83,12 +89,12 @@ public class WarrantyRelease {
         this.fgnr = fgnr;
     }
 
-    public String getRepDat() {
-        return repDat;
+    public String getRepdat() {
+        return repdat;
     }
 
-    public void setRepDat(String repDat) {
-        this.repDat = repDat;
+    public void setRepdat(String repdat) {
+        this.repdat = repdat;
     }
 
     public String getStatus() {

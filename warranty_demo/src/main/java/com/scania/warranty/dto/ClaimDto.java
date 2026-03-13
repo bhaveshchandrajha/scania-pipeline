@@ -1,26 +1,22 @@
 /**
  * Data transfer object for API or display.
  * <p>
- * Generated from RPG: unit {@code HS1210}, node {@code n404}.
+ * Generated from RPG: unit {@code HS1210}, node {@code n1779}.
  */
 
 package com.scania.warranty.dto;
 
-/**
- * DTO for claim list item.
- */
+import java.math.BigDecimal;
+
 public record ClaimDto(
-    String companyCode,
-    String claimNumber,
-    String invoiceNumber,
-    String invoiceDate,
-    String chassisNumber,
-    String customerNumber,
-    String customerName,
-    String claimNumberSde,
-    Integer statusCodeSde,
-    String statusDescription,
-    Integer errorCount,
-    String displayColor
+    String pakz, // @rpg-trace: schema
+    String rechNr, // @rpg-trace: schema
+    String rechDatum, // @rpg-trace: schema
+    String auftragsNr, // @rpg-trace: schema
+    String bereich, // @rpg-trace: schema
+    String claimNr, // @rpg-trace: schema
+    String chassisNr, // @rpg-trace: schema
+    Integer statusCodeSde, // @rpg-trace: schema
+    Integer anzFehler // @rpg-trace: schema
 ) {
 }

@@ -33,6 +33,17 @@ Thumbs.db
 backup_*/
 *_checkpoint_*/
 
+# Push temp
+.push_tmp/
+
+# H2 file-based database (warranty_demo)
+warranty_demo/data/
+
+# Secrets (never commit)
+.env
+.env.local
+.env.*.local
+
 # Optional: exclude large generated data
 # context_index_old_*/
 # JSON_ast/

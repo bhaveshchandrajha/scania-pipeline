@@ -39,23 +39,22 @@
 
     async function loadData(schema, companyCode) {
       const ds = schema.dataSource;
-      const url = new URL(ds.url, window.location.origin);
-      if (ds.params && ds.params.companyCode) {
-        url.searchParams.set(
-          'companyCode',
-          companyCode || ds.params.companyCode.value || '001'
-        );
-      }
-      const res = await fetch(url.toString());
+      const url = new URL(ds.url, window.location.origin).toString();
+      const method = (ds.method || 'POST').toUpperCase();
+      const body = {
+        companyCode: companyCode || (ds.params?.companyCode?.value) || '001',
+        openClaimsOnly: false,
+        ascending: true
+      };
+      const res = await fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
       if (!res.ok) throw new Error('Failed to load claims');
       const json = await res.json();
-      // API returns an object { claims: [...], totalCount, criteria }
-      if (Array.isArray(json)) {
-        return json;
-      }
-      if (Array.isArray(json.claims)) {
-        return json.claims;
-      }
+      if (Array.isArray(json)) return json;
+      if (Array.isArray(json.claims)) return json.claims;
       return [];
     }
 

@@ -11,19 +11,18 @@ package com.scania.warranty.domain;
  */
 public record ClaimSearchCriteria(
     String companyCode,
+    String filterType,
+    String searchText,
+    Integer ageFilterDays,
+    String claimTypeFilter,
+    boolean openClaimsOnly,
     String statusFilter,
     String statusOperator,
-    String chassisNumberFilter,
-    String customerNumberFilter,
-    String claimNumberSdeFilter,
-    String claimTypeFilter,
-    Integer ageFilterDays,
-    boolean openClaimsOnly,
-    String searchText,
-    boolean ascending,
     String vehicleFilter,
     String customerFilter,
     String sdeClaimFilter,
-    boolean minimumOnly
+    boolean minimumOnly,
+    String sortField,
+    boolean ascending
 ) {
 }

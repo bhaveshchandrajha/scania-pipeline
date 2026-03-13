@@ -14,7 +14,7 @@
     }
   },
   "narrative": "### Node n1983: Procedure `CheckV4`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Raw sem JSON**:\n```json\n{}\n```",
-  "rpgSnippet": "     P CheckV4         B\n     D CheckV4         PI              N\n     D*****************************************************************\nRM#8   Monitor;\nRM#8      If %Subst(G71200:8:2) = 'V4';\n             Return *Off;\n          EndIf;\nRM#8      Chain (G71000:G71010:G71020:' ':\nRM#8             G71030:G71040:G71190:%Subst(G71200:8:2)) HSAHKPF;\nRM#8      If %Found(HSAHKPF);\nRM#8         SetLl (AHK000:AHK040:AHK050:AHK060:'V4') HSEPAF;\nRM#8         ReadE (AHK000:AHK040:AHK050:AHK060:'V4') HSEPAF;\nRM#8         DoW Not %EoF(HSEPAF);\nRM#8            If EPA_DATV = AHK080;\nRM#8               return *On;\nRM#8            EndIf;\nRM#8            ReadE (AHK000:AHK040:AHK050:AHK060:'V4') HSEPAF;\nRM#8         EndDo;\nRM#8      EndIf;\nRM#8   On-Error *All;\nRM#8\nRM#8   EndMon;\n       Return *Off;\n     P                 E",
+  "rpgSnippet": "",
   "dbContracts": [],
   "symbolMetadata": {},
   "statementNodes": [

@@ -16,42 +16,16 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Spring Data JPA repository for InvoiceHeader entity.
+ * Repository for invoice header (HSAHKLF3).
  */
 @Repository
 public interface InvoiceHeaderRepository extends JpaRepository<InvoiceHeader, Long> {
 
-    // @origin HS1210 L2838-2838 (CHAIN)
-    @Query("SELECT i FROM InvoiceHeader i WHERE i.companyCode = :companyCode " +
-           "AND i.orderDate = :orderDate AND i.orderNumber = :orderNumber " +
-           "AND i.department = :department AND i.workshopTheke = :workshopTheke " +
-           "AND i.split = :split")
-    Optional<InvoiceHeader> findByKey(
-        @Param("companyCode") String companyCode,
-        @Param("orderDate") String orderDate,
-        @Param("orderNumber") String orderNumber,
-        @Param("department") String department,
-        @Param("workshopTheke") String workshopTheke,
-        @Param("split") String split
-    );
+    // @origin HS1210 L941-941 (CHAIN)
+    @Query("SELECT i FROM InvoiceHeader i WHERE i.pakz = :pakz AND i.rnr = :rnr AND i.rdat = :rdat AND i.anr = :anr AND i.berei = :berei AND i.wt = :wt AND i.splitt = :splitt")
+    Optional<InvoiceHeader> findByKey(@Param("pakz") String pakz, @Param("rnr") String rnr, @Param("rdat") String rdat, @Param("anr") String anr, @Param("berei") String berei, @Param("wt") String wt, @Param("splitt") String splitt);
 
-    @Query("SELECT i FROM InvoiceHeader i WHERE i.companyCode = :companyCode " +
-           "AND i.invoiceNumber = :invoiceNumber AND i.invoiceDate = :invoiceDate " +
-           "AND i.orderNumber = :orderNumber AND i.workshopTheke = :workshopTheke")
-    Optional<InvoiceHeader> findByInvoiceKey(
-        @Param("companyCode") String companyCode,
-        @Param("invoiceNumber") String invoiceNumber,
-        @Param("invoiceDate") String invoiceDate,
-        @Param("orderNumber") String orderNumber,
-        @Param("workshopTheke") String workshopTheke
-    );
-
-    // @origin HS1210 L2815-2815 (CHAIN)
-    @Query("SELECT i FROM InvoiceHeader i WHERE i.companyCode = :companyCode " +
-           "AND i.stornoIndicator = 'S' AND i.orderDate = :orderDate " +
-           "ORDER BY i.invoiceNumber")
-    List<InvoiceHeader> findStornoInvoices(
-        @Param("companyCode") String companyCode,
-        @Param("orderDate") String orderDate
-    );
+    // @origin HS1210 L1027-1027 (CHAIN)
+    @Query("SELECT i FROM InvoiceHeader i WHERE i.pakz = :pakz AND i.adat = :adat AND i.anr = :anr AND i.berei = :berei AND i.wt = :wt")
+    List<InvoiceHeader> findByOrderKey(@Param("pakz") String pakz, @Param("adat") String adat, @Param("anr") String anr, @Param("berei") String berei, @Param("wt") String wt);
 }

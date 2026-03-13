@@ -1,0 +1,57 @@
+<div class="claims-container" *ngIf="schema">
+  <header class="claims-header">
+    <h1>{{ schema.title }}</h1>
+
+    <div class="toolbar">
+      <div class="filters">
+        <label>
+          <span class="filter-label">Company:</span>
+          <input type="text" [(ngModel)]="companyCode" (ngModelChange)="loadClaims()" />
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" [(ngModel)]="openClaimsOnly" (ngModelChange)="loadClaims()" />
+          Open claims only
+        </label>
+        <div class="filter-panel" *ngIf="showFilterDialog">
+          <span class="filter-hint">Sort: {{ ascending ? 'Asc' : 'Desc' }}</span>
+          <button type="button" class="filter-close" (click)="showFilterDialog = false">Close</button>
+        </div>
+      </div>
+      <div class="actions">
+        <button *ngFor="let action of schema.actions" 
+                type="button" 
+                class="action-btn"
+                (click)="onAction(action)">
+          {{ action.label }}
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="error" *ngIf="error">{{ error }}</div>
+  <div class="loading" *ngIf="loading">Loading claims...</div>
+
+  <div class="table-wrapper" *ngIf="!loading && claims.length > 0">
+    <table class="claims-table">
+      <thead>
+        <tr>
+          <th *ngFor="let col of schema.columns">{{ col.label }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of claims" 
+            [class.color-indicator]="item.colorIndicator"
+            [class.selected]="selectedClaim === item"
+            (click)="selectRow(item)">
+          <td *ngFor="let col of schema.columns">
+            {{ getValue(item, col.dtoField) ?? '' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="empty" *ngIf="!loading && claims.length === 0 && !error">
+    No claims found.
+  </div>
+</div>

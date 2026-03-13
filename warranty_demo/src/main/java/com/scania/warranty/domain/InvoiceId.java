@@ -5,6 +5,7 @@ import java.util.Objects;
 
 /**
  * Composite primary key for {@link Invoice} (HSAHKLF3).
+ * Field names must match the @Id property names in Invoice.
  */
 public class InvoiceId implements Serializable {
 

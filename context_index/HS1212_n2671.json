@@ -14,7 +14,7 @@
     }
   },
   "narrative": "### Node n2671: Procedure\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Raw sem JSON**:\n```json\n{}\n```",
-  "rpgSnippet": "     P loadTextFromSfl...\n     P                 B\n     D loadTextFromSfl...\n     D                 PI\n     D*----------------------------------------------------------------\n       countZ = 0;\n       DoW countZ < 4;\n          countZ += 1;\n          Chain countZ HS1212ST;\n          If countZ = 1;\n             G7312A = TEXT;\n          EndIf;\n          If countZ = 2;\n             G7313A = TEXT;\n          EndIf;\n          If countZ = 3;\n             G7332A = TEXT;\n          EndIf;\n          If countZ = 4;\n             G7333A = TEXT;\n          EndIf;\n       EndDo;\n     P                 E",
+  "rpgSnippet": "",
   "dbContracts": [],
   "symbolMetadata": {},
   "statementNodes": [

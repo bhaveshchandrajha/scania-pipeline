@@ -15,17 +15,12 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * Spring Data JPA repository for SubmissionDeadlineRelease entity.
+ * Repository for submission deadline releases (HSG70F).
  */
 @Repository
 public interface SubmissionDeadlineReleaseRepository extends JpaRepository<SubmissionDeadlineRelease, Long> {
 
-    // @origin HS1210 L2838-2838 (CHAIN)
-    @Query("SELECT s FROM SubmissionDeadlineRelease s WHERE s.companyCode = :companyCode " +
-           "AND s.invoiceNumber = :invoiceNumber AND s.invoiceDate = :invoiceDate")
-    Optional<SubmissionDeadlineRelease> findByInvoiceKey(
-        @Param("companyCode") String companyCode,
-        @Param("invoiceNumber") String invoiceNumber,
-        @Param("invoiceDate") String invoiceDate
-    );
+    // @origin HS1210 L941-941 (CHAIN)
+    @Query("SELECT s FROM SubmissionDeadlineRelease s WHERE s.kzl = :kzl AND s.rnr = :rnr AND s.rdat = :rdat")
+    Optional<SubmissionDeadlineRelease> findByKzlAndRnrAndRdat(@Param("kzl") String kzl, @Param("rnr") String rnr, @Param("rdat") String rdat);
 }
