@@ -87,7 +87,7 @@ public class ClaimSubfileService {
                 ClaimListItemDto dto = new ClaimListItemDto(
                     claim.getG71000(),
                     claim.getG71010(),
-                    claim.getG71020(),
+                    formatDate(claim.getG71020()),
                     claim.getG71030(),
                     claim.getG71040(),
                     claim.getG71050(),
@@ -101,8 +101,8 @@ public class ClaimSubfileService {
                     claim.getG71170(),
                     resolveStatusText(claim),
                     claim.getG71190() != null ? claim.getG71190() : "",
-                    errors.size(),
-                    claim.getG71200() != null ? claim.getG71200() : ""
+                    claim.getG71200() != null ? claim.getG71200() : "",
+                    errors.size()
                 ); // @rpg-trace: n509
                 result.add(dto); // @rpg-trace: n509
             }
@@ -160,6 +160,15 @@ public class ClaimSubfileService {
         }
 
         return filteredClaims; // @rpg-trace: n523
+    }
+
+    private String formatDate(String yyyyMMdd) {
+        if (yyyyMMdd == null || yyyyMMdd.isBlank() || yyyyMMdd.length() < 8) return "";
+        String year = yyyyMMdd.substring(0, 4);
+        String month = yyyyMMdd.substring(4, 6);
+        String day = yyyyMMdd.substring(6, 8);
+        if ("0000".equals(year)) return "";
+        return day + "." + month + "." + year;
     }
 
     private String resolveStatusText(Claim claim) {
@@ -242,7 +251,7 @@ public class ClaimSubfileService {
         }
 
         Invoice invoice = invoiceOpt.get(); // @rpg-trace: n984
-        List<Claim> existingClaims = claimRepository.findByInvoiceKey(companyCode, invoiceNumber, invoiceDate, branchCode); // @rpg-trace: n965
+        List<Claim> existingClaims = claimRepository.findByInvoiceKeyPartial(companyCode, invoiceNumber, invoiceDate, branchCode); // @rpg-trace: n965
         for (Claim existing : existingClaims) { // @rpg-trace: n966
             if (existing.getG71170() != 99) { // @rpg-trace: n967
                 throw new IllegalArgumentException("Claim already exists for this invoice"); // @rpg-trace: n968
@@ -274,11 +283,11 @@ public class ClaimSubfileService {
 
         claimRepository.save(newClaim); // @rpg-trace: n1112
 
-        List<Labor> laborRecords = laborRepository.findLaborByInvoiceKey(companyCode, invoiceNumber, invoiceDate, branchCode); // @rpg-trace: n1213
+        List<Labor> laborRecords = laborRepository.findByInvoiceKey(companyCode, invoiceNumber, invoiceDate, branchCode, workshopType); // @rpg-trace: n1213
         for (Labor labor : laborRecords) { // @rpg-trace: n1213
         }
 
-        List<ExternalService> externalServices = externalServiceRepository.findByInvoiceKey(companyCode, invoiceDate, branchCode); // @rpg-trace: n1320
+        List<ExternalService> externalServices = externalServiceRepository.findExternalServicesForClaim(companyCode, invoiceDate, branchCode); // @rpg-trace: n1320
         for (ExternalService service : externalServices) { // @rpg-trace: n1323
         }
     }

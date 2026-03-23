@@ -79,13 +79,13 @@ def _run_maven_build_with_autofix(proj_path: Path, progress_callback=None, hitl_
 
     def _run_build_once(use_clean: bool = False, full_package: bool = False) -> tuple[int | None, str]:
         try:
-            # compile-only is ~2-3x faster than clean package; use for fix loop
+            # test-compile includes compile; catches test source errors (e.g. int->BigDecimal) for fix loop
             if full_package:
                 cmd = ["mvn", "-f", "pom.xml", "-T", "1C", "-q", "clean", "package", "-DskipTests"]
             elif use_clean:
-                cmd = ["mvn", "-f", "pom.xml", "-T", "1C", "-q", "clean", "compile"]
+                cmd = ["mvn", "-f", "pom.xml", "-T", "1C", "-q", "clean", "test-compile"]
             else:
-                cmd = ["mvn", "-f", "pom.xml", "-T", "1C", "-q", "compile"]
+                cmd = ["mvn", "-f", "pom.xml", "-T", "1C", "-q", "test-compile"]
             proc = subprocess.run(
                 cmd,
                 cwd=str(proj_path),
@@ -162,6 +162,20 @@ def _run_maven_build_with_autofix(proj_path: Path, progress_callback=None, hitl_
         count, _ = run_ambiguous_mapping_fix(proj_path)
         if count > 0:
             _progress(f"Ambiguous mapping fixer: {count} endpoint(s) fixed.")
+    except Exception:
+        pass
+    try:
+        from fix_int_bigdecimal import run_fix as run_int_bigdecimal_fix
+        count, _ = run_int_bigdecimal_fix(proj_path)
+        if count > 0:
+            _progress(f"Int/BigDecimal fixer: {count} file(s) fixed.")
+    except Exception:
+        pass
+    try:
+        from fix_jpql_repository_mismatch import run_fix as run_jpql_mismatch_fix
+        count, _ = run_jpql_mismatch_fix(proj_path)
+        if count > 0:
+            _progress(f"JPQL repository mismatch fixer: {count} file(s) fixed.")
     except Exception:
         pass
 

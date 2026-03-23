@@ -16,5 +16,5 @@ import java.util.Optional;
 @Repository
 public interface ClaimReleaseRequestRepository extends JpaRepository<ClaimReleaseRequest, ClaimReleaseRequestId> {
 
-    Optional<ClaimReleaseRequest> findByG70KzlAndG70RnrAndG70Rdat(String kzl, String rnr, String rdat); // @rpg-trace: n1707
+    Optional<ClaimReleaseRequest> findByG70KzlAndG70RnrAndG70Rdat(String g70Kzl, String g70Rnr, String g70Rdat); // @rpg-trace: n938
 }

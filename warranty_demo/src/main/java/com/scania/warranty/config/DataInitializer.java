@@ -98,9 +98,12 @@ public class DataInitializer implements ApplicationRunner {
                 }
             }
             // Seed dummy claims so claims list shows data on first load (HSG71PF)
-            seedClaimIfMissing(SEED_COMPANY, SEED_INVOICE_NUMBER, SEED_INVOICE_DATE, SEED_JOB_NUMBER, "00000001", "Demo Customer", "100001");
-            seedClaimIfMissing(SEED_COMPANY, "99999", SEED_INVOICE_DATE, "002", "00000002", "Demo Customer 2", "100002");
-            log.info("DataInitializer: Seeded claims for company {} (invoices 12345, 99999)", SEED_COMPANY);
+            seedClaimIfMissing(SEED_COMPANY, SEED_INVOICE_NUMBER, SEED_INVOICE_DATE, SEED_JOB_NUMBER, "00000001", "Demo Customer", "100001", "YSA1234", ClaimStatus.PENDING.getCode());
+            seedClaimIfMissing(SEED_COMPANY, "99999", SEED_INVOICE_DATE, "002", "00000002", "Demo Customer 2", "100002", "YSA6789", ClaimStatus.PENDING.getCode());
+            seedClaimIfMissing(SEED_COMPANY, "88888", SEED_INVOICE_DATE, "003", "00000003", "Demo Customer 88888", "100088", "YSA8888", ClaimStatus.PENDING.getCode());
+            seedClaimIfMissing(SEED_COMPANY, "77777", SEED_INVOICE_DATE, "004", "00000004", "Demo Customer 77777", "100077", "YSA7777", ClaimStatus.PENDING.getCode());
+            seedClaimIfMissing(SEED_COMPANY, "55555", SEED_INVOICE_DATE, "005", "00000005", "Demo Customer 55555", "100055", "YSA5555", ClaimStatus.APPROVED.getCode());
+            log.info("DataInitializer: Seeded claims for company {} (invoices 12345, 99999, 88888, 77777, 55555)", SEED_COMPANY);
         }
     }
 
@@ -251,8 +254,8 @@ public class DataInitializer implements ApplicationRunner {
         return inv;
     }
 
-    private void seedClaimIfMissing(String pakz, String rechNr, String rechDatum, String auftragsNr, String claimNr, String kdName, String kdNr) {
-        if (!claimRepository.findByInvoiceKey(pakz, rechNr, rechDatum, auftragsNr).isEmpty()) {
+    private void seedClaimIfMissing(String pakz, String rechNr, String rechDatum, String auftragsNr, String claimNr, String kdName, String kdNr, String chassis, int statusCode) {
+        if (!claimRepository.findByInvoiceKeyPartial(pakz, rechNr, rechDatum, auftragsNr).isEmpty()) {
             return;
         }
         Claim claim = new Claim();
@@ -262,26 +265,29 @@ public class DataInitializer implements ApplicationRunner {
         claim.setG71030(auftragsNr);
         claim.setG71040(SEED_AREA);
         claim.setG71050(claimNr);
-        claim.setG71060("1234567");  // chassis 7 chars - part of ClaimId
-        claim.setG71070("ABC123");
+        claim.setG71060(chassis);  // chassis 7 chars - part of ClaimId
+        String regNr = "R" + claimNr;
+        claim.setG71070(regNr.substring(0, Math.min(10, regNr.length())));  // G71070 max 10 chars
         claim.setG71080(BigDecimal.ZERO);
-        claim.setG71090(new BigDecimal("20240115"));
-        claim.setG71100(BigDecimal.valueOf(45));
+        claim.setG71090(new BigDecimal(rechDatum));
+        claim.setG71100(BigDecimal.valueOf(45));  // G71100 NUMERIC(3,0) max 999
         claim.setG71110(BigDecimal.ONE);
         claim.setG71120(" ");
         claim.setG71130(" ");
         claim.setG71140(kdNr);
         claim.setG71150(kdName);
         claim.setG71160("");
-        claim.setG71170(ClaimStatus.PENDING.getCode());
+        claim.setG71170(statusCode);
         claim.setG71180(0);
         claim.setG71190(" ");
         claim.setG71200(auftragsNr + SEED_WORKSHOP_TYPE + SEED_AREA + SEED_SPLIT);
         claimRepository.save(claim);
 
-        // ClaimError seeding may fail due to HSG73PF schema conflict with other entities; skip if so
+        // ClaimError seeding for first two claims so "Errors" column shows data
         try {
-            seedClaimError(pakz, rechNr, rechDatum, auftragsNr, claimNr);
+            if ("00000001".equals(claimNr) || "00000003".equals(claimNr)) {
+                seedClaimError(pakz, rechNr, rechDatum, auftragsNr, claimNr);
+            }
         } catch (Exception e) {
             log.warn("DataInitializer: Skipped ClaimError for claim {}: {}", claimNr, e.getMessage());
         }

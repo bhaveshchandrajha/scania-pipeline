@@ -58,7 +58,7 @@ public class ClaimCreationService {
             throw new IllegalArgumentException("Invoice has been cancelled"); // @rpg-trace: n978
         }
 
-        List<Claim> existingClaims = claimRepository.findByInvoiceKey(companyCode, invoiceNumber, invoiceDate, workshopCode); // @rpg-trace: n964
+        List<Claim> existingClaims = claimRepository.findByInvoiceKeyPartial(companyCode, invoiceNumber, invoiceDate, workshopCode); // @rpg-trace: n964
         for (Claim existing : existingClaims) { // @rpg-trace: n965
             if (existing.getG71170() != 99) { // @rpg-trace: n967
                 throw new IllegalArgumentException("Claim already exists for this invoice"); // @rpg-trace: n968
@@ -142,7 +142,9 @@ public class ClaimCreationService {
 
     private BigDecimal parseMileageAsBigDecimal(BigDecimal mileage) {
         try {
-            return mileage.divide(new BigDecimal("1000")); // @rpg-trace: n1012
+            if (mileage == null) return BigDecimal.ZERO;
+            BigDecimal result = mileage.divide(new BigDecimal("1000"), java.math.RoundingMode.HALF_UP); // @rpg-trace: n1012
+            return result.compareTo(new BigDecimal("999")) > 0 ? new BigDecimal("999") : result; // G71100 NUMERIC(3,0) max 999
         } catch (Exception e) {
             return BigDecimal.ZERO; // @rpg-trace: n1015
         }

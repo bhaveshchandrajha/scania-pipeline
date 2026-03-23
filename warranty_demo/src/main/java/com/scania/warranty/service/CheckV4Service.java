@@ -73,7 +73,8 @@ public class CheckV4Service {
                 " ",                // AHK030 = blank in RPG
                 request.g71030(),   // AHK040
                 request.g71040(),   // AHK050
-                agreementTypeCode   // AHK060 = %Subst(G71200:8:2)
+                request.g71190(),   // AHK060 = G71190
+                agreementTypeCode   // AHK070 = %Subst(G71200:8:2)
             ); // @rpg-trace: n1991
 
             if (invoiceHeaderOpt.isPresent()) { // @rpg-trace: n1993
@@ -81,7 +82,7 @@ public class CheckV4Service {
 
                 // SETLL/READE on HSEPAF with key (AHK000:AHK040:AHK050:AHK060:'V4')
                 List<ExtendedPartAgreement> epaRecords = extendedPartAgreementRepository
-                    .findByPartialKeyAndType(
+                    .findByKeyAndVariant(
                         invoiceHeader.getAhk000(),  // EPA000 = AHK000
                         invoiceHeader.getAhk040(),  // EPA040 = AHK040
                         invoiceHeader.getAhk050(),  // EPA050 = AHK050

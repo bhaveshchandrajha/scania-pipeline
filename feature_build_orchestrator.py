@@ -68,10 +68,24 @@ def run_llm_fixer() -> int:
     return proc.returncode
 
 
+def run_pre_build_fixers() -> None:
+    """Run deterministic fixers before first build (same as ui_global_context_server pre-build)."""
+    try:
+        sys.path.insert(0, str(ROOT))
+        from fix_jpql_repository_mismatch import run_fix
+        count, _ = run_fix(PROJECT_DIR)
+        if count > 0:
+            print(f"[fixer] JPQL repository mismatch: {count} file(s) fixed.")
+    except Exception:
+        pass
+
+
 def main() -> None:
     if not PROJECT_DIR.is_dir():
         print(f"[orchestrator] ERROR: Project directory not found: {PROJECT_DIR}")
         sys.exit(1)
+
+    run_pre_build_fixers()
 
     for attempt in range(1, MAX_RETRIES + 1):
         print(f"\n=== Build attempt {attempt}/{MAX_RETRIES} ===")

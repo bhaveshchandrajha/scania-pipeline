@@ -20,8 +20,9 @@ This document provides an **updated and precise** technical architecture of the 
 8. [BFS-Based Iterative Node Migration](#8-bfs-based-iterative-node-migration)
 9. [Output Application](#9-output-application)
 10. [Directory Layout](#10-directory-layout)
-11. [API Summary](#11-api-summary)
-12. [Related Documentation](#12-related-documentation)
+11. [Build Resilience (Auto-Fix Pipeline)](#11-build-resilience-auto-fix-pipeline)
+12. [API Summary](#12-api-summary)
+13. [Related Documentation](#13-related-documentation)
 
 ---
 
@@ -451,7 +452,23 @@ for nid in nodes_in_slice:
 
 ---
 
-## 11. API Summary
+## 11. Build Resilience (Auto-Fix Pipeline)
+
+The build pipeline includes several **automatic fixers** that run before and during Maven builds to prevent deployment failures:
+
+| Fixer | Purpose |
+|-------|---------|
+| `fix_idclass` | JPA @IdClass alignment |
+| `fix_test_alignment` | Test getter names vs entity (getClaimNumber → getClaimNr) |
+| `fix_ambiguous_mapping` | Duplicate controller endpoint paths |
+| **fix_int_bigdecimal** | int literal → BigDecimal.ZERO when entity setter expects BigDecimal |
+| **fix_compile_errors** | LLM-based fix for remaining compilation errors |
+
+**Flow:** Initial build uses `mvn test-compile` (includes test sources). On failure, fixers run; `fix_compile_errors.py` handles test files (`src/test/java`) and includes entity types for int→BigDecimal fixes. Retries up to 4 LLM passes.
+
+---
+
+## 12. API Summary
 
 | Method | Path | Purpose |
 |--------|------|---------|
@@ -464,7 +481,7 @@ for nid in nodes_in_slice:
 
 ---
 
-## 12. Related Documentation
+## 13. Related Documentation
 
 | Document | Description |
 |----------|-------------|

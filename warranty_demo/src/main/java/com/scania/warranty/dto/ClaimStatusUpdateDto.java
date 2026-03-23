@@ -10,4 +10,4 @@ public record ClaimStatusUpdateDto(
     String companyCode,
     String claimNr,
     int newStatus
-) {} // @rpg-trace: n653
+) {} // @rpg-trace: n654

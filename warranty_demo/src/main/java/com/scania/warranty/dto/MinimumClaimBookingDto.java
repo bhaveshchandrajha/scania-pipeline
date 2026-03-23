@@ -8,5 +8,6 @@ package com.scania.warranty.dto;
 
 public record MinimumClaimBookingDto(
     String companyCode,
-    String claimNr
-) {} // @rpg-trace: n1663
+    String claimNr,
+    String chassisNr
+) {} // @rpg-trace: n1664

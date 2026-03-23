@@ -143,11 +143,11 @@ public class TestDataFactory {
         inv.setAhk800(BigDecimal.ZERO);
         inv.setAhk810("00000000");
         inv.setAhk815(BigDecimal.ZERO);
-        inv.setAhk820(0);
-        inv.setAhk830(0);
-        inv.setAhk840(0);
-        inv.setAhk845(0);
-        inv.setAhk850(0);
+        inv.setAhk820(BigDecimal.ZERO);
+        inv.setAhk830(BigDecimal.ZERO);
+        inv.setAhk840(BigDecimal.ZERO);
+        inv.setAhk845(BigDecimal.ZERO);
+        inv.setAhk850(BigDecimal.ZERO);
         inv.setAhk855("          ");
         inv.setAhk860("  ");
         inv.setAhk870("  ");
@@ -156,7 +156,7 @@ public class TestDataFactory {
         inv.setAhk900("               ");
         inv.setAhk901("00000000");
         inv.setAhk910("               ");
-        inv.setAhk920(0);
+        inv.setAhk920(BigDecimal.ZERO);
         inv.setAhk930("   ");
         inv.setAhk940("                                        ");
         inv.setAhk950("                    ");

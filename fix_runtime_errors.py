@@ -29,6 +29,15 @@ def detect_ambiguous_mapping(log_content: str) -> bool:
     return "Ambiguous mapping" in log_content
 
 
+def detect_jpql_path_exception(log_content: str) -> bool:
+    """Check if log contains Hibernate UnknownPathException or PathElementException (JPQL attribute mismatch)."""
+    return (
+        "UnknownPathException" in log_content
+        or "PathElementException" in log_content
+        or "Could not resolve attribute" in log_content
+    )
+
+
 def apply_fixes(project_dir: Path, log_content: str) -> Tuple[bool, str]:
     """
     Apply fixes based on runtime log content.
@@ -81,6 +90,18 @@ def apply_fixes(project_dir: Path, log_content: str) -> Tuple[bool, str]:
             return False, "fix_ambiguous_mapping not found. Cannot auto-fix ambiguous mappings."
         except Exception as e:
             return False, f"fix_ambiguous_mapping failed: {e}"
+
+    if detect_jpql_path_exception(log_content):
+        try:
+            from fix_jpql_repository_mismatch import run_fix
+            count, _ = run_fix(project_dir)
+            if count > 0:
+                return True, f"JPQL repository mismatch fixer applied ({count} file/s). Restart Application."
+            return False, "JPQL path exception detected but fix_jpql_repository_mismatch found no occurrences to fix."
+        except ImportError:
+            return False, "fix_jpql_repository_mismatch not found. Cannot auto-fix JPQL attribute mismatches."
+        except Exception as e:
+            return False, f"fix_jpql_repository_mismatch failed: {e}"
 
     return False, "No known runtime fix applicable."
 

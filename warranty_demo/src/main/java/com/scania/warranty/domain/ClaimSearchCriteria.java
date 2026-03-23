@@ -12,12 +12,12 @@ public record ClaimSearchCriteria(
     String statusCompareSign,
     String filterBranch,
     String filterCustomer,
-    String filterSde,
-    String filterArt,
+    String filterSdeClaimNr,
+    String filterType,
     int filterAgeDays,
     boolean filterOpenOnly,
     boolean filterMinimumOnly,
     String searchString,
-    boolean sortByClaimNr,
-    SortDirection sortDirection
+    SortDirection sortDirection,
+    boolean sortByClaimNr
 ) {}

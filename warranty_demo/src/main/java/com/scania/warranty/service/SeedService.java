@@ -31,28 +31,38 @@ public class SeedService {
     @Transactional
     public int seedInvoices() {
         int created = 0;
-        for (String[] pair : new String[][]{{"12345", "001"}, {"99999", "002"}, {"88888", "003"}, {"77777", "004"}, {"55555", "005"}, {"44444", "006"}, {"33333", "007"}}) {
+        // invoiceNr, orderNr, customerName, customerNr, chassis (7 chars max for G71060/ahk510)
+        String[][] rows = {
+            {"12345", "001", "Demo Customer", "100001", "YSA1234"},
+            {"99999", "002", "Demo Customer 2", "100002", "YSA6789"},
+            {"88888", "003", "Demo Customer 88888", "100088", "YSA8888"},
+            {"77777", "004", "Demo Customer 77777", "100077", "YSA7777"},
+            {"55555", "005", "Demo Customer 55555", "100055", "YSA5555"},
+            {"44444", "006", "Demo Customer 44444", "100044", "YSA4444"},
+            {"33333", "007", "Demo Customer 33333", "100033", "YSA3333"},
+        };
+        for (String[] row : rows) {
             try {
-                created += seedOne(pair[0], pair[1]);
+                created += seedOne(row[0], row[1], row[2], row[3], row[4]);
             } catch (Exception e) {
-                log.error("SeedService: Failed to seed invoice {}: {}", pair[0], e.getMessage(), e);
-                throw new RuntimeException("Failed to seed invoice " + pair[0] + ": " + e.getMessage(), e);
+                log.error("SeedService: Failed to seed invoice {}: {}", row[0], e.getMessage(), e);
+                throw new RuntimeException("Failed to seed invoice " + row[0] + ": " + e.getMessage(), e);
             }
         }
         log.info("SeedService: Created {} invoices", created);
         return created;
     }
 
-    private int seedOne(String invoiceNr, String orderNr) {
+    private int seedOne(String invoiceNr, String orderNr, String customerName, String customerNr, String chassis) {
         if (invoiceRepository.findByKey(SEED_COMPANY, invoiceNr, SEED_DATE, orderNr).isPresent()) {
             return 0;
         }
-        Invoice inv = createMinimalInvoice(invoiceNr, orderNr);
+        Invoice inv = createMinimalInvoice(invoiceNr, orderNr, customerName, customerNr, chassis);
         invoiceRepository.save(inv);
         return 1;
     }
 
-    private Invoice createMinimalInvoice(String rnr, String anr) {
+    private Invoice createMinimalInvoice(String rnr, String anr, String customerName, String customerNr, String chassis) {
         Invoice inv = new Invoice();
         inv.setAhk000(SEED_COMPANY);
         inv.setAhk010(rnr);
@@ -81,17 +91,17 @@ public class SeedService {
         inv.setAhk190("000000");
         inv.setAhk200("000000");
         inv.setAhk205("000000");
-        inv.setAhk210("1234567");
+        inv.setAhk210(chassis != null ? chassis : "1234567");
         inv.setAhk220("00000");
         inv.setAhk221("          ");
         inv.setAhk222("001");
-        inv.setAhk223("100001");
-        inv.setAhk224("100001");
+        inv.setAhk223(customerNr != null ? customerNr : "100001");
+        inv.setAhk224(customerNr != null ? customerNr : "100001");
         inv.setAhk225(" ");
         inv.setAhk226(" ");
-        inv.setAhk230("100001");
+        inv.setAhk230(customerNr != null ? customerNr : "100001");
         inv.setAhk240(" ");
-        inv.setAhk250("Demo Customer " + rnr);
+        inv.setAhk250(customerName != null ? customerName : "Demo Customer " + rnr);
         inv.setAhk260(" ");
         inv.setAhk270(" ");
         inv.setAhk280(" ");
@@ -119,7 +129,7 @@ public class SeedService {
         inv.setAhk490(" ");
         inv.setAhk500("001");
         inv.setAhk505("INV" + rnr);
-        inv.setAhk510("1234567");
+        inv.setAhk510(chassis != null ? chassis : "1234567");
         inv.setAhk520("20240115");
         inv.setAhk530("000000");
         inv.setAhk540("   ");

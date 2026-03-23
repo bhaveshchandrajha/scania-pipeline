@@ -9,4 +9,4 @@ package com.scania.warranty.dto;
 public record ClaimDeleteRequestDto(
     String companyCode,
     String claimNr
-) {} // @rpg-trace: n553
+) {} // @rpg-trace: n587

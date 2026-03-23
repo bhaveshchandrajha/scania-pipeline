@@ -2421,6 +2421,12 @@
   },
   "displayFiles": [
     {
+      "symbolId": "sym.dspf.HSGSCPF",
+      "name": "HSGSCPF",
+      "fileId": null,
+      "path": null
+    },
+    {
       "symbolId": "sym.dspf.HS1212D",
       "name": "HS1212D",
       "fileId": null,
@@ -7977,12 +7983,6 @@
           }
         ]
       }
-    },
-    {
-      "symbolId": "sym.dspf.HSGSCPF",
-      "name": "HSGSCPF",
-      "fileId": null,
-      "path": null
     }
   ],
   "callGraph": {

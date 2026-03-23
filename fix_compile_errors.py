@@ -64,10 +64,11 @@ def extract_error_files(build_log: str, project_dir: Path) -> List[Path]:
     seen: Set[Path] = set()
     # Absolute path: /path/to/File.java or C:\path\File.java
     abs_pattern = re.compile(r"(?:\[\s*ERROR\s*\]\s*)?(?P<path>[/\\][^\s:]+\.java|[A-Za-z]:[^\s:]+\.java)")
-    # Relative to module dir: src/main/java/.../File.java
-    rel_pattern = re.compile(r"(?:\[\s*ERROR\s*\]\s*)?(?P<path>src/main/java[^\s:]*\.java)")
+    # Relative to module dir: src/main/java/.../File.java or src/test/java/.../File.java
+    rel_main = re.compile(r"(?:\[\s*ERROR\s*\]\s*)?(?P<path>src/main/java[^\s:]*\.java)")
+    rel_test = re.compile(r"(?:\[\s*ERROR\s*\]\s*)?(?P<path>src/test/java[^\s:]*\.java)")
     for line in build_log.splitlines():
-        for pattern in (abs_pattern, rel_pattern):
+        for pattern in (abs_pattern, rel_main, rel_test):
             m = pattern.search(line)
             if not m:
                 continue
@@ -170,6 +171,49 @@ def extract_dtos_from_error_files(
     return paths
 
 
+def extract_entities_from_test_files(
+    error_files: List[Path],
+    error_snippet: str,
+    project_dir: Path,
+) -> List[Path]:
+    """
+    When test files have "int cannot be converted to java.math.BigDecimal",
+    scan the test file for variable types (e.g. Invoice inv) and include entity files.
+    """
+    if "cannot be converted to" not in error_snippet.lower() or "BigDecimal" not in error_snippet:
+        return []
+
+    paths: List[Path] = []
+    seen: Set[str] = set()
+    src_main = project_dir / "src" / "main" / "java"
+
+    for path in error_files:
+        if "src/test" not in str(path).replace("\\", "/"):
+            continue
+        try:
+            content = path.read_text(encoding="utf-8", errors="ignore")
+            # Match: Invoice inv, Claim claim, SomeEntity foo
+            for m in re.finditer(r"\b([A-Z][A-Za-z0-9]*)\s+([a-z][A-Za-z0-9]*)\s*[;=]", content):
+                type_name = m.group(1)
+                if type_name in ("String", "Integer", "Long", "List", "Optional", "Map", "Set"):
+                    continue
+                if type_name in seen:
+                    continue
+                seen.add(type_name)
+                # Resolve entity path (assume same package base: com.scania.warranty.domain.X)
+                for candidate_dir in [src_main / "com" / "scania" / "warranty" / "domain",
+                                     src_main]:
+                    candidate = candidate_dir / f"{type_name}.java"
+                    if candidate.exists():
+                        p = candidate.resolve()
+                        if p not in paths:
+                            paths.append(p)
+                        break
+        except Exception:
+            continue
+    return paths
+
+
 def extract_related_type_files(build_log: str, project_dir: Path) -> List[Path]:
     """
     From error lines like:
@@ -242,9 +286,13 @@ The build will fail again if you leave ANY error unfixed. Fix every single error
 
 5. **Entity files are included**: When fixing DataInitializer or a service that uses Invoice/Claim, the entity file is in the list above. Read it to see the exact setter names and getter return types.
 
-6. **Minimal edits**: Change ONLY what is broken. Do not refactor. Preserve all other code.
+6. **int cannot be converted to java.math.BigDecimal**: When the entity setter expects BigDecimal (e.g. setAhk820(BigDecimal)) but test/factory code passes an int literal (0), replace with BigDecimal.ZERO or BigDecimal.ONE. Example: `inv.setAhk820(0)` → `inv.setAhk820(BigDecimal.ZERO)`. Ensure `import java.math.BigDecimal;` is present.
 
-7. **No new text**: Output ONLY file markers and code blocks. No explanations, no summaries. Text after ``` corrupts the file.
+7. **UnknownPathException / PathElementException / Could not resolve attribute**: When a repository @Query references attributes that do not exist on the entity (e.g. e.epaKey000 but entity has epa000), fix the JPQL to use the entity's actual field names. For ExtendedPartAgreement: epaKey000→epa000, epaKey040→epa040, epaKey050→epa050, epaKey060→epa060, epaVariant→epaType. For other entities, read the entity class to see the exact field names and align the @Query.
+
+8. **Minimal edits**: Change ONLY what is broken. Do not refactor. Preserve all other code.
+
+9. **No new text**: Output ONLY file markers and code blocks. No explanations, no summaries. Text after ``` corrupts the file.
 
 ## Response format
 
@@ -290,7 +338,9 @@ def main() -> None:
     entity_dto_files = extract_types_from_error_text(error_snippet, project_dir)
     # When "incompatible types" at call site, scan error file for new XDto(...) and include that DTO
     dto_from_error_files = extract_dtos_from_error_files(error_files, error_snippet, project_dir)
-    all_files_set: Set[Path] = set(error_files) | set(related_type_files) | set(entity_dto_files) | set(dto_from_error_files)
+    # When test files have int->BigDecimal errors, include entity types (Invoice, etc.) from test vars
+    entity_from_test = extract_entities_from_test_files(error_files, error_snippet, project_dir)
+    all_files_set: Set[Path] = set(error_files) | set(related_type_files) | set(entity_dto_files) | set(dto_from_error_files) | set(entity_from_test)
     all_files: List[Path] = list(all_files_set)
 
     if not all_files:

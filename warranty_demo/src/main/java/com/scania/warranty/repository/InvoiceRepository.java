@@ -19,23 +19,26 @@ import java.util.Optional;
 @Repository
 public interface InvoiceRepository extends JpaRepository<Invoice, InvoiceId> {
 
-    @Query("SELECT i FROM Invoice i WHERE i.ahk000 = :pkz AND i.ahk080 = :orderDate AND i.ahk010 = :invoiceNr ORDER BY i.ahk040")
-    List<Invoice> findByCompanyAndOrderDateAndInvoiceNr(@Param("pkz") String pkz,
-                                                        @Param("orderDate") String orderDate,
-                                                        @Param("invoiceNr") String invoiceNr); // @rpg-trace: n975
+    @Query("SELECT i FROM Invoice i WHERE i.ahk000 = :ahk000 AND i.ahk080 = :ahk080 ORDER BY i.ahk010")
+    List<Invoice> findByCompanyAndOrderDate(@Param("ahk000") String ahk000, @Param("ahk080") String ahk080); // @rpg-trace: n794
 
-    @Query("SELECT i FROM Invoice i WHERE i.ahk000 = :pkz AND i.ahk010 = :invoiceNr AND i.ahk020 = :invoiceDate " +
-           "AND i.ahk040 = :orderNr")
-    Optional<Invoice> findByKey(@Param("pkz") String pkz, @Param("invoiceNr") String invoiceNr,
-                                @Param("invoiceDate") String invoiceDate, @Param("orderNr") String orderNr); // @rpg-trace: n983
+    @Query("SELECT i FROM Invoice i WHERE i.ahk000 = :ahk000 AND i.ahk010 = :ahk010 AND i.ahk020 = :ahk020 AND i.ahk040 = :ahk040 AND i.ahk060 = :ahk060")
+    Optional<Invoice> findByKeyAhk(@Param("ahk000") String ahk000, @Param("ahk010") String ahk010,
+                                    @Param("ahk020") String ahk020, @Param("ahk040") String ahk040,
+                                    @Param("ahk060") String ahk060); // @rpg-trace: n918
 
-    @Query("SELECT i FROM Invoice i WHERE i.ahk000 = :pkz ORDER BY i.ahk080")
-    List<Invoice> findByCompanyCode(@Param("pkz") String pkz); // @rpg-trace: n747
+    @Query("SELECT i FROM Invoice i WHERE i.ahk000 = :ahk000 AND i.ahk030 = 'S' AND i.ahk010 = :ahk010 AND i.ahk080 = :ahk080")
+    List<Invoice> findStornoInvoices(@Param("ahk000") String ahk000, @Param("ahk010") String ahk010,
+                                      @Param("ahk080") String ahk080); // @rpg-trace: n975
 
-    @Query("SELECT i FROM Invoice i WHERE i.ahk000 = :pkz ORDER BY i.ahk080")
-    List<Invoice> findByCompany(@Param("pkz") String pkz);
+    @Query("SELECT i FROM Invoice i WHERE i.ahk000 = :ahk000 AND i.ahk010 = :ahk010 AND i.ahk020 = :ahk020 AND i.ahk040 = :ahk040")
+    Optional<Invoice> findByKey(@Param("ahk000") String ahk000, @Param("ahk010") String ahk010,
+                                 @Param("ahk020") String ahk020, @Param("ahk040") String ahk040);
 
-    @Query("SELECT i FROM Invoice i WHERE i.ahk000 = :pkz AND i.ahk080 = :orderDate AND i.ahk010 = :invoiceNr AND i.ahk030 = 'S' ORDER BY i.ahk040")
-    List<Invoice> findStornoByKey(@Param("pkz") String pkz, @Param("orderDate") String orderDate,
-                                   @Param("invoiceNr") String invoiceNr);
+    @Query("SELECT i FROM Invoice i WHERE i.ahk000 = :ahk000 ORDER BY i.ahk010")
+    List<Invoice> findByCompany(@Param("ahk000") String ahk000);
+
+    @Query("SELECT i FROM Invoice i WHERE i.ahk000 = :ahk000 AND i.ahk030 = 'S' AND i.ahk080 = :ahk080 AND i.ahk010 = :ahk010")
+    List<Invoice> findStornoByKey(@Param("ahk000") String ahk000, @Param("ahk080") String ahk080,
+                                   @Param("ahk010") String ahk010);
 }

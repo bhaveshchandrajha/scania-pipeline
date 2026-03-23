@@ -6,11 +6,14 @@
 
 package com.scania.warranty.web;
 
-import com.scania.warranty.domain.CheckClaimRequest;
-import com.scania.warranty.dto.CheckClaimResultDto;
+import com.scania.warranty.domain.ClaimCheckRequest;
+import com.scania.warranty.dto.ClaimCheckResultDto;
 import com.scania.warranty.service.CheckClaimService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/claims")
@@ -22,13 +25,13 @@ public class CheckClaimController {
         this.checkClaimService = checkClaimService;
     }
 
+    /**
+     * Validates a claim before submission.
+     * POST /api/claims/check
+     */
     @PostMapping("/check")
-    public ResponseEntity<CheckClaimResultDto> checkClaim(@RequestBody CheckClaimRequest request) {
-        CheckClaimResultDto result = checkClaimService.checkClaim(request); // @rpg-trace: n1919
-        if (result.valid()) {
-            return ResponseEntity.ok(result);
-        } else {
-            return ResponseEntity.unprocessableEntity().body(result);
-        }
+    public ResponseEntity<ClaimCheckResultDto> checkClaim(@RequestBody ClaimCheckRequest request) {
+        ClaimCheckResultDto result = checkClaimService.checkClaim(request); // @rpg-trace: n1919
+        return ResponseEntity.ok(result);
     }
 }
