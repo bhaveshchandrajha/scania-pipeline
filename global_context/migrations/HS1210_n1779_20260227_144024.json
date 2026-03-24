@@ -1,0 +1,176 @@
+{
+  "programId": "HS1210",
+  "unitId": "qsys:HSSRC/QRPGLESRC/HS1210",
+  "entryNodeId": "n1779",
+  "nodesInSlice": [
+    {
+      "nodeId": "n1779",
+      "kind": "Procedure",
+      "name": "CreateClaim",
+      "procedureName": null,
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+        "startLine": 2798,
+        "endLine": 2887
+      }
+    }
+  ],
+  "contextFiles": [
+    "/Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/context_index/HS1210_n1779.json"
+  ],
+  "dbFiles": [
+    {
+      "name": "AUFWKO",
+      "library": "HSSRC"
+    },
+    {
+      "name": "FISTAM",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HS1210D",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKLF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKLF8",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHPPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHTPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHWPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSBTSLF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSBTSPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSEPAF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSFLALF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG70F",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF2",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF7",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71PF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG73LF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG73PF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG79F",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGFIPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSLF2",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSLF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGSCPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSKAMPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "RWAPRL1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "ITLSMF3",
+      "library": "P400IMS"
+    },
+    {
+      "name": "PIPPMST",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F001",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F002",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F003",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F009",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F085",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3L004H",
+      "library": "S400CAS"
+    }
+  ],
+  "runs": [
+    {
+      "contextFile": "/Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/context_index/HS1210_n1779.json",
+      "returnCode": 0,
+      "stdoutPreview": "// === domain/Claim.java ===\npackage com.scania.warranty.domain;\n\nimport jakarta.persistence.*;\nimport java.math.BigDecimal;\n\n/**\n * JPA entity for claim header (HSG71PF).\n */\n@Entity\n@Table(name = \"HSG71PF\")\npublic class Claim {\n    \n    @Id\n    @Column(name = \"PAKZ\", length = 3, nullable = false)\n    private String companyCode;\n    \n    @Id\n    @Column(name = \"RECH.-NR.\", length = 5, nullable = false)\n    private String invoiceNumber;\n    \n    @Column(name = \"RECH.-DATUM\", length = 8, nullable = false)\n    private String invoiceDate;\n    \n    @Column(name = \"AUFTRAGS-NR.\", length = 5, nullable = false)\n    private String orderNumber;\n    \n    @Column(name = \"WETE\", length = 1, nullable = false)\n    private String wete;\n    \n    @Column(name = \"CLAIM-NR.\", length = 8, nullable = false)\n    private String claimNumber;\n    \n    @Column(name = \"CHASSIS-NR.\", length = 7, nullable = false)\n    private String chassisNumber;\n    \n    @Column(name = \"KENNZEICHEN\", length = 10, nullable = false)\n    private String licensePlate;\n    \n    @Column(name = \"ZUL.-DATUM\", precision = 8, scale = 0, nullable = false)\n    private BigDecimal registrationDate;\n    \n    @Column(name = \"REP.-DATUM\", precision = 8, scale = 0, nullable = false)\n    private BigDecimal repairDate;\n    \n    @Column(name = \"KM-STAND\", precision = 3, scale = 0, nullable = false)\n    private BigDecimal mileage;\n    \n    @Column(name = \"PRODUKT-TYP\", precision = 1, scale = 0, nullable = false)\n    private BigDecimal productType;\n    \n    @Column(name = \"ANHANG\", length = 1, nullable = false)\n    private String attachment;\n    \n    @Column(name = \"AUSL#NDER\", length = 1, nullable = false)\n    private String foreigner;\n    \n    @Column(name = \"KD-NR.\", length = 6, nullable = false)\n    private String customerNumber;\n    \n    @Column(name = \"KD-NAME\", length = 30, nullable = false)\n    private String customerName;\n    \n    @Column(name = \"CLAIM-NR. SDE\", length = 8, nullable = false)\n    private String claimNumberSde;\n    \n    @Column(name = \"STATUS CODE SDE\", precision = 2, scale = 0, nullable = false)\n    private BigDecimal statusCodeSde;\n    \n    @Column(name = \"ANZ. FEHLER\", precision = 2, scale = 0, nullable = false)\n    private BigDecimal errorCount;\n    \n    @Column(name = \"BEREICH\", length = 1, nullable = false)\n    private String scope;\n    \n    @Column(name = \"AUF.NR.\", length = 10, nullable = false)\n    private String aufNr;\n    \n    // Constructors\n    public Claim() {\n    }\n    \n    // Getters and Setters\n    public String getCompanyCode() {\n        return companyCode;\n    }\n    \n    public void setCompanyCode(String companyCode) {\n        this.companyCode = companyCode;\n    }\n    \n    public String getInvoiceNumber() {\n        return invoiceNumber;\n    }\n    \n    public void setInvoiceNumber(String invoiceNumber) {\n        this.invoiceNumber = invoiceNumber;\n    }\n    \n    public String getInvoiceDate() {\n        return invoiceDate;\n    }\n    \n    public void setInvoiceDate(String invoiceDate) {\n        this.invoiceDate = invoiceDate;\n    }\n    \n    public String getOrderNumber() {\n        return orderNumber;\n    }\n    \n    public void setOrderNumber(String orderNumber) {\n        this.orderNumber = orderNumber;\n    }\n    \n    public String getWete() {\n        return wete;\n    }\n    \n    public void setWete(String wete) {\n        this.wete = wete;\n    }\n    \n    public String getClaimNumber() {\n        return claimNumber;\n    }\n    \n    public void setClaimNumber(String claimNumber) {\n        this.claimNumber = claimNumber;\n    }\n    \n    public String getChassisNumber() {\n        return chassisNumber;\n    }\n    \n    public void setChassisNumber(String chassisNumber) {\n        this.chassisNumber = chassisNumber;\n    }\n    \n    public String getLicensePlate() {\n        return licensePlate;\n    }\n    \n    public void setLicensePlate(String licensePlate) {\n        this.licensePlate = licensePlate;\n    }\n    \n    public BigDecimal getRegistrationDate() {\n        retur",
+      "stderrPreview": "// Context package size: 69.8 KB\n// DB Contracts: 3, Total columns: 104\n// Extracted 1 embedded SQL statement(s) for translation to repository methods\n// Generating Pure Java (Track B) with layered architecture...\n// This may take 60-120 seconds for large packages...\n// Prompt size: 69.5 KB\n// Integration mode: writing into existing project warranty_demo\n// Starting Pure Java migration (Track B)...\n// Sending request to LLM (this may take 60-120 seconds for large prompts)...\n// LLM response received in 134.4 seconds\n// Parsing multi-file output...\n// Parser extracted 14 files:\n//   - domain/Claim.java\n//   - domain/ClaimCreationContext.java\n//   - domain/ClaimError.java\n//   - domain/ClaimPosition.java\n//   - domain/ItemMasterRecord.java\n//   - domain/RecordType.java\n//   - dto/ClaimCreationRequest.java\n//   - dto/ClaimCreationResponse.java\n//   - repository/ClaimErrorRepository.java\n//   - repository/ClaimPositionRepository.java\n//   - repository/ClaimRepository.java\n//   - repository/ItemMasterRepository.java\n//   - service/ClaimCreationService.java\n//   - web/ClaimCreationController.java\n// Found 14 Java files to write\n// \u2705 Wrote com/scania/warranty/domain/Claim.java (6398 chars)\n// \u2705 Wrote com/scania/warranty/domain/ClaimError.java (15438 chars)\n// \u2705 Wrote com/scania/warranty/domain/ClaimPosition.java (8913 chars)\n// \u2705 Wrote com/scania/warranty/domain/RecordType.java (905 chars)\n// \u2705 Wrote com/scania/warranty/domain/ClaimCreationContext.java (4169 chars)\n// \u2705 Wrote com/scania/warranty/repository/ClaimRepository.java (985 chars)\n// \u2705 Wrote com/scania/warranty/repository/ClaimErrorRepository.java (492 chars)\n// \u2705 Wrote com/scania/warranty/repository/ClaimPositionRepository.java (1204 chars)\n// \u2705 Wrote com/scania/warranty/repository/ItemMasterRepository.java (791 chars)\n// \u2705 Wrote com/scania/warranty/domain/ItemMasterRecord.java (883 chars)\n// \u2705 Wrote com/scania/warranty/service/ClaimCreationService.java (6847 chars)\n// \u2705 Wrote com/scania/warranty/dto/ClaimCreationRequest.java (338 chars)\n// \u2705 Wrote com/scania/warranty/dto/ClaimCreationResponse.java (307 chars)\n// \u2705 Wrote com/scania/warranty/web/ClaimCreationController.java (1616 chars)\n\n// \u2705 Successfully generated 14 Java files\n// \ud83d\udcc1 Output directory: /Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/warranty_demo/src/main/java\n// \ud83d\udce6 Package structure:\n//    com/scania/warranty/domain/Claim.java\n//    com/scania/warranty/domain/ClaimCreationContext.java\n//    com/scania/warranty/domain/ClaimError.java\n//    com/scania/warranty/domain/ClaimPosition.java\n//    com/scania/warranty/domain/ItemMasterRecord.java\n//    com/scania/warranty/domain/RecordType.java\n//    com/scania/warranty/dto/ClaimCreationRequest.java\n//    com/scania/warranty/dto/ClaimCreationResponse.java\n//    com/scania/warranty/repository/ClaimErrorRepository.java\n//    com/scania/warranty/repository/ClaimPositionRepository.java\n//    ... and 4 more files\n// \u2705 Migration complete! Files integrated into project: warranty_demo/src\n"
+    }
+  ],
+  "summary": "Migrated feature starting at HS1210 n1779 with 1 node(s); DB files involved: AUFWKO (HSSRC), FISTAM (HSSRC), HS1210D (HSSRC), HSAHKLF3 (HSSRC), HSAHKLF8 (HSSRC), HSAHKPF (HSSRC), HSAHPPF (HSSRC), HSAHTPF (HSSRC), HSAHWPF (HSSRC), HSBTSLF1 (HSSRC), HSBTSPF (HSSRC), HSEPAF (HSSRC), HSFLALF1 (HSSRC), HSG70F (HSSRC), HSG71LF2 (HSSRC), HSG71LF3 (HSSRC), HSG71LF7 (HSSRC), HSG71PF (HSSRC), HSG73LF1 (HSSRC), HSG73PF (HSSRC), HSG79F (HSSRC), HSGFIPF (HSSRC), HSGPSLF2 (HSSRC), HSGPSLF3 (HSSRC), HSGPSPF (HSSRC), HSGSCPF (HSSRC), HSKAMPF (HSSRC), RWAPRL1 (HSSRC), ITLSMF3 (P400IMS), PIPPMST (S400CAS), S3F001 (S400CAS), S3F002 (S400CAS), S3F003 (S400CAS), S3F009 (S400CAS), S3F085 (S400CAS), S3L004H (S400CAS)."
+}

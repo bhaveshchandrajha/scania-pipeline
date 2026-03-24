@@ -1,0 +1,59 @@
+{
+  "astNode": {
+    "id": "n2614",
+    "kind": "Procedure",
+    "name": null,
+    "sem": null,
+    "outgoingEdges": [],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "startLine": 3563,
+      "startColumn": 7,
+      "endLine": 3596,
+      "endColumn": 24
+    },
+    "raw": {
+      "id": "n2614",
+      "kind": "Procedure",
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+        "startLine": 3563,
+        "startLinePP": 3590,
+        "startCol": 7,
+        "startByte": 169365,
+        "endLine": 3596,
+        "endLinePP": 3623,
+        "endCol": 24,
+        "endByte": 170371
+      },
+      "props": {
+        "procedure_name": "loadText",
+        "opcode": "PROC",
+        "name": "loadTextGPT"
+      },
+      "children": [
+        "n2615",
+        "n2616",
+        "n2617",
+        "n2618",
+        "n2619",
+        "n2620",
+        "n2629",
+        "n2639",
+        "n2640"
+      ]
+    }
+  },
+  "narrative": "### Node n2614: Procedure\n\nProcedure `n2614` expresses business logic derived from its semantic block and referenced symbols/files.\n\n",
+  "rpgSnippet": "     P loadTextGPT     B\n     D loadTextGPT     PI\n     D   start                        3  0 value\n     D*----------------------------------------------------------------\n       ZLT = 0;\n       exec sql\n          declare ct Cursor for select GPT_TXT\n            from HSGPTF\n            where GPT_KZL = :G71000 and GPT_CNR = :G71050 and\n                  GPT_FNR = :G7306A\n            order by GPT_ZNR;\n       exec sql open ct;\n       exec sql fetch next from ct into :record_t;\n       If SQLCOD = 100;\n          loadtextGps(start);\n          exec sql close ct;\n          If ZLT < start;\n             ZLT = start;\n          EndIf;\n          return;\n       EndIf;\n       DoW SQLCOD = 0;\n          TEXT = R_TXT;\n          ZLT += 1;\n          If ZLT > start;\n             write HS1212ST;\n          EndIf;\n          exec sql fetch next from ct into :record_t;\n       EndDo;\n       exec sql close ct;\n       If ZLT < start;\n          ZLT = start;\n       EndIf;\n     P                 E",
+  "dbContracts": [],
+  "symbolMetadata": {},
+  "displayFiles": [
+    {
+      "symbolId": "sym.dspf.HS1212D",
+      "name": "HS1212D",
+      "fileId": "qsys:HSSRC/QDDSSRC/HS1212D",
+      "path": "/QSYS.LIB/HSSRC.LIB/QDDSSRC.FILE/HS1212D.MBR"
+    }
+  ]
+}

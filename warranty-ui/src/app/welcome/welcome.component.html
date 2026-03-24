@@ -1,0 +1,24 @@
+<div class="welcome-container" *ngIf="schema">
+  <header class="welcome-header">
+    <h1>{{ schema.title }}</h1>
+    <p class="subtitle" *ngIf="schema.subtitle">{{ schema.subtitle }}</p>
+    <p class="message" *ngIf="schema.message">{{ schema.message }}</p>
+  </header>
+
+  <nav class="welcome-links" *ngIf="schema.links?.length">
+    <ng-container *ngFor="let link of schema.links">
+      <a *ngIf="!link.external" [routerLink]="getRoute(link.url)" class="link-card">
+        <span class="link-label">{{ link.label }}</span>
+        <span class="link-desc" *ngIf="link.description">{{ link.description }}</span>
+      </a>
+      <a *ngIf="link.external" [href]="link.url" target="_blank" rel="noopener" class="link-card">
+        <span class="link-label">{{ link.label }}</span>
+        <span class="link-desc" *ngIf="link.description">{{ link.description }}</span>
+      </a>
+    </ng-container>
+  </nav>
+</div>
+
+<div class="error" *ngIf="error">
+  {{ error }}
+</div>

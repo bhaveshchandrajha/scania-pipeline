@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pure Java Migration Pipeline</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid #1f2937;
+      background: linear-gradient(90deg, #0f172a, #111827);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+    header span {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+    .tabs {
+      display: flex;
+      gap: 4px;
+      padding: 12px 16px;
+      border-bottom: 1px solid #1f2937;
+      background: #020617;
+    }
+    .tab {
+      padding: 8px 16px;
+      border-radius: 6px 6px 0 0;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #9ca3af;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+    .tab:hover {
+      background: #111827;
+      color: #e5e7eb;
+    }
+    .tab.active {
+      background: #0f172a;
+      border-color: #1f2937 #1f2937 transparent;
+      color: #e5e7eb;
+      border-bottom-color: #0f172a;
+    }
+    .tab-content {
+      display: none;
+      padding: 16px;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .card {
+      background: #020617;
+      border-radius: 10px;
+      border: 1px solid #1e293b;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      color: #e5e7eb;
+    }
+    button {
+      font-size: 11px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid #4b5563;
+      background: #111827;
+      color: #e5e7eb;
+      cursor: pointer;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+    button.primary {
+      border-color: #4f46e5;
+      background: linear-gradient(90deg, #4f46e5, #7c3aed);
+      color: white;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+    input, select {
+      padding: 6px 8px;
+      border-radius: 4px;
+      border: 1px solid #374151;
+      background: #111827;
+      color: #e5e7eb;
+      font-size: 11px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+    .status {
+      padding: 8px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      font-size: 11px;
+    }
+    .status.success {
+      background: #064e3b;
+      border: 1px solid #10b981;
+      color: #6ee7b7;
+    }
+    .status.error {
+      background: #7f1d1d;
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+    }
+    .status.info {
+      background: #1e3a5f;
+      border: 1px solid #3b82f6;
+      color: #93c5fd;
+    }
+    pre {
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      padding: 12px;
+      overflow-x: auto;
+      font-size: 11px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .file-tree {
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      line-height: 1.6;
+      padding: 12px;
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .file-tree .file {
+      color: #60a5fa;
+    }
+    .file-tree .dir {
+      color: #fbbf24;
+      font-weight: bold;
+    }
+    .validation-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .validation-metrics-row {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 12px;
+      grid-column: 1 / -1;
+      width: 100%;
+      margin-top: 4px;
+    }
+    .validation-metrics-row .validation-card {
+      flex: 1;
+      min-width: 0;
+    }
+    .validation-card {
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      padding: 12px;
+    }
+    .validation-card h4 {
+      margin: 0 0 8px;
+      font-size: 12px;
+      color: #9ca3af;
+    }
+    .validation-card .score {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 8px 0;
+    }
+    .validation-card .score.high { color: #10b981; }
+    .validation-card .score.medium { color: #f59e0b; }
+    .validation-card .score.low { color: #ef4444; }
+    .api-test {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .api-test .request {
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      padding: 12px;
+    }
+    .api-test .response {
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      padding: 12px;
+    }
+    .api-test h4 {
+      margin: 0 0 8px;
+      font-size: 12px;
+      color: #9ca3af;
+    }
+    .endpoint-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .endpoint-list li {
+      padding: 8px;
+      margin-bottom: 4px;
+      background: #020617;
+      border-radius: 4px;
+      border: 1px solid #1e293b;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .endpoint-list li:hover {
+      background: #111827;
+    }
+    .endpoint-list .method {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+    .endpoint-list .method.get { background: #3b82f6; color: white; }
+    .endpoint-list .method.post { background: #10b981; color: white; }
+  </style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Pure Java Migration Pipeline</h1>
+    <span>Complete Track B pipeline: Context → Migration → Validation → Build → Test</span>
+  </div>
+  <span id="header-status">Ready</span>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-tab="context">1. Build Context</div>
+  <div class="tab" data-tab="migrate">2. Migrate (Pure Java)</div>
+  <div class="tab" data-tab="validate">3. Validate</div>
+  <div class="tab" data-tab="build">4. Build Project</div>
+  <div class="tab" data-tab="test">5. Test APIs</div>
+</div>
+
+<!-- Tab 1: Build Context -->
+<div id="tab-context" class="tab-content active">
+  <div class="card">
+    <h3>Build Context Packages from ASTs</h3>
+    <p style="font-size: 11px; color: #9ca3af; margin-bottom: 12px;">
+      Build context packages by indexing AST files. This creates context_index/manifest.json and individual context files.
+    </p>
+    <div style="margin-bottom: 12px;">
+      <div style="margin-bottom: 8px;">
+        <label style="display: inline-block; width: 120px;">AST Directory:</label>
+        <select id="ast-dir" style="width: 300px; padding: 6px;"></select>
+      </div>
+      <div style="margin-bottom: 8px;">
+        <label style="display: inline-block; width: 120px;">DDS AST (optional):</label>
+        <select id="dds-ast-dir" style="width: 300px; padding: 6px;">
+          <option value="">— None —</option>
+          <option value="HS1210D_20260216">HS1210D_20260216 — DDS</option>
+        </select>
+        <span style="font-size: 10px; color: #9ca3af;"> e.g. HS1210D_20260216 for display file uiContracts</span>
+      </div>
+      <div style="margin-bottom: 8px;">
+        <label style="display: inline-block; width: 120px;">RPG Directory:</label>
+        <input type="text" id="rpg-dir" style="width: 350px; padding: 6px;" placeholder="Type full path or use Browse">
+        <input type="file" id="rpg-dir-picker" webkitdirectory directory multiple style="display: none;" />
+        <button type="button" id="browse-rpg-btn" style="margin-left: 8px;">📁 Browse</button>
+        <button type="button" id="help-path-btn" style="margin-left: 4px;" title="Help with path">?</button>
+      </div>
+      <div id="path-help" style="display: none; margin-bottom: 8px; padding: 8px; background: #111827; border: 1px solid #1e293b; border-radius: 4px; font-size: 10px; color: #9ca3af;">
+        <strong>Path Help:</strong><br>
+        • <strong>Relative path:</strong> PoC_HS1210 (from project root)<br>
+        • <strong>Absolute path:</strong> /Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/PoC_HS1210<br>
+        • <strong>Browse button:</strong> Selects directory but may only show directory name - you can edit the path manually<br>
+        • <strong>Tip:</strong> After browsing, check the path and edit if needed to use full absolute path
+      </div>
+      <div>
+        <button id="discover-btn" class="primary" style="margin-right: 8px;">🔍 Discover Directories</button>
+        <button id="build-context-btn" class="primary">Build Context</button>
+      </div>
+    </div>
+    <div id="context-status"></div>
+    <pre id="context-output" style="display: none;"></pre>
+  </div>
+</div>
+
+<!-- Tab 2: Migrate (Pure Java) -->
+<div id="tab-migrate" class="tab-content">
+  <div class="card">
+    <h3>Pure Java Migration</h3>
+    <p style="font-size: 11px; color: #9ca3af; margin-bottom: 12px;">
+      Generate Pure Java application with layered architecture (domain/service/repository/dto/web).
+    </p>
+    <div>
+      <label>Select Node:</label>
+      <select id="migrate-unit" style="width: 120px;"></select>
+      <select id="migrate-node" style="width: 120px;"></select>
+      <label>Model:</label>
+      <select id="migrate-model" style="width: 150px;">
+        <option value="claude-sonnet-4-5">claude-sonnet-4-5</option>
+        <option value="claude-opus-4">claude-opus-4</option>
+      </select>
+      <button class="primary" onclick="migratePureJava()">Migrate</button>
+      <label style="margin-left: 12px; font-size: 11px; color: #9ca3af;">
+        <input type="checkbox" id="migrate-enforce-logic" checked>
+        Enforce 100% logic (auto-fix with LLM if needed)
+      </label>
+    </div>
+    <div id="migrate-traceability" class="traceability-bar" style="display: none; margin-top: 10px; padding: 8px 12px; background: #111827; border: 1px solid #1e293b; border-radius: 6px; font-size: 11px;">
+      <span style="color: #9ca3af;">Node:</span> <span id="migrate-node-label">—</span>
+      <span style="color: #9ca3af; margin-left: 12px;">Context:</span> <span id="migrate-context-label">—</span>
+      <button type="button" id="migrate-view-rpg-btn" style="margin-left: 12px;">View RPG snippet</button>
+      <button type="button" id="migrate-view-java-btn" style="margin-left: 8px;">View generated Java</button>
+    </div>
+    <div id="migrate-rpg-snippet" style="display: none; margin-top: 8px;">
+      <pre id="migrate-rpg-snippet-pre" style="max-height: 200px; overflow: auto; font-size: 10px; padding: 10px; background: #0f172a; border: 1px solid #1e293b; border-radius: 4px;"></pre>
+    </div>
+    <div id="migrate-java-snippet" style="display: none; margin-top: 8px;">
+      <pre id="migrate-java-snippet-pre" style="max-height: 260px; overflow: auto; font-size: 10px; padding: 10px; background: #020617; border: 1px solid #1e293b; border-radius: 4px;"></pre>
+    </div>
+    <div id="migrate-status"></div>
+    <div id="migrate-fix-gaps" style="display: none; margin-top: 8px;">
+      <button type="button" class="primary" id="migrate-fix-gaps-btn" onclick="fixLogicGapsFromMigrate()">Fix logic gaps with LLM</button>
+      <span style="font-size: 11px; color: #9ca3af; margin-left: 8px;">Uses validator gaps + context to patch service files (no empty loops, no stub returns).</span>
+    </div>
+    <div id="file-structure" style="display: none;">
+      <h4 style="margin-top: 16px; margin-bottom: 8px;">Generated File Structure:</h4>
+      <div class="file-tree" id="file-tree"></div>
+    </div>
+    <pre id="migrate-output" style="display: none;"></pre>
+  </div>
+</div>
+
+<!-- Tab 3: Validate -->
+<div id="tab-validate" class="tab-content">
+  <div class="card">
+    <h3>Validate Pure Java Application</h3>
+    <p style="font-size: 11px; color: #9ca3af; margin-bottom: 12px;">
+      Validate directory structure, syntax, database mapping, architecture, and modern Java features.
+    </p>
+    <div>
+      <label>Application Directory:</label>
+      <input type="text" id="validate-app-dir" value="HS1210_n404_pure_java" style="width: 250px;">
+      <label>Context File (optional):</label>
+      <input type="text" id="validate-context-file" value="context_index/HS1210_n404.json" style="width: 250px;">
+      <button class="primary" onclick="validatePureJava()">Validate</button>
+    </div>
+    <div id="validate-traceability" class="traceability-bar" style="display: none; margin-top: 10px; padding: 8px 12px; background: #111827; border: 1px solid #1e293b; border-radius: 6px; font-size: 11px;">
+      <span style="color: #9ca3af;">Node:</span> <span id="validate-node-label">—</span>
+      <button type="button" id="validate-view-rpg-btn" style="margin-left: 12px;">View RPG snippet</button>
+    </div>
+    <div id="validate-rpg-snippet" style="display: none; margin-top: 8px;">
+      <pre id="validate-rpg-snippet-pre" style="max-height: 200px; overflow: auto; font-size: 10px; padding: 10px; background: #0f172a; border: 1px solid #1e293b; border-radius: 4px;"></pre>
+    </div>
+    <div id="validate-status"></div>
+    <div id="validate-results" style="display: none;">
+      <div class="validation-grid" id="validation-grid"></div>
+      <pre id="validate-output" style="margin-top: 16px;"></pre>
+    </div>
+  </div>
+</div>
+
+<!-- Tab 4: Build Project -->
+<div id="tab-build" class="tab-content">
+  <div class="card">
+    <h3>Build Maven Project</h3>
+    <p style="font-size: 11px; color: #9ca3af; margin-bottom: 12px;">
+      Build the Spring Boot application using Maven. This compiles the Pure Java code and creates a runnable JAR.
+    </p>
+    <div>
+      <label>Project Directory:</label>
+      <input type="text" id="build-project-dir" value="warranty_demo" style="width: 200px;">
+      <button class="primary" onclick="buildProject()">Build Project</button>
+    </div>
+    <div id="build-status"></div>
+    <pre id="build-output" style="display: none;"></pre>
+  </div>
+</div>
+
+<!-- Tab 5: Test APIs -->
+<div id="tab-test" class="tab-content">
+  <div class="card">
+    <h3>Test API Endpoints</h3>
+    <p style="font-size: 11px; color: #9ca3af; margin-bottom: 12px;">
+      Test the running Spring Boot application on localhost:8081.
+    </p>
+    <div class="api-test">
+      <div class="request">
+        <h4>Available Endpoints</h4>
+        <ul class="endpoint-list">
+          <li onclick="testEndpoint('GET', '/api/claims')">
+            <span class="method get">GET</span> /api/claims
+          </li>
+          <li onclick="testEndpoint('GET', '/api/claims/search?companyCode=001')">
+            <span class="method get">GET</span> /api/claims/search?companyCode=001
+          </li>
+          <li onclick="testEndpoint('POST', '/api/claims/search', '{\"companyCode\":\"001\"}')">
+            <span class="method post">POST</span> /api/claims/search
+          </li>
+          <li onclick="testEndpoint('GET', '/swagger-ui.html')">
+            <span class="method get">GET</span> /swagger-ui.html
+          </li>
+        </ul>
+        <div style="margin-top: 16px;">
+          <h4>Custom Test</h4>
+          <select id="test-method" style="width: 80px;">
+            <option>GET</option>
+            <option>POST</option>
+          </select>
+          <input type="text" id="test-endpoint" placeholder="/api/claims/search" style="width: 300px;">
+          <textarea id="test-body" placeholder='{"companyCode":"001"}' style="width: 100%; height: 60px; margin-top: 8px; padding: 6px; border-radius: 4px; border: 1px solid #374151; background: #111827; color: #e5e7eb; font-size: 11px; font-family: monospace;"></textarea>
+          <button class="primary" onclick="testCustomEndpoint()">Test</button>
+        </div>
+      </div>
+      <div class="response">
+        <h4>Response</h4>
+        <div id="test-status"></div>
+        <pre id="test-response" style="max-height: 500px;">// Response will appear here</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Tab switching
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const tabName = tab.getAttribute('data-tab');
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(`tab-${tabName}`).classList.add('active');
+    });
+  });
+
+  // Load manifest for node selection
+  async function loadManifest() {
+    try {
+      const res = await fetch('/api/manifest');
+      const manifest = await res.json();
+      const entries = manifest.entries || manifest.Entries || [];
+      
+      const unitSelect = document.getElementById('migrate-unit');
+      const nodeSelect = document.getElementById('migrate-node');
+      
+      // Populate unit dropdown
+      const units = [...new Set(entries.map(e => e.unitId))];
+      unitSelect.innerHTML = '<option value="">Select Unit</option>';
+      units.forEach(unit => {
+        unitSelect.innerHTML += `<option value="${unit}">${unit}</option>`;
+      });
+      
+      // Update node dropdown when unit changes
+      unitSelect.addEventListener('change', () => {
+        const selectedUnit = unitSelect.value;
+        const nodes = entries.filter(e => e.unitId === selectedUnit);
+        nodeSelect.innerHTML = '<option value="">Select Node</option>';
+        nodes.forEach(entry => {
+          nodeSelect.innerHTML += `<option value="${entry.nodeId}">${entry.nodeId} (${entry.kind})</option>`;
+        });
+        updateMigrateTraceability();
+      });
+      nodeSelect.addEventListener('change', updateMigrateTraceability);
+    } catch (e) {
+      console.error('Failed to load manifest:', e);
+    }
+  }
+
+  async function showJavaSnippet(unitId, nodeId) {
+    if (!unitId || !nodeId) return;
+    const pre = document.getElementById('migrate-java-snippet-pre');
+    const div = document.getElementById('migrate-java-snippet');
+    if (!pre || !div) return;
+    try {
+      const res = await fetch('/api/pure-java-source?unitId=' + encodeURIComponent(unitId) + '&nodeId=' + encodeURIComponent(nodeId));
+      const data = await res.json();
+      if (data.error) {
+        pre.textContent = 'Error: ' + data.error;
+      } else {
+        const header = (data.path ? '// ' + data.path + '\\n\\n' : '');
+        pre.textContent = header + (data.javaSource || '(no source)');
+      }
+      div.style.display = 'block';
+    } catch (e) {
+      pre.textContent = 'Error: ' + e.message;
+      div.style.display = 'block';
+    }
+  }
+
+  function updateMigrateTraceability() {
+    const unitId = document.getElementById('migrate-unit')?.value;
+    const nodeId = document.getElementById('migrate-node')?.value;
+    const bar = document.getElementById('migrate-traceability');
+    const nodeLabel = document.getElementById('migrate-node-label');
+    const contextLabel = document.getElementById('migrate-context-label');
+    if (!bar || !nodeLabel || !contextLabel) return;
+    if (unitId && nodeId) {
+      const nodeName = unitId + '_' + nodeId;
+      nodeLabel.textContent = nodeName;
+      contextLabel.textContent = 'context_index/' + nodeName + '.json';
+      bar.style.display = 'block';
+    } else {
+      bar.style.display = 'none';
+    }
+  }
+
+  async function showRpgSnippet(unitId, nodeId, snippetPreId, snippetDivId) {
+    if (!unitId || !nodeId) return;
+    const pre = document.getElementById(snippetPreId);
+    const div = document.getElementById(snippetDivId);
+    if (!pre || !div) return;
+    try {
+      const res = await fetch('/api/rpg-snippet?unitId=' + encodeURIComponent(unitId) + '&nodeId=' + encodeURIComponent(nodeId));
+      const data = await res.json();
+      if (data.error) {
+        pre.textContent = 'Error: ' + data.error;
+      } else {
+        pre.textContent = data.rpgSnippet || '(no snippet)';
+      }
+      div.style.display = 'block';
+    } catch (e) {
+      pre.textContent = 'Error: ' + e.message;
+      div.style.display = 'block';
+    }
+  }
+
+  function parseNodeFromContextFile(contextFile) {
+    if (!contextFile || !contextFile.trim()) return null;
+    const base = contextFile.replace(/^.*\//, '').replace(/\.json$/i, '');
+    if (!base) return null;
+    const idx = base.indexOf('_');
+    if (idx <= 0) return null;
+    return { unitId: base.slice(0, idx), nodeId: base.slice(idx + 1), nodeName: base };
+  }
+
+  function updateValidateTraceability() {
+    const contextFile = document.getElementById('validate-context-file')?.value?.trim();
+    const bar = document.getElementById('validate-traceability');
+    const nodeLabel = document.getElementById('validate-node-label');
+    if (!bar || !nodeLabel) return;
+    const parsed = parseNodeFromContextFile(contextFile);
+    if (parsed) {
+      nodeLabel.textContent = parsed.nodeName + ' ← ' + (contextFile || '');
+      bar.style.display = 'block';
+    } else {
+      bar.style.display = 'none';
+    }
+  }
+
+
+  // Migrate Pure Java
+  async function migratePureJava() {
+    const unitId = document.getElementById('migrate-unit').value;
+    const nodeId = document.getElementById('migrate-node').value;
+    const model = document.getElementById('migrate-model').value;
+    
+    if (!unitId || !nodeId) {
+      alert('Please select both unit and node');
+      return;
+    }
+    
+    const statusDiv = document.getElementById('migrate-status');
+    const outputPre = document.getElementById('migrate-output');
+    const fileTreeDiv = document.getElementById('file-structure');
+    const fileTree = document.getElementById('file-tree');
+    const javaDiv = document.getElementById('migrate-java-snippet');
+    const javaPre = document.getElementById('migrate-java-snippet-pre');
+    
+    statusDiv.innerHTML = '<div class="status info">Migrating to Pure Java (this may take 2-5 minutes)...</div>';
+    outputPre.style.display = 'block';
+    outputPre.textContent = 'Starting migration...';
+    fileTreeDiv.style.display = 'none';
+    if (javaDiv && javaPre) {
+      javaPre.textContent = '';
+      javaDiv.style.display = 'none';
+    }
+    
+    try {
+      const enforceLogic = document.getElementById('migrate-enforce-logic')?.checked ? '1' : '0';
+      const res = await fetch(`/api/migrate-pure-java?unitId=${encodeURIComponent(unitId)}&nodeId=${encodeURIComponent(nodeId)}&model=${encodeURIComponent(model)}&enforceLogic=${enforceLogic}`, {
+        method: 'POST'
+      });
+      const result = await res.json();
+      
+      if (result.success && result.exists) {
+        let statusHtml = `<div class="status success">✓ Migration complete! Generated ${result.fileCount} files in ${result.outputDir}</div>`;
+        if (result.logic_completeness_enforced && result.logic_completeness_failed) {
+          statusHtml += `<div class="status error" style="margin-top: 8px;">⚠ Logic completeness: ${result.logic_completeness_score}% (100% required). Fix the gaps below and re-validate.</div>`;
+          if (result.logic_enforce_fix_attempted) {
+            statusHtml += `<div class="status info" style="margin-top: 6px;">Auto-fix was run; re-validate or click "Fix logic gaps with LLM" to try again.</div>`;
+          }
+        } else if (result.logic_completeness_enforced && !result.logic_completeness_failed) {
+          statusHtml += `<div class="status success" style="margin-top: 8px;">✓ Logic completeness: 100%</div>`;
+          if (result.logic_enforce_fix_attempted && result.logic_enforce_fix_files && result.logic_enforce_fix_files.length > 0) {
+            statusHtml += `<div class="status info" style="margin-top: 6px;">Auto-fix updated: ${result.logic_enforce_fix_files.join(', ')}</div>`;
+          }
+        }
+        statusDiv.innerHTML = statusHtml;
+        
+        // Show stderr output (progress messages) and stdout (if any)
+        const outputText = (result.stderr || '') + (result.output || '');
+        outputPre.textContent = outputText || 'Migration completed successfully';
+        outputPre.style.display = 'block';
+        
+        // If logic completeness failed, show action required and gap details in the output area
+        if (result.logic_completeness_failed && result.logic_completeness_action_required) {
+          let gapSection = '\n\n--- LOGIC COMPLETENESS: ACTION REQUIRED ---\n' + result.logic_completeness_action_required + '\n\n';
+          if (result.logic_completeness_gap_details && result.logic_completeness_gap_details.length > 0) {
+            result.logic_completeness_gap_details.forEach(g => {
+              gapSection += g.file + ': ' + g.description + '\n  → ' + g.action_required + '\n\n';
+            });
+          } else if (result.logic_completeness_gaps && result.logic_completeness_gaps.length > 0) {
+            result.logic_completeness_gaps.forEach(g => { gapSection += '• ' + g + '\n'; });
+          }
+          gapSection += 'Run Validate with app dir: ' + (result.outputDir || '') + ' and context file: context_index/' + unitId + '_' + nodeId + '.json to see full report.\n';
+          outputPre.textContent = outputPre.textContent + gapSection;
+          window.lastMigrateResult = { outputDir: result.outputDir, unitId, nodeId };
+          document.getElementById('migrate-fix-gaps').style.display = 'block';
+        } else {
+          window.lastMigrateResult = null;
+          document.getElementById('migrate-fix-gaps').style.display = 'none';
+        }
+        
+        // Auto-wire Validate tab to this migrated node for traceability
+        const validateAppInput = document.getElementById('validate-app-dir');
+        const validateContextInput = document.getElementById('validate-context-file');
+        if (validateAppInput) {
+          validateAppInput.value = result.outputDir || (unitId + '_' + nodeId + '_pure_java');
+        }
+        if (validateContextInput) {
+          validateContextInput.value = 'context_index/' + unitId + '_' + nodeId + '.json';
+        }
+        if (typeof updateValidateTraceability === 'function') {
+          updateValidateTraceability();
+        }
+
+        // Auto-wire Build tab (projectDir) to the generated app if it is a Maven project
+        const buildDirInput = document.getElementById('build-project-dir');
+        if (buildDirInput && result.outputDir && result.isMavenProject) {
+          // Only auto-target the generated directory when it is a Maven project (has pom.xml).
+          buildDirInput.value = result.outputDir;
+        }
+
+        // Automatically show freshly generated Java for this node (cause → effect)
+        if (typeof showJavaSnippet === 'function') {
+          showJavaSnippet(unitId, nodeId);
+        }
+        
+        // Display file structure
+        if (result.files && result.files.length > 0) {
+          fileTreeDiv.style.display = 'block';
+          let treeHtml = `<div style="color: #10b981; font-weight: bold; margin-bottom: 8px;">📂 ${result.outputDir}</div>`;
+          
+          // Build tree structure
+          const tree = {};
+          result.files.forEach(file => {
+            const parts = file.path.split('/');
+            let current = tree;
+            for (let i = 0; i < parts.length; i++) {
+              const part = parts[i];
+              if (i === parts.length - 1) {
+                // File
+                current[part] = { type: 'file', size: file.size, package: file.package };
+              } else {
+                // Directory
+                if (!current[part]) {
+                  current[part] = { type: 'dir', children: {} };
+                }
+                current = current[part].children;
+              }
+            }
+          });
+          
+          // Render tree
+          function renderTree(node, prefix = '', isLast = true) {
+            const entries = Object.entries(node).sort((a, b) => {
+              // Directories first, then files
+              if (a[1].type === 'dir' && b[1].type !== 'dir') return -1;
+              if (a[1].type !== 'dir' && b[1].type === 'dir') return 1;
+              return a[0].localeCompare(b[0]);
+            });
+            
+            entries.forEach(([name, data], index) => {
+              const isLastItem = index === entries.length - 1;
+              const connector = isLast ? '└── ' : '├── ';
+              const newPrefix = prefix + (isLast ? '    ' : '│   ');
+              
+              if (data.type === 'dir') {
+                treeHtml += `<div class="dir">${prefix}${connector}📁 ${name}/</div>`;
+                renderTree(data.children, newPrefix, isLastItem);
+              } else {
+                const sizeStr = (data.size / 1024).toFixed(1);
+                const packageStr = data.package ? ` (${data.package})` : '';
+                treeHtml += `<div class="file">${prefix}${connector}📄 ${name} (${sizeStr} KB)${packageStr}</div>`;
+              }
+            });
+          }
+          
+          renderTree(tree);
+          fileTree.innerHTML = treeHtml;
+        } else {
+          fileTreeDiv.style.display = 'block';
+          fileTree.innerHTML = '<div style="color: #f59e0b;">⚠️ No Java files found. Check output directory: ' + result.outputDir + '</div>';
+        }
+      } else {
+        statusDiv.innerHTML = '<div class="status error">✗ Migration failed or files not created</div>';
+        const errorMsg = result.error || result.stderr || 'Unknown error';
+        outputPre.textContent = errorMsg + '\n\nOutput:\n' + (result.output || '');
+        outputPre.style.display = 'block';
+        fileTreeDiv.style.display = 'none';
+        window.lastMigrateResult = null;
+        document.getElementById('migrate-fix-gaps').style.display = 'none';
+      }
+    } catch (e) {
+      statusDiv.innerHTML = '<div class="status error">✗ Error: ' + e.message + '</div>';
+      outputPre.textContent = 'Error: ' + e.message;
+    }
+  }
+
+  async function fixLogicGaps(appDir, contextFile) {
+    const statusDiv = document.getElementById('migrate-status');
+    const outputPre = document.getElementById('migrate-output');
+    if (!statusDiv || !outputPre) return;
+    statusDiv.innerHTML = '<div class="status info">Fixing logic gaps with LLM (1–3 min)...</div>';
+    outputPre.style.display = 'block';
+    outputPre.textContent = 'Calling fix-logic-gaps API...';
+    try {
+      const res = await fetch('/api/fix-logic-gaps', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appDir, contextFile })
+      });
+      const result = await res.json();
+      if (result.success) {
+        statusDiv.innerHTML = '<div class="status success">✓ ' + (result.message || 'Fixed ' + (result.files_fixed?.length || 0) + ' file(s). Re-run Validate to confirm 100%.') + '</div>';
+        outputPre.textContent = (result.stderr || '') + '\n' + (result.message || '') + '\nFiles: ' + (result.files_fixed?.join(', ') || '');
+      } else {
+        statusDiv.innerHTML = '<div class="status error">✗ Fix failed</div>';
+        outputPre.textContent = (result.error || 'Unknown error') + '\n' + (result.stderr || '') + '\n' + (result.raw_stdout || '');
+      }
+    } catch (e) {
+      statusDiv.innerHTML = '<div class="status error">✗ Error: ' + e.message + '</div>';
+      outputPre.textContent = 'Error: ' + e.message;
+    }
+  }
+
+  function fixLogicGapsFromMigrate() {
+    const last = window.lastMigrateResult;
+    if (!last || !last.outputDir) {
+      alert('Run Migrate first and wait for logic completeness result with gaps.');
+      return;
+    }
+    const contextFile = 'context_index/' + last.unitId + '_' + last.nodeId + '.json';
+    fixLogicGaps(last.outputDir, contextFile);
+  }
+
+  async function fixLogicGapsFromValidate() {
+    const appDir = document.getElementById('validate-app-dir')?.value?.trim();
+    const contextFile = document.getElementById('validate-context-file')?.value?.trim();
+    if (!appDir) {
+      alert('Enter Application Directory in the Validate tab.');
+      return;
+    }
+    if (!contextFile) {
+      alert('Enter Context File in the Validate tab (required for fix).');
+      return;
+    }
+    const statusDiv = document.getElementById('validate-status');
+    const outputPre = document.getElementById('validate-output');
+    statusDiv.innerHTML = '<div class="status info">Fixing logic gaps with LLM (1–3 min)...</div>';
+    outputPre.style.display = 'block';
+    outputPre.textContent = 'Calling fix-logic-gaps API...';
+    try {
+      const res = await fetch('/api/fix-logic-gaps', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appDir, contextFile })
+      });
+      const result = await res.json();
+      if (result.success) {
+        statusDiv.innerHTML = '<div class="status success">✓ ' + (result.message || 'Fixed ' + (result.files_fixed?.length || 0) + ' file(s). Re-run Validate to confirm.') + '</div>';
+        outputPre.textContent = (result.stderr || '') + '\n' + (result.message || '') + '\nFiles: ' + (result.files_fixed?.join(', ') || '');
+      } else {
+        statusDiv.innerHTML = '<div class="status error">✗ Fix failed</div>';
+        outputPre.textContent = (result.error || 'Unknown error') + '\n' + (result.stderr || '');
+      }
+    } catch (e) {
+      statusDiv.innerHTML = '<div class="status error">✗ Error: ' + e.message + '</div>';
+      outputPre.textContent = 'Error: ' + e.message;
+    }
+  }
+
+  // Validate Pure Java
+  async function validatePureJava() {
+    const appDir = document.getElementById('validate-app-dir').value;
+    const contextFile = document.getElementById('validate-context-file').value;
+    
+    const statusDiv = document.getElementById('validate-status');
+    const resultsDiv = document.getElementById('validate-results');
+    const gridDiv = document.getElementById('validation-grid');
+    const outputPre = document.getElementById('validate-output');
+    
+    statusDiv.innerHTML = '<div class="status info">Validating Pure Java application...</div>';
+    resultsDiv.style.display = 'none';
+    outputPre.textContent = 'Running validation...';
+    
+    try {
+      const body = {appDir};
+      if (contextFile && contextFile.trim()) {
+        body.contextFile = contextFile.trim();
+      }
+      
+      const res = await fetch('/api/validate-pure-java', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body)
+      });
+      
+      // Check if response is OK
+      if (!res.ok) {
+        const errorText = await res.text();
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = {error: errorText || `HTTP ${res.status}`};
+        }
+        throw new Error(errorData.error || `HTTP ${res.status}: ${errorText}`);
+      }
+      
+      const result = await res.json();
+      
+      // Check if result has error field
+      if (result.error) {
+        statusDiv.innerHTML = '<div class="status error">✗ Validation failed</div>';
+        let errorMsg = result.error;
+        if (result.debug) {
+          errorMsg += '\n\nDebug info:\n' + JSON.stringify(result.debug, null, 2);
+        }
+        if (result.stdoutPreview) {
+          errorMsg += '\n\nOutput preview:\n' + result.stdoutPreview;
+        }
+        outputPre.textContent = errorMsg;
+        resultsDiv.style.display = 'block';
+        return;
+      }
+      
+      // Success - display results
+      statusDiv.innerHTML = '<div class="status success">✓ Validation complete</div>';
+      resultsDiv.style.display = 'block';
+      
+      // Extract category scores
+      const categories = result.categories || {};
+      const results = result.results || {};
+      
+      // Display overall score
+      const overallScore = result.overall_score || 0;
+      const overallStatus = result.status || 'UNKNOWN';
+      
+      gridDiv.innerHTML = '';
+      
+      // Add overall score card
+      const overallCard = document.createElement('div');
+      overallCard.className = 'validation-card';
+      overallCard.style.gridColumn = 'span 3';
+      overallCard.style.border = '2px solid #3b82f6';
+      const overallClass = overallScore >= 95 ? 'high' : overallScore >= 80 ? 'medium' : 'low';
+      overallCard.innerHTML = `
+        <h3 style="margin: 0 0 8px 0; font-size: 16px;">Overall Score</h3>
+        <div class="score ${overallClass}" style="font-size: 32px; font-weight: bold;">${overallScore.toFixed(1)}%</div>
+        <div style="font-size: 12px; color: #9ca3af; margin-top: 4px;">Status: ${overallStatus}</div>
+      `;
+      gridDiv.appendChild(overallCard);
+      
+      // Add category headers
+      const categoryOrder = [
+        { key: 'structural', name: 'Structural', icon: '🏗️', required: true },
+        { key: 'semantic', name: 'Semantic', icon: '🧠', required: true },
+        { key: 'behavioral', name: 'Behavioral', icon: '⚙️', required: false }
+      ];
+      
+      categoryOrder.forEach(cat => {
+        const catData = categories[cat.key] || { score: 0, description: 'Not evaluated' };
+        const card = document.createElement('div');
+        card.className = 'validation-card';
+        const scoreClass = catData.score >= 100 ? 'high' : catData.score >= 95 ? 'high' : catData.score >= 80 ? 'medium' : 'low';
+        const requiredBadge = cat.required ? '<span style="font-size: 10px; color: #ef4444; font-weight: bold;">REQUIRED</span>' : '';
+        card.innerHTML = `
+          <h4>${cat.icon} ${cat.name} ${requiredBadge}</h4>
+          <div class="score ${scoreClass}">${catData.score.toFixed(1)}%</div>
+          <div style="font-size: 10px; color: #9ca3af; margin-top: 4px; line-height: 1.3;">${catData.description}</div>
+        `;
+        gridDiv.appendChild(card);
+      });
+      
+      // Add detailed metric cards in a single full-width row
+      const metrics = [
+        { key: 'packages', name: 'Packages', category: 'structural' },
+        { key: 'database_mapping', name: 'Database Mapping', category: 'semantic' },
+        { key: 'architecture', name: 'Architecture', category: 'semantic' },
+        { key: 'logic_completeness', name: 'Logic completeness', category: 'structural' },
+        { key: 'syntax', name: 'Syntax', category: 'behavioral' },
+        { key: 'modern_java', name: 'Modern Java', category: 'behavioral' }
+      ];
+      
+      const metricsRow = document.createElement('div');
+      metricsRow.className = 'validation-metrics-row';
+      metrics.forEach(metric => {
+        const metricData = results[metric.key];
+        if (!metricData) return;
+        // Skip only if skipped AND no content (logic_completeness is advisory but we still show it when we have checks)
+        if (metricData.skipped && metric.key !== 'logic_completeness') return;
+        if (metricData.skipped && metric.key === 'logic_completeness' && (!metricData.checks || metricData.checks.length === 0)) return;
+        
+        const score = metricData.score || 0;
+        const card = document.createElement('div');
+        card.className = 'validation-card';
+        card.style.fontSize = '12px';
+        const scoreClass = score >= 100 ? 'high' : score >= 95 ? 'high' : score >= 80 ? 'medium' : 'low';
+        card.innerHTML = `
+          <h5 style="margin: 0 0 4px 0; font-size: 12px;">${metric.name}</h5>
+          <div class="score ${scoreClass}" style="font-size: 20px;">${score.toFixed(1)}%</div>
+        `;
+        metricsRow.appendChild(card);
+      });
+      gridDiv.appendChild(metricsRow);
+      
+      // Logic completeness: show action_required and gap_details when context was provided
+      const logicResult = results.logic_completeness;
+      if (logicResult && (logicResult.potential_gaps?.length > 0 || logicResult.action_required)) {
+        const gapsDiv = document.createElement('div');
+        gapsDiv.className = 'validation-card';
+        gapsDiv.style.gridColumn = '1 / -1';
+        gapsDiv.style.marginTop = '8px';
+        let html = '';
+        if (logicResult.action_required) {
+          html += '<h4 style="margin: 0 0 8px 0; font-size: 12px; color: #e5e7eb;">What to do for 100% logic</h4>';
+          html += '<p style="margin: 0 0 10px 0; font-size: 11px; color: #9ca3af; line-height: 1.4;">' + logicResult.action_required + '</p>';
+        }
+        if (logicResult.gap_details && logicResult.gap_details.length > 0) {
+          html += '<h4 style="margin: 8px 0 6px 0; font-size: 12px; color: #f59e0b;">Gaps and how to fix them</h4>';
+          html += '<div style="font-size: 11px;">';
+          logicResult.gap_details.forEach((g, i) => {
+            html += '<div style="margin-bottom: 10px; padding: 8px; background: #0f172a; border-radius: 4px; border-left: 3px solid #f59e0b;">';
+            html += '<strong>' + (g.file || '') + '</strong> — ' + (g.description || '') + '<br>';
+            html += '<span style="color: #10b981;">→ ' + (g.action_required || '') + '</span>';
+            html += '</div>';
+          });
+          html += '<button type="button" class="primary" onclick="fixLogicGapsFromValidate()" style="margin-top: 8px;">Fix logic gaps with LLM</button>';
+          html += '</div>';
+        } else if (logicResult.potential_gaps && logicResult.potential_gaps.length > 0) {
+          html += '<h4 style="margin: 8px 0 6px 0; font-size: 12px; color: #f59e0b;">Potential gaps</h4><ul style="margin: 0; padding-left: 20px; font-size: 11px; color: #e5e7eb;">' +
+            logicResult.potential_gaps.map(g => '<li>' + g + '</li>').join('') + '</ul>';
+        }
+        gapsDiv.innerHTML = html || '';
+        if (html) gridDiv.appendChild(gapsDiv);
+      }
+      
+      // Show full JSON output
+      outputPre.textContent = JSON.stringify(result, null, 2);
+      
+    } catch (e) {
+      console.error('Validation error:', e);
+      statusDiv.innerHTML = '<div class="status error">✗ Error: ' + e.message + '</div>';
+      outputPre.textContent = 'Error: ' + e.message + '\n\nStack: ' + (e.stack || 'No stack trace');
+      resultsDiv.style.display = 'block';
+    }
+  }
+
+  // Build Project
+  async function buildProject() {
+    const projectDir = document.getElementById('build-project-dir').value;
+    
+    const statusDiv = document.getElementById('build-status');
+    const outputPre = document.getElementById('build-output');
+    
+    statusDiv.innerHTML = '<div class="status info">Building Maven project (this may take 1-3 minutes)...</div>';
+    outputPre.style.display = 'block';
+    outputPre.textContent = 'Running mvn clean package...';
+    
+    try {
+      const res = await fetch(`/api/build-project?projectDir=${encodeURIComponent(projectDir)}`, {
+        method: 'POST'
+      });
+      const result = await res.json();
+      
+      if (result.success) {
+        statusDiv.innerHTML = '<div class="status success">✓ Build successful!</div>';
+        outputPre.textContent = result.output || 'Success';
+      } else {
+        statusDiv.innerHTML = '<div class="status error">✗ Build failed</div>';
+        outputPre.textContent = (result.error || 'Unknown error') + '\n\n' + (result.output || '');
+      }
+    } catch (e) {
+      statusDiv.innerHTML = '<div class="status error">✗ Error: ' + e.message + '</div>';
+      outputPre.textContent = 'Error: ' + e.message;
+    }
+  }
+
+  // Test API Endpoint
+  async function testEndpoint(method, endpoint, body = null) {
+    document.getElementById('test-method').value = method;
+    document.getElementById('test-endpoint').value = endpoint;
+    if (body) document.getElementById('test-body').value = body;
+    testCustomEndpoint();
+  }
+
+  async function testCustomEndpoint() {
+    const method = document.getElementById('test-method').value;
+    const endpoint = document.getElementById('test-endpoint').value;
+    const body = document.getElementById('test-body').value;
+    
+    const statusDiv = document.getElementById('test-status');
+    const responsePre = document.getElementById('test-response');
+    
+    statusDiv.innerHTML = '<div class="status info">Testing endpoint...</div>';
+    responsePre.textContent = 'Loading...';
+    
+    try {
+      const params = new URLSearchParams({
+        endpoint,
+        method
+      });
+      if (body) params.append('body', body);
+      
+      const res = await fetch(`/api/test-api?${params}`);
+      
+      let result;
+      try {
+        const responseText = await res.text();
+        if (!responseText) {
+          throw new Error('Empty response from server');
+        }
+        try {
+          result = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error('Failed to parse JSON response:', responseText);
+          throw new Error(`Invalid JSON response: ${responseText.substring(0, 200)}`);
+        }
+      } catch (parseError) {
+        console.error('Error parsing response:', parseError);
+        throw parseError;
+      }
+      
+      if (!res.ok && res.status !== 503) {
+        const errorMsg = typeof result.error === 'string' ? result.error : JSON.stringify(result.error || result);
+        throw new Error(errorMsg || `HTTP ${res.status}`);
+      }
+      
+      if (result.success && result.status >= 200 && result.status < 300) {
+        statusDiv.innerHTML = `<div class="status success">✓ Success (HTTP ${result.status})</div>`;
+        try {
+          const formatted = JSON.stringify(result.data, null, 2);
+          responsePre.textContent = formatted;
+        } catch {
+          responsePre.textContent = typeof result.data === 'string' ? result.data : JSON.stringify(result.data, null, 2);
+        }
+      } else if (result.error) {
+        // Connection refused or other error
+        statusDiv.innerHTML = `<div class="status error">✗ ${result.error.includes('Connection refused') ? 'Connection Refused' : 'Error'}</div>`;
+        let errorMsg = result.error;
+        if (result.suggestion) {
+          errorMsg += '\n\n💡 Suggestion: ' + result.suggestion;
+        }
+        if (result.hint) {
+          errorMsg += '\n\n💡 Hint: ' + result.hint;
+        }
+        responsePre.textContent = errorMsg + '\n\nFull response:\n' + JSON.stringify(result, null, 2);
+      } else {
+        statusDiv.innerHTML = `<div class="status error">✗ Error (HTTP ${result.status || 'N/A'})</div>`;
+        responsePre.textContent = JSON.stringify(result, null, 2);
+      }
+    } catch (e) {
+      console.error('Test API error:', e);
+      let errorMsg = 'Unknown error';
+      if (e instanceof Error) {
+        errorMsg = e.message || String(e);
+      } else if (typeof e === 'object' && e !== null) {
+        errorMsg = JSON.stringify(e, null, 2);
+      } else {
+        errorMsg = String(e);
+      }
+      statusDiv.innerHTML = '<div class="status error">✗ Error</div>';
+      responsePre.textContent = 'Error: ' + errorMsg + '\n\nMake sure the Spring Boot application is running:\n  cd HS1210_n404_pure_java && mvn spring-boot:run\n\nFull error details:\n' + JSON.stringify(e, Object.getOwnPropertyNames(e), 2);
+    }
+  }
+
+  // Discover directories
+  async function discoverDirectories() {
+    const discoverBtn = document.getElementById('discover-btn');
+    const originalText = discoverBtn.textContent;
+    discoverBtn.disabled = true;
+    discoverBtn.textContent = 'Discovering...';
+    
+    try {
+      const res = await fetch('/api/discover-directories?t=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+      }
+      const data = await res.json();
+      
+      // Populate AST directory dropdown
+      const astSelect = document.getElementById('ast-dir');
+      if (!astSelect) {
+        console.error('ast-dir element not found');
+        return;
+      }
+      
+      astSelect.innerHTML = '';
+      if (data.astDirs && data.astDirs.length > 0) {
+        data.astDirs.forEach(dir => {
+          const option = document.createElement('option');
+          option.value = dir.path;
+          option.textContent = dir.label ? `${dir.path} — ${dir.label} (${dir.fileCount} files)` : `${dir.path} (${dir.fileCount} files)`;
+          if (dir.path === data.defaultAstDir || (!data.defaultAstDir && dir.path.includes('JSON_20260211'))) {
+            option.selected = true;
+          }
+          astSelect.appendChild(option);
+        });
+      } else {
+        const option = document.createElement('option');
+        option.value = data.defaultAstDir || 'JSON_ast/JSON_20260211';
+        option.textContent = data.defaultAstDir || 'JSON_ast/JSON_20260211';
+        astSelect.appendChild(option);
+      }
+
+      // Populate DDS AST directory (optional) – use dedicated ddsAstDirs so DDS always appears when present
+      const ddsAstSelect = document.getElementById('dds-ast-dir');
+      if (ddsAstSelect) {
+        ddsAstSelect.innerHTML = '<option value="">— None —</option>';
+        const ddsList = (data.ddsAstDirs && data.ddsAstDirs.length > 0)
+          ? data.ddsAstDirs
+          : (data.astDirs || []).filter(d => d.label === 'DDS');
+        const seen = new Set(['']);
+        ddsList.forEach(dir => {
+          if (seen.has(dir.path)) return;
+          seen.add(dir.path);
+          const option = document.createElement('option');
+          option.value = dir.path;
+          option.textContent = dir.label ? `${dir.path} — ${dir.label} (${dir.fileCount || 0} files)` : dir.path;
+          ddsAstSelect.appendChild(option);
+        });
+        // Keep static fallback if still missing (no duplicate)
+        if (!seen.has('HS1210D_20260216')) {
+          const fallback = document.createElement('option');
+          fallback.value = 'HS1210D_20260216';
+          fallback.textContent = 'HS1210D_20260216 — DDS';
+          ddsAstSelect.appendChild(fallback);
+        }
+      }
+      
+      // Populate RPG directory input with discovered directories or default
+      const rpgInput = document.getElementById('rpg-dir');
+      if (!rpgInput) {
+        console.error('rpg-dir element not found');
+        return;
+      }
+      
+      if (data.rpgDirs && data.rpgDirs.length > 0) {
+        // Set to first discovered directory
+        rpgInput.value = data.rpgDirs[0];
+      } else {
+        // Show suggestion if no directories found
+        if (data.zipFiles && data.zipFiles.length > 0) {
+          const zipFile = data.zipFiles[0];
+          rpgInput.placeholder = `No RPG directory found (found ${zipFile.path}) - use Browse to select`;
+          
+          // Show suggestion
+          if (data.suggestion) {
+            const statusDiv = document.getElementById('context-status');
+            if (statusDiv) {
+              statusDiv.innerHTML = `<div class="status info">💡 ${data.suggestion}</div>`;
+            }
+          }
+        } else {
+          rpgInput.value = 'PoC_HS1210';
+          rpgInput.placeholder = 'Select or type RPG directory path';
+        }
+      }
+      
+      discoverBtn.textContent = '✓ Discovered';
+      setTimeout(() => {
+        discoverBtn.textContent = originalText;
+      }, 2000);
+    } catch (e) {
+      console.error('Failed to discover directories:', e);
+      discoverBtn.textContent = '✗ Error';
+      alert('Failed to discover directories: ' + e.message);
+      // Set defaults
+      const astSelect = document.getElementById('ast-dir');
+      const rpgSelect = document.getElementById('rpg-dir');
+      if (astSelect) {
+        astSelect.innerHTML = '<option value="JSON_ast/JSON_20260211">JSON_ast/JSON_20260211</option>';
+      }
+      const rpgInput = document.getElementById('rpg-dir');
+      if (rpgInput) {
+        rpgInput.value = 'PoC_HS1210';
+      }
+      setTimeout(() => {
+        discoverBtn.textContent = originalText;
+        discoverBtn.disabled = false;
+      }, 2000);
+      return;
+    } finally {
+      discoverBtn.disabled = false;
+    }
+  }
+
+  // Build Context function
+  async function buildContext() {
+    const astDir = document.getElementById('ast-dir')?.value;
+    const ddsAstDir = (document.getElementById('dds-ast-dir')?.value || '').trim();
+    const rpgDirInput = document.getElementById('rpg-dir');
+    const rpgDir = rpgDirInput?.value?.trim();
+    
+    if (!astDir || !rpgDir) {
+      alert('Please select both AST and RPG directories');
+      return;
+    }
+    
+    const statusDiv = document.getElementById('context-status');
+    const outputPre = document.getElementById('context-output');
+    const buildBtn = document.getElementById('build-context-btn');
+    
+    buildBtn.disabled = true;
+    statusDiv.innerHTML = '<div class="status info">Building context packages...' + (ddsAstDir ? ' (with DDS AST)' : '') + '</div>';
+    outputPre.style.display = 'block';
+    outputPre.textContent = 'Running IndexAll...';
+    
+    try {
+      const res = await fetch('/api/build-context', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ astDir, rpgDir, ...(ddsAstDir ? { ddsAstDir } : {}) })
+      });
+      const result = await res.json();
+      
+      if (result.success) {
+        statusDiv.innerHTML = '<div class="status success">✓ Context packages built successfully!</div>';
+        outputPre.textContent = result.output || 'Success';
+        // Reload manifest
+        loadManifest();
+      } else {
+        statusDiv.innerHTML = '<div class="status error">✗ Build failed</div>';
+        let errorMsg = result.error || 'Unknown error';
+        if (result.searchedPaths) {
+          errorMsg += '\n\nSearched paths:';
+          result.searchedPaths.forEach(p => {
+            errorMsg += '\n  - ' + p;
+          });
+        }
+        if (result.similarDirs && result.similarDirs.length > 0) {
+          errorMsg += '\n\nSimilar directories found:';
+          result.similarDirs.forEach(d => {
+            errorMsg += '\n  - ' + d;
+          });
+        }
+        if (result.suggestion) {
+          errorMsg += '\n\n' + result.suggestion;
+        }
+        outputPre.textContent = errorMsg;
+        
+        // Show helpful message with clickable similar directories
+        let helpMsg = '';
+        if (result.similarDirs && result.similarDirs.length > 0) {
+          helpMsg = `<div class="status info" style="margin-top: 8px;">💡 <strong>Found similar directories:</strong><br>`;
+          result.similarDirs.forEach((d, idx) => {
+            const isFirst = idx === 0;
+            helpMsg += `<button type="button" onclick="useSimilarDir('${d}')" style="margin: 4px 4px 4px 0; padding: 6px 12px; background: ${isFirst ? '#3b82f6' : '#1e293b'}; color: white; border: 1px solid ${isFirst ? '#2563eb' : '#334155'}; border-radius: 4px; cursor: pointer; font-size: 11px; font-family: monospace;">${isFirst ? '✓ Use: ' : ''}${d}</button><br>`;
+          });
+          helpMsg += `<small style="color: #9ca3af; display: block; margin-top: 4px;">Click a path above to use it, or manually type the full path.</small></div>`;
+        } else {
+          const rpgInput = document.getElementById('rpg-dir');
+          if (rpgInput && !rpgInput.value.startsWith('/')) {
+            helpMsg = '<div class="status info" style="margin-top: 8px;">💡 <strong>Tip:</strong> Try typing the full absolute path (starting with /) instead of relative path.</div>';
+          }
+        }
+        if (helpMsg) {
+          statusDiv.innerHTML += helpMsg;
+        }
+      }
+    } catch (e) {
+      statusDiv.innerHTML = '<div class="status error">✗ Error: ' + e.message + '</div>';
+      outputPre.textContent = 'Error: ' + e.message;
+    } finally {
+      buildBtn.disabled = false;
+    }
+  }
+
+
+
+  // Handle RPG directory browser picker
+  function setupRpgDirectoryPicker() {
+    const browseBtn = document.getElementById('browse-rpg-btn');
+    const picker = document.getElementById('rpg-dir-picker');
+    const rpgInput = document.getElementById('rpg-dir');
+    const helpBtn = document.getElementById('help-path-btn');
+    const helpDiv = document.getElementById('path-help');
+    
+    if (helpBtn && helpDiv) {
+      helpBtn.addEventListener('click', () => {
+        helpDiv.style.display = helpDiv.style.display === 'none' ? 'block' : 'none';
+      });
+    }
+    
+    if (browseBtn && picker && rpgInput) {
+      browseBtn.addEventListener('click', () => {
+        picker.click();
+      });
+      
+      picker.addEventListener('change', (e) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+          // Get the directory path from the first file
+          const firstFile = files[0];
+          
+          // webkitRelativePath gives us the path relative to the selected directory
+          // Format: "DirectoryName/subdir/file.ext" or "DirectoryName/file.ext"
+          let dirPath = '';
+          
+          if (firstFile.webkitRelativePath) {
+            const pathParts = firstFile.webkitRelativePath.split('/');
+            if (pathParts.length > 0) {
+              // First part is the directory name - use it as relative path
+              dirPath = pathParts[0];
+              
+              // If the selected directory is nested (e.g., PoC_HS1210/PoC_HS1210/),
+              // we need to construct the full relative path
+              // Check if we're inside a PoC_HS1210 structure
+              if (pathParts.length > 1 && pathParts[0].startsWith('PoC_')) {
+                // This might be the nested structure
+                dirPath = pathParts[0];
+              }
+            }
+          }
+          
+          // Try to get more path info if available
+          // Note: Browsers don't expose full paths, but we can work with what we have
+          if (!dirPath) {
+            // Fallback: try to extract from file name or use a default
+            dirPath = 'PoC_HS1210'; // Default fallback
+          }
+          
+          // Try to get more accurate path information
+          // Since browsers don't expose full paths, we'll use the directory name
+          // and let the user know they may need to adjust it
+          let finalPath = dirPath;
+          
+          // If webkitRelativePath shows a nested structure, try to capture it
+          if (firstFile.webkitRelativePath) {
+            const pathParts = firstFile.webkitRelativePath.split('/');
+            // If path has multiple parts, the first part is usually the selected directory name
+            // But we want the full relative path from project root if possible
+            if (pathParts.length >= 2) {
+              // Check if it looks like PoC_HS1210/PoC_HS1210 structure
+              if (pathParts[0] === pathParts[1] || pathParts[0].startsWith('PoC_')) {
+                finalPath = pathParts[0];
+              } else {
+                finalPath = pathParts.slice(0, 2).join('/');
+              }
+            }
+          }
+          
+          // Set the input value
+          rpgInput.value = finalPath;
+          
+          // Auto-fix common path issues
+          if (finalPath && !finalPath.startsWith('/') && (finalPath.startsWith('Users/') || finalPath.startsWith('home/'))) {
+            // Looks like absolute path missing leading slash
+            rpgInput.value = '/' + finalPath;
+            finalPath = '/' + finalPath;
+          }
+          
+          // Show success message with file count and instructions
+          const statusDiv = document.getElementById('context-status');
+          if (statusDiv) {
+            let message = `✓ Selected directory with ${files.length} file(s)`;
+            message += `<br><strong>Path:</strong> ${rpgInput.value}`;
+            if (!rpgInput.value.startsWith('/')) {
+              message += `<br><small style="color: #f59e0b;">⚠️ Path should start with / for absolute paths. Auto-corrected if needed.</small>`;
+            }
+            statusDiv.innerHTML = `<div class="status success">${message}</div>`;
+          }
+          
+          // Show help if not already visible
+          if (helpDiv) {
+            helpDiv.style.display = 'block';
+          }
+          
+          // Store the full file list for potential future use
+          rpgInput.dataset.fileCount = files.length;
+        }
+      });
+    }
+  }
+
+  // Initialize when DOM is ready
+  document.addEventListener('DOMContentLoaded', function() {
+    // Set up event listeners
+    const discoverBtn = document.getElementById('discover-btn');
+    const buildBtn = document.getElementById('build-context-btn');
+    
+    if (discoverBtn) {
+      discoverBtn.addEventListener('click', discoverDirectories);
+    }
+    if (buildBtn) {
+      buildBtn.addEventListener('click', buildContext);
+    }
+    
+    // Traceability: View RPG snippet (Migrate tab)
+    const migrateViewRpgBtn = document.getElementById('migrate-view-rpg-btn');
+    if (migrateViewRpgBtn) {
+      migrateViewRpgBtn.addEventListener('click', function() {
+        const unitId = document.getElementById('migrate-unit')?.value;
+        const nodeId = document.getElementById('migrate-node')?.value;
+        showRpgSnippet(unitId, nodeId, 'migrate-rpg-snippet-pre', 'migrate-rpg-snippet');
+      });
+    }
+    const migrateViewJavaBtn = document.getElementById('migrate-view-java-btn');
+    if (migrateViewJavaBtn) {
+      migrateViewJavaBtn.addEventListener('click', function() {
+        const unitId = document.getElementById('migrate-unit')?.value;
+        const nodeId = document.getElementById('migrate-node')?.value;
+        showJavaSnippet(unitId, nodeId);
+      });
+    }
+    
+    // Traceability: View RPG snippet (Validate tab)
+    const validateViewRpgBtn = document.getElementById('validate-view-rpg-btn');
+    if (validateViewRpgBtn) {
+      validateViewRpgBtn.addEventListener('click', function() {
+        const contextFile = document.getElementById('validate-context-file')?.value?.trim();
+        const parsed = parseNodeFromContextFile(contextFile);
+        if (parsed) {
+          showRpgSnippet(parsed.unitId, parsed.nodeId, 'validate-rpg-snippet-pre', 'validate-rpg-snippet');
+        }
+      });
+    }
+    
+    // Traceability: update Validate bar when context file input changes
+    const validateContextInput = document.getElementById('validate-context-file');
+    if (validateContextInput) {
+      validateContextInput.addEventListener('input', updateValidateTraceability);
+      validateContextInput.addEventListener('change', updateValidateTraceability);
+    }
+    
+    // Set up RPG directory picker
+    setupRpgDirectoryPicker();
+    
+    // Auto-discover on load
+    discoverDirectories();
+    loadManifest();
+    updateValidateTraceability();
+  });
+
+  // Function to use a similar directory path
+  function useSimilarDir(path) {
+    const rpgInput = document.getElementById('rpg-dir');
+    if (rpgInput) {
+      rpgInput.value = path;
+      // Optionally trigger build automatically
+      // buildContext();
+    }
+  }
+</script>
+</body>
+</html>

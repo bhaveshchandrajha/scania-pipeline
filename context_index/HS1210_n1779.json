@@ -1,0 +1,2105 @@
+{
+  "astNode": {
+    "id": "n1779",
+    "kind": "Procedure",
+    "name": "CreateClaim",
+    "sem": "{\"sym.file.HSG71PF\": {\"refersTo\": \"sym.file.HSG71PF\"}, \"sym.file.HSG73PF\": {\"refersTo\": \"sym.file.HSG73PF\"}, \"sym.file.HSGPSLF3\": {\"refersTo\": \"sym.file.HSGPSLF3\"}, \"sym.var.KEY_GPS\": {\"refersTo\": \"sym.var.KEY_GPS\"}, \"sym.var.create\": {\"refersTo\": \"sym.var.create\"}, \"sym.var.maintenance\": {\"refersTo\": \"sym.var.maintenance\"}, \"sym.var.groups\": {\"refersTo\": \"sym.var.groups\"}, \"sym.var.partNo\": {\"refersTo\": \"sym.var.partNo\"}, \"sym.var.partValue\": {\"refersTo\": \"sym.var.partValue\"}, \"sym.var.text\": {\"refersTo\": \"sym.var.text\"}, \"sym.var.failureNo\": {\"refersTo\": \"sym.var.failureNo\"}, \"sym.var.lineNo\": {\"refersTo\": \"sym.var.lineNo\"}, \"sym.var.valueMat\": {\"refersTo\": \"sym.var.valueMat\"}, \"sym.var.valueLab\": {\"refersTo\": \"sym.var.valueLab\"}, \"sym.var.valueSpe\": {\"refersTo\": \"sym.var.valueSpe\"}}",
+    "outgoingEdges": [
+      "sym.file.HSG71PF",
+      "sym.file.HSG73PF",
+      "sym.file.HSGPSLF3",
+      "sym.var.KEY_GPS",
+      "sym.var.create",
+      "sym.var.failureNo",
+      "sym.var.groups",
+      "sym.var.lineNo",
+      "sym.var.maintenance",
+      "sym.var.partNo",
+      "sym.var.partValue",
+      "sym.var.text",
+      "sym.var.valueLab",
+      "sym.var.valueMat",
+      "sym.var.valueSpe"
+    ],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1210",
+      "startLine": 2798,
+      "startColumn": 7,
+      "endLine": 2887,
+      "endColumn": 24
+    }
+  },
+  "narrative": "### Node n1779: Procedure `CreateClaim`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Files / DB Contracts**:\n  - HSG71PF (columns: G71000 CHAR, G71010 CHAR, G71020 CHAR, G71030 CHAR, G71040 CHAR, G71050 CHAR, G71060 CHAR, G71070 CHAR, G71080 DECIMAL, G71090 DECIMAL, G71100 DECIMAL, G71110 DECIMAL, G71120 CHAR, G71130 CHAR, G71140 CHAR, G71150 CHAR, G71160 CHAR, G71170 DECIMAL, G71180 DECIMAL, G71190 CHAR +1 more)\n  - HSG73PF (columns: G73000 CHAR, G73010 CHAR, G73020 CHAR, G73030 CHAR, G73040 CHAR, G73050 CHAR, G73060 CHAR, G73065 CHAR, G73070 CHAR, G73080 CHAR, G73090 CHAR, G73100 CHAR, G73110 CHAR, G73120 CHAR, G73130 CHAR, G73140 CHAR, G73150 CHAR, G73160 DECIMAL, G73170 DECIMAL, G73180 DECIMAL +33 more)\n  - HSGPSLF3 (columns: GPS000 CHAR, GPS010 CHAR, GPS020 CHAR, GPS025 CHAR, GPS030 DECIMAL, GPS035 DECIMAL, GPS040 CHAR, GPS050 CHAR, GPS060 DECIMAL, GPS070 DECIMAL, GPS080 CHAR, GPS090 CHAR, GPS100 DECIMAL, GPS110 DECIMAL, GPS120 DECIMAL, GPS130 CHAR, GPS140 DECIMAL, GPS150 DECIMAL, GPS160 CHAR, GPS161 CHAR +10 more)\n\n- **Variables**:\n  - KEY_GPS (type: t.klist.KEY_GPS)\n  - create\n  - failureNo (type: t.dec2_0)\n  - groups (type: t.char.4)\n  - lineNo (type: t.dec1_0)\n  - maintenance\n  - partNo (type: t.char.7)\n  - partValue (type: t.dec11_2)\n  - text (type: t.char.65)\n  - valueLab (type: t.dec11_2)\n  - valueMat (type: t.dec11_2)\n  - valueSpe (type: t.dec11_2)\n\n- **Raw sem JSON**:\n```json\n{\n  \"sym.file.HSG71PF\": {\n    \"refersTo\": \"sym.file.HSG71PF\"\n  },\n  \"sym.file.HSG73PF\": {\n    \"refersTo\": \"sym.file.HSG73PF\"\n  },\n  \"sym.file.HSGPSLF3\": {\n    \"refersTo\": \"sym.file.HSGPSLF3\"\n  },\n  \"sym.var.KEY_GPS\": {\n    \"refersTo\": \"sym.var.KEY_GPS\"\n  },\n  \"sym.var.create\": {\n    \"refersTo\": \"sym.var.create\"\n  },\n  \"sym.var.maintenance\": {\n    \"refersTo\": \"sym.var.maintenance\"\n  },\n  \"sym.var.groups\": {\n    \"refersTo\": \"sym.var.groups\"\n  },\n  \"sym.var.partNo\": {\n    \"refersTo\": \"sym.var.partNo\"\n  },\n  \"sym.var.partValue\": {\n    \"refersTo\": \"sym.var.partValue\"\n  },\n  \"sym.var.text\": {\n    \"refersTo\": \"sym.var.text\"\n  },\n  \"sym.var.failureNo\": {\n    \"refersTo\": \"sym.var.failureNo\"\n  },\n  \"sym.var.lineNo\": {\n    \"refersTo\": \"sym.var.lineNo\"\n  },\n  \"sym.var.valueMat\": {\n    \"refersTo\": \"sym.var.valueMat\"\n  },\n  \"sym.var.valueLab\": {\n    \"refersTo\": \"sym.var.valueLab\"\n  },\n  \"sym.var.valueSpe\": {\n    \"refersTo\": \"sym.var.valueSpe\"\n  }\n}\n```",
+  "rpgSnippet": "     P CreateClaim     B\n     D CreateClaim     PI\n     D*----------------------------------------------------------------\n     D create          S               N   Inz(*Off)\n     D maintenance     S               N   Inz(*Off)\n     D groups          S              4A   Inz(*Blanks)\n     D partNo          S              7A   Inz(*Blanks)\n     D partValue       S             11  2 Inz(0)\n     D text            S             65A   Dim(4) Inz(*Blanks)\n     D failureNo       S              2  0 Inz(0)\n     D lineNo          S              1  0 Inz(0)\n     D valueMat        S             11  2 Inz(0)\n     D valueLab        S             11  2 Inz(0)\n     D valueSpe        S             11  2 Inz(0)\n     D*****************************************************************\n      /free\n        FailureNo = 1;\n        SetLl Key_GPS HSGPSLF3;\n        ReadE Key_GPS HSGPSLF3;\n        DoW Not %Eof(HSGPSLF3);\n           If GPS150 > failureNo;\n              createFail(failureNo:groups:partNo:maintenance:text:\n                         valueMat:valueLab:valueSpe);\n              FailureNo = GPS150;\n              Maintenance = *Off;\n              clear text;\n              lineNo = 0;\n              valueMat = 0;\n              valueLab = 0;\n              valueSpe = 0;\n              groups = *Blanks;\n              partNo = *Blanks;\n              partValue = 0;\n           EndIf;\n           If GPS150 > 0;\n              create = *On;\n              GPS020 = %Subst(%EditC(GPS150:'X'):2:2);\n              GPS025 = '00';\n              //Check if Maintenance Standard time\n              If GPS040 = 'MAT';\n                 Chain GPS050 ITLSMF3;\n                 If %Found(ITLSMF3) And SFRAN = 'SC';\n                    If GPS070 > partValue;\n                       partNo = GPS050;\n                       partValue = GPS070;\n                    EndIf;\n                 EndIf;\n              EndIf;\n              Exec SQL Set :GPS080U = Upper(:GPS080);\n              If GPS040 = 'ARB' And %Scan('WARTUNG':GPS080U) > 0;\n                 Maintenance = *On;\n                 groups = %Subst(GPS050:1:4);\n              EndIf;\n              //Retrieve Main and Subgroup\n              If GPS040 = 'ARB' And Groups = *Blanks;\n                 groups = %Subst(GPS050:1:4);\n              EndIf;\n              If GPS040 = 'TXT' And %Subst(GPS080:1:1) <> '+' and lineNo < 4;\n                 lineNo +=1;\n                 text(lineNo) = GPS080;\n              EndIf;\n              Select;\n              When GPS040 = 'ARB';\n                 valueLab += GPS060 * GPS070;\n              When GPS040 = 'MAT';\n                 valueMat += GPS060 * GPS070;\n              When GPS040 = 'TXT';\n              Other;\n                 valueSpe += GPS070;\n              EndSl;\n           EndIf;\n           ReadE Key_GPS HSGPSLF3;\n        EndDo;\n        If create;\n           createFail(failureNo:groups:partNo:maintenance:text:\n                      valueMat:valueLab:valueSpe);\n           Chain (G71000:G71050:G71060) HSG71LF2;\n           If %Found(HSG71LF2);\n              G71170 = 3;\n              Update HSG71LR2;\n           EndIf;\n           If PKZ = 'SNF';\n              //sendClaim(G71000:G71050:*Blanks:*Blanks);\n           EndIf;\n        EndIf;\n        Unlock HSG71PF;\n        Unlock HSG73PF;\n       Return;\n      /end-free\n     P                 E",
+  "dbContracts": [
+    {
+      "name": "HSG71PF",
+      "symbolId": "sym.file.HSG71PF",
+      "library": "HSSRC",
+      "typeId": "t.file.HSG71PF",
+      "recordFormat": "HSG71PR",
+      "keyed": false,
+      "keys": [
+        {
+          "name": "G71000",
+          "ascending": true
+        },
+        {
+          "name": "G71010",
+          "ascending": true
+        },
+        {
+          "name": "G71020",
+          "ascending": true
+        },
+        {
+          "name": "G71030",
+          "ascending": true
+        },
+        {
+          "name": "G71040",
+          "ascending": true
+        }
+      ],
+      "description": null,
+      "columns": [
+        {
+          "name": "G71000",
+          "description": null,
+          "type": "CHAR",
+          "length": 3,
+          "scale": null,
+          "key": true,
+          "typeId": "t.char.3",
+          "sqlType": "CHAR(3)",
+          "nullable": false
+        },
+        {
+          "name": "G71010",
+          "description": null,
+          "type": "CHAR",
+          "length": 5,
+          "scale": null,
+          "key": true,
+          "typeId": "t.char.5",
+          "sqlType": "CHAR(5)",
+          "nullable": false
+        },
+        {
+          "name": "G71020",
+          "description": null,
+          "type": "CHAR",
+          "length": 8,
+          "scale": null,
+          "key": true,
+          "typeId": "t.char.8",
+          "sqlType": "CHAR(8)",
+          "nullable": false
+        },
+        {
+          "name": "G71030",
+          "description": null,
+          "type": "CHAR",
+          "length": 5,
+          "scale": null,
+          "key": true,
+          "typeId": "t.char.5",
+          "sqlType": "CHAR(5)",
+          "nullable": false
+        },
+        {
+          "name": "G71040",
+          "description": null,
+          "type": "CHAR",
+          "length": 1,
+          "scale": null,
+          "key": true,
+          "typeId": "t.char.1",
+          "sqlType": "CHAR(1)",
+          "nullable": false
+        },
+        {
+          "name": "G71050",
+          "description": null,
+          "type": "CHAR",
+          "length": 8,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.8",
+          "sqlType": "CHAR(8)",
+          "nullable": false
+        },
+        {
+          "name": "G71060",
+          "description": null,
+          "type": "CHAR",
+          "length": 7,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.7",
+          "sqlType": "CHAR(7)",
+          "nullable": false
+        },
+        {
+          "name": "G71070",
+          "description": null,
+          "type": "CHAR",
+          "length": 10,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.10",
+          "sqlType": "CHAR(10)",
+          "nullable": false
+        },
+        {
+          "name": "G71080",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 8,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec8_0",
+          "sqlType": "DECIMAL(8,0)",
+          "nullable": false
+        },
+        {
+          "name": "G71090",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 8,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec8_0",
+          "sqlType": "DECIMAL(8,0)",
+          "nullable": false
+        },
+        {
+          "name": "G71100",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 3,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec3_0",
+          "sqlType": "DECIMAL(3,0)",
+          "nullable": false
+        },
+        {
+          "name": "G71110",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 1,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec1_0",
+          "sqlType": "DECIMAL(1,0)",
+          "nullable": false
+        },
+        {
+          "name": "G71120",
+          "description": null,
+          "type": "CHAR",
+          "length": 1,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.1",
+          "sqlType": "CHAR(1)",
+          "nullable": false
+        },
+        {
+          "name": "G71130",
+          "description": null,
+          "type": "CHAR",
+          "length": 1,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.1",
+          "sqlType": "CHAR(1)",
+          "nullable": false
+        },
+        {
+          "name": "G71140",
+          "description": null,
+          "type": "CHAR",
+          "length": 6,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.6",
+          "sqlType": "CHAR(6)",
+          "nullable": false
+        },
+        {
+          "name": "G71150",
+          "description": null,
+          "type": "CHAR",
+          "length": 30,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.30",
+          "sqlType": "CHAR(30)",
+          "nullable": false
+        },
+        {
+          "name": "G71160",
+          "description": null,
+          "type": "CHAR",
+          "length": 8,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.8",
+          "sqlType": "CHAR(8)",
+          "nullable": false
+        },
+        {
+          "name": "G71170",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 2,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec2_0",
+          "sqlType": "DECIMAL(2,0)",
+          "nullable": false
+        },
+        {
+          "name": "G71180",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 2,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec2_0",
+          "sqlType": "DECIMAL(2,0)",
+          "nullable": false
+        },
+        {
+          "name": "G71190",
+          "description": null,
+          "type": "CHAR",
+          "length": 1,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.1",
+          "sqlType": "CHAR(1)",
+          "nullable": false
+        },
+        {
+          "name": "G71200",
+          "description": null,
+          "type": "CHAR",
+          "length": 10,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.10",
+          "sqlType": "CHAR(10)",
+          "nullable": false
+        }
+      ],
+      "sourceUnits": [
+        "qsys:HSSRC/QRPGLESRC/HS1210",
+        "qsys:HSSRC/QRPGLESRC/HS1212"
+      ]
+    },
+    {
+      "name": "HSG73PF",
+      "symbolId": "sym.file.HSG73PF",
+      "library": "HSSRC",
+      "typeId": "t.file.HSG73PF",
+      "recordFormat": "HSG73PR",
+      "keyed": false,
+      "keys": [
+        {
+          "name": "G73000",
+          "ascending": true
+        },
+        {
+          "name": "G73010",
+          "ascending": true
+        },
+        {
+          "name": "G73020",
+          "ascending": true
+        },
+        {
+          "name": "G73030",
+          "ascending": true
+        },
+        {
+          "name": "G73040",
+          "ascending": true
+        },
+        {
+          "name": "G73050",
+          "ascending": true
+        },
+        {
+          "name": "G73060",
+          "ascending": true
+        }
+      ],
+      "description": null,
+      "columns": [
+        {
+          "name": "G73000",
+          "description": null,
+          "type": "CHAR",
+          "length": 3,
+          "scale": null,
+          "key": true,
+          "typeId": "t.char.3",
+          "sqlType": "CHAR(3)",
+          "nullable": false
+        },
+        {
+          "name": "G73010",
+          "description": null,
+          "type": "CHAR",
+          "length": 5,
+          "scale": null,
+          "key": true,
+          "typeId": "t.char.5",
+          "sqlType": "CHAR(5)",
+          "nullable": false
+        },
+        {
+          "name": "G73020",
+          "description": null,
+          "type": "CHAR",
+          "length": 8,
+          "scale": null,
+          "key": true,
+          "typeId": "t.char.8",
+          "sqlType": "CHAR(8)",
+          "nullable": false
+        },
+        {
+          "name": "G73030",
+          "description": null,
+          "type": "CHAR",
+          "length": 5,
+          "scale": null,
+          "key": true,
+          "typeId": "t.char.5",
+          "sqlType": "CHAR(5)",
+          "nullable": false
+        },
+        {
+          "name": "G73040",
+          "description": null,
+          "type": "CHAR",
+          "length": 1,
+          "scale": null,
+          "key": true,
+          "typeId": "t.char.1",
+          "sqlType": "CHAR(1)",
+          "nullable": false
+        },
+        {
+          "name": "G73050",
+          "description": null,
+          "type": "CHAR",
+          "length": 8,
+          "scale": null,
+          "key": true,
+          "typeId": "t.char.8",
+          "sqlType": "CHAR(8)",
+          "nullable": false
+        },
+        {
+          "name": "G73060",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": true,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "G73065",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "G73070",
+          "description": null,
+          "type": "CHAR",
+          "length": 18,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.18",
+          "sqlType": "CHAR(18)",
+          "nullable": false
+        },
+        {
+          "name": "G73080",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "G73090",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "G73100",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "G73110",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "G73120",
+          "description": null,
+          "type": "CHAR",
+          "length": 65,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.65",
+          "sqlType": "CHAR(65)",
+          "nullable": false
+        },
+        {
+          "name": "G73130",
+          "description": null,
+          "type": "CHAR",
+          "length": 65,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.65",
+          "sqlType": "CHAR(65)",
+          "nullable": false
+        },
+        {
+          "name": "G73140",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "G73150",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "G73160",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 4,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec4_0",
+          "sqlType": "DECIMAL(4,0)",
+          "nullable": false
+        },
+        {
+          "name": "G73170",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 8,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec8_0",
+          "sqlType": "DECIMAL(8,0)",
+          "nullable": false
+        },
+        {
+          "name": "G73180",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 3,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec3_0",
+          "sqlType": "DECIMAL(3,0)",
+          "nullable": false
+        },
+        {
+          "name": "G73190",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 3,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec3_0",
+          "sqlType": "DECIMAL(3,0)",
+          "nullable": false
+        },
+        {
+          "name": "G73200",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 3,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec3_0",
+          "sqlType": "DECIMAL(3,0)",
+          "nullable": false
+        },
+        {
+          "name": "G73210",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 11,
+          "scale": 2,
+          "key": false,
+          "typeId": "t.dec11_2",
+          "sqlType": "DECIMAL(11,2)",
+          "nullable": false
+        },
+        {
+          "name": "G73220",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 11,
+          "scale": 2,
+          "key": false,
+          "typeId": "t.dec11_2",
+          "sqlType": "DECIMAL(11,2)",
+          "nullable": false
+        },
+        {
+          "name": "G73230",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 11,
+          "scale": 2,
+          "key": false,
+          "typeId": "t.dec11_2",
+          "sqlType": "DECIMAL(11,2)",
+          "nullable": false
+        },
+        {
+          "name": "G73240",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 1,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec1_0",
+          "sqlType": "DECIMAL(1,0)",
+          "nullable": false
+        },
+        {
+          "name": "G73250",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 8,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec8_0",
+          "sqlType": "DECIMAL(8,0)",
+          "nullable": false
+        },
+        {
+          "name": "G73260",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 3,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec3_0",
+          "sqlType": "DECIMAL(3,0)",
+          "nullable": false
+        },
+        {
+          "name": "G73270",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 6,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec6_0",
+          "sqlType": "DECIMAL(6,0)",
+          "nullable": false
+        },
+        {
+          "name": "G73280",
+          "description": null,
+          "type": "CHAR",
+          "length": 8,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.8",
+          "sqlType": "CHAR(8)",
+          "nullable": false
+        },
+        {
+          "name": "G73285",
+          "description": null,
+          "type": "CHAR",
+          "length": 20,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.20",
+          "sqlType": "CHAR(20)",
+          "nullable": false
+        },
+        {
+          "name": "G73290",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 2,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec2_0",
+          "sqlType": "DECIMAL(2,0)",
+          "nullable": false
+        },
+        {
+          "name": "G73300",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 2,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec2_0",
+          "sqlType": "DECIMAL(2,0)",
+          "nullable": false
+        },
+        {
+          "name": "G73310",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 2,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec2_0",
+          "sqlType": "DECIMAL(2,0)",
+          "nullable": false
+        },
+        {
+          "name": "G73320",
+          "description": null,
+          "type": "CHAR",
+          "length": 65,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.65",
+          "sqlType": "CHAR(65)",
+          "nullable": false
+        },
+        {
+          "name": "G73330",
+          "description": null,
+          "type": "CHAR",
+          "length": 65,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.65",
+          "sqlType": "CHAR(65)",
+          "nullable": false
+        },
+        {
+          "name": "G73340",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "G73350",
+          "description": null,
+          "type": "CHAR",
+          "length": 1,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.1",
+          "sqlType": "CHAR(1)",
+          "nullable": false
+        },
+        {
+          "name": "G73360",
+          "description": null,
+          "type": "CHAR",
+          "length": 5,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.5",
+          "sqlType": "CHAR(5)",
+          "nullable": false
+        },
+        {
+          "name": "G73370",
+          "description": null,
+          "type": "CHAR",
+          "length": 5,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.5",
+          "sqlType": "CHAR(5)",
+          "nullable": false
+        },
+        {
+          "name": "G73380",
+          "description": null,
+          "type": "CHAR",
+          "length": 5,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.5",
+          "sqlType": "CHAR(5)",
+          "nullable": false
+        },
+        {
+          "name": "G73390",
+          "description": null,
+          "type": "CHAR",
+          "length": 5,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.5",
+          "sqlType": "CHAR(5)",
+          "nullable": false
+        },
+        {
+          "name": "G73400",
+          "description": null,
+          "type": "CHAR",
+          "length": 5,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.5",
+          "sqlType": "CHAR(5)",
+          "nullable": false
+        },
+        {
+          "name": "G73410",
+          "description": null,
+          "type": "CHAR",
+          "length": 5,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.5",
+          "sqlType": "CHAR(5)",
+          "nullable": false
+        },
+        {
+          "name": "G73420",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "G73430",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "G73440",
+          "description": null,
+          "type": "CHAR",
+          "length": 5,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.5",
+          "sqlType": "CHAR(5)",
+          "nullable": false
+        },
+        {
+          "name": "G73450",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "G73460",
+          "description": null,
+          "type": "CHAR",
+          "length": 5,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.5",
+          "sqlType": "CHAR(5)",
+          "nullable": false
+        },
+        {
+          "name": "G73470",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "G73480",
+          "description": null,
+          "type": "CHAR",
+          "length": 5,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.5",
+          "sqlType": "CHAR(5)",
+          "nullable": false
+        },
+        {
+          "name": "G73490",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "G73500",
+          "description": null,
+          "type": "CHAR",
+          "length": 5,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.5",
+          "sqlType": "CHAR(5)",
+          "nullable": false
+        }
+      ],
+      "sourceUnits": [
+        "qsys:HSSRC/QRPGLESRC/HS1210",
+        "qsys:HSSRC/QRPGLESRC/HS1212"
+      ]
+    },
+    {
+      "name": "HSGPSLF3",
+      "symbolId": "sym.file.HSGPSLF3",
+      "library": "HSSRC",
+      "typeId": "t.file.HSGPSLF3",
+      "recordFormat": "HSGPSLR3",
+      "keyed": false,
+      "keys": [
+        {
+          "name": "GPS000",
+          "ascending": true
+        },
+        {
+          "name": "GPS010",
+          "ascending": true
+        },
+        {
+          "name": "GPS150",
+          "ascending": true
+        },
+        {
+          "name": "GPS030",
+          "ascending": true
+        },
+        {
+          "name": "GPS020",
+          "ascending": true
+        },
+        {
+          "name": "GPS025",
+          "ascending": true
+        }
+      ],
+      "description": null,
+      "columns": [
+        {
+          "name": "GPS000",
+          "description": null,
+          "type": "CHAR",
+          "length": 3,
+          "scale": null,
+          "key": true,
+          "typeId": "t.char.3",
+          "sqlType": "CHAR(3)",
+          "nullable": false
+        },
+        {
+          "name": "GPS010",
+          "description": null,
+          "type": "CHAR",
+          "length": 8,
+          "scale": null,
+          "key": true,
+          "typeId": "t.char.8",
+          "sqlType": "CHAR(8)",
+          "nullable": false
+        },
+        {
+          "name": "GPS020",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": true,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "GPS025",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": true,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "GPS030",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 3,
+          "scale": 0,
+          "key": true,
+          "typeId": "t.dec3_0",
+          "sqlType": "DECIMAL(3,0)",
+          "nullable": false
+        },
+        {
+          "name": "GPS035",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 3,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec3_0",
+          "sqlType": "DECIMAL(3,0)",
+          "nullable": false
+        },
+        {
+          "name": "GPS040",
+          "description": null,
+          "type": "CHAR",
+          "length": 3,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.3",
+          "sqlType": "CHAR(3)",
+          "nullable": false
+        },
+        {
+          "name": "GPS050",
+          "description": null,
+          "type": "CHAR",
+          "length": 18,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.18",
+          "sqlType": "CHAR(18)",
+          "nullable": false
+        },
+        {
+          "name": "GPS060",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 5,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec5_0",
+          "sqlType": "DECIMAL(5,0)",
+          "nullable": false
+        },
+        {
+          "name": "GPS070",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 11,
+          "scale": 2,
+          "key": false,
+          "typeId": "t.dec11_2",
+          "sqlType": "DECIMAL(11,2)",
+          "nullable": false
+        },
+        {
+          "name": "GPS080",
+          "description": null,
+          "type": "CHAR",
+          "length": 40,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.40",
+          "sqlType": "CHAR(40)",
+          "nullable": false
+        },
+        {
+          "name": "GPS090",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "GPS100",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 3,
+          "scale": 1,
+          "key": false,
+          "typeId": "t.dec3_1",
+          "sqlType": "DECIMAL(3,1)",
+          "nullable": false
+        },
+        {
+          "name": "GPS110",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 4,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec4_0",
+          "sqlType": "DECIMAL(4,0)",
+          "nullable": false
+        },
+        {
+          "name": "GPS120",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 3,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec3_0",
+          "sqlType": "DECIMAL(3,0)",
+          "nullable": false
+        },
+        {
+          "name": "GPS130",
+          "description": null,
+          "type": "CHAR",
+          "length": 1,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.1",
+          "sqlType": "CHAR(1)",
+          "nullable": false
+        },
+        {
+          "name": "GPS140",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 8,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec8_0",
+          "sqlType": "DECIMAL(8,0)",
+          "nullable": false
+        },
+        {
+          "name": "GPS150",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 3,
+          "scale": 0,
+          "key": true,
+          "typeId": "t.dec3_0",
+          "sqlType": "DECIMAL(3,0)",
+          "nullable": false
+        },
+        {
+          "name": "GPS160",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "GPS161",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "GPS162",
+          "description": null,
+          "type": "CHAR",
+          "length": 5,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.5",
+          "sqlType": "CHAR(5)",
+          "nullable": false
+        },
+        {
+          "name": "GPS170",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 3,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec3_0",
+          "sqlType": "DECIMAL(3,0)",
+          "nullable": false
+        },
+        {
+          "name": "GPS180",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 13,
+          "scale": 2,
+          "key": false,
+          "typeId": "t.dec13_2",
+          "sqlType": "DECIMAL(13,2)",
+          "nullable": false
+        },
+        {
+          "name": "GPS190",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 5,
+          "scale": 2,
+          "key": false,
+          "typeId": "t.dec5_2",
+          "sqlType": "DECIMAL(5,2)",
+          "nullable": false
+        },
+        {
+          "name": "GPS200",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 15,
+          "scale": 2,
+          "key": false,
+          "typeId": "t.dec15_2",
+          "sqlType": "DECIMAL(15,2)",
+          "nullable": false
+        },
+        {
+          "name": "GPS210",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 7,
+          "scale": 0,
+          "key": false,
+          "typeId": "t.dec7_0",
+          "sqlType": "DECIMAL(7,0)",
+          "nullable": false
+        },
+        {
+          "name": "GPS220",
+          "description": null,
+          "type": "CHAR",
+          "length": 5,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.5",
+          "sqlType": "CHAR(5)",
+          "nullable": false
+        },
+        {
+          "name": "GPS230",
+          "description": null,
+          "type": "CHAR",
+          "length": 1,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.1",
+          "sqlType": "CHAR(1)",
+          "nullable": false
+        },
+        {
+          "name": "GPS240",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.2",
+          "sqlType": "CHAR(2)",
+          "nullable": false
+        },
+        {
+          "name": "GPS250",
+          "description": null,
+          "type": "CHAR",
+          "length": 2000,
+          "scale": null,
+          "key": false,
+          "typeId": "t.char.2000",
+          "sqlType": "CHAR(2000)",
+          "nullable": false
+        }
+      ],
+      "sourceUnits": [
+        "qsys:HSSRC/QRPGLESRC/HS1210"
+      ]
+    }
+  ],
+  "symbolMetadata": {
+    "sym.var.KEY_GPS": {
+      "name": "KEY_GPS",
+      "kind": "variable",
+      "typeId": "t.klist.KEY_GPS",
+      "scopeId": "scope.global",
+      "shared": true
+    },
+    "sym.var.create": {
+      "name": "create",
+      "kind": "variable",
+      "typeId": null,
+      "scopeId": "scope.createClaim",
+      "shared": true
+    },
+    "sym.var.maintenance": {
+      "name": "maintenance",
+      "kind": "variable",
+      "typeId": null,
+      "scopeId": "scope.createClaim",
+      "shared": true
+    },
+    "sym.var.groups": {
+      "name": "groups",
+      "kind": "variable",
+      "typeId": "t.char.4",
+      "scopeId": "scope.createClaim",
+      "shared": true
+    },
+    "sym.var.partNo": {
+      "name": "partNo",
+      "kind": "variable",
+      "typeId": "t.char.7",
+      "scopeId": "scope.createClaim",
+      "shared": true
+    },
+    "sym.var.partValue": {
+      "name": "partValue",
+      "kind": "variable",
+      "typeId": "t.dec11_2",
+      "scopeId": "scope.createClaim",
+      "shared": true
+    },
+    "sym.var.text": {
+      "name": "text",
+      "kind": "variable",
+      "typeId": "t.char.65",
+      "scopeId": "scope.createClaim",
+      "shared": true
+    },
+    "sym.var.failureNo": {
+      "name": "failureNo",
+      "kind": "variable",
+      "typeId": "t.dec2_0",
+      "scopeId": "scope.createClaim",
+      "shared": true
+    },
+    "sym.var.lineNo": {
+      "name": "lineNo",
+      "kind": "variable",
+      "typeId": "t.dec1_0",
+      "scopeId": "scope.createClaim",
+      "shared": true
+    },
+    "sym.var.valueMat": {
+      "name": "valueMat",
+      "kind": "variable",
+      "typeId": "t.dec11_2",
+      "scopeId": "scope.createClaim",
+      "shared": true
+    },
+    "sym.var.valueLab": {
+      "name": "valueLab",
+      "kind": "variable",
+      "typeId": "t.dec11_2",
+      "scopeId": "scope.createClaim",
+      "shared": true
+    },
+    "sym.var.valueSpe": {
+      "name": "valueSpe",
+      "kind": "variable",
+      "typeId": "t.dec11_2",
+      "scopeId": "scope.createClaim",
+      "shared": true
+    }
+  },
+  "callGraph": {
+    "calls": [],
+    "calledBy": [
+      "n1"
+    ],
+    "tableAccess": {
+      "HSGPSLF3": [
+        {
+          "nodeId": "n1784",
+          "opcode": "SETLL",
+          "line": 2815
+        }
+      ],
+      "HSG71LF2": [
+        {
+          "nodeId": "n1824",
+          "opcode": "CHAIN",
+          "line": 2874
+        },
+        {
+          "nodeId": "n1829",
+          "opcode": "UPDATE",
+          "line": 2877
+        }
+      ],
+      "ITLSMF3": [
+        {
+          "nodeId": "n1810",
+          "opcode": "CHAIN",
+          "line": 2838
+        }
+      ]
+    }
+  },
+  "statementNodes": [
+    {
+      "id": "n1780",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 2800,
+      "endLine": 2800
+    },
+    {
+      "id": "n1782",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 2812,
+      "endLine": 2812
+    },
+    {
+      "id": "n1783",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 2814,
+      "endLine": 2814,
+      "target": "sym.var.failureNo",
+      "symbols": [
+        "sym.var.failureNo"
+      ]
+    },
+    {
+      "id": "n1784",
+      "kind": "SetLL",
+      "opcode": "SETLL",
+      "startLine": 2815,
+      "endLine": 2815,
+      "target": "HSGPSLF3",
+      "symbols": [
+        "sym.file.HSGPSLF3",
+        "sym.var.KEY_GPS"
+      ]
+    },
+    {
+      "id": "n1785",
+      "kind": "DoW",
+      "opcode": "DOW",
+      "startLine": 2817,
+      "endLine": 2870,
+      "symbols": [
+        "sym.file.HSGPSLF3",
+        "sym.var.KEY_GPS"
+      ]
+    },
+    {
+      "id": "n1822",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 2871,
+      "endLine": 2882,
+      "symbols": [
+        "sym.var.maintenance",
+        "sym.var.groups",
+        "sym.var.partNo",
+        "sym.var.text",
+        "sym.var.failureNo",
+        "sym.var.valueMat",
+        "sym.var.valueLab",
+        "sym.var.valueSpe"
+      ]
+    },
+    {
+      "id": "n1836",
+      "kind": "Return",
+      "opcode": "RETURN",
+      "startLine": 2885,
+      "endLine": 2885
+    },
+    {
+      "id": "n1786",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 2817,
+      "endLine": 2817
+    },
+    {
+      "id": "n1788",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 2818,
+      "endLine": 2831,
+      "symbols": [
+        "sym.var.maintenance",
+        "sym.var.groups",
+        "sym.var.partNo",
+        "sym.var.text",
+        "sym.var.failureNo",
+        "sym.var.valueMat",
+        "sym.var.valueLab",
+        "sym.var.valueSpe"
+      ]
+    },
+    {
+      "id": "n1800",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 2832,
+      "endLine": 2868
+    },
+    {
+      "id": "n1821",
+      "kind": "EndDo",
+      "opcode": null,
+      "startLine": 2870,
+      "endLine": 2870
+    },
+    {
+      "id": "n1823",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 2871,
+      "endLine": 2871,
+      "symbols": [
+        "sym.var.create"
+      ]
+    },
+    {
+      "id": "n1824",
+      "kind": "Chain",
+      "opcode": "CHAIN",
+      "startLine": 2874,
+      "endLine": 2874,
+      "target": "HSG71LF2",
+      "symbols": [
+        "sym.file.HSG71LF2",
+        "sym.var.2876"
+      ]
+    },
+    {
+      "id": "n1825",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 2875,
+      "endLine": 2878
+    },
+    {
+      "id": "n1831",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 2879,
+      "endLine": 2881
+    },
+    {
+      "id": "n1835",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 2882,
+      "endLine": 2882
+    },
+    {
+      "id": "n1787",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 2817,
+      "endLine": 2817
+    },
+    {
+      "id": "n1789",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 2818,
+      "endLine": 2818,
+      "symbols": [
+        "sym.var.GPS150",
+        "sym.var.failureNo"
+      ]
+    },
+    {
+      "id": "n1790",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 2821,
+      "endLine": 2821,
+      "target": "sym.var.failureNo",
+      "symbols": [
+        "sym.var.GPS150",
+        "sym.var.failureNo"
+      ]
+    },
+    {
+      "id": "n1791",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 2822,
+      "endLine": 2822,
+      "target": "sym.var.maintenance",
+      "symbols": [
+        "sym.var.maintenance"
+      ]
+    },
+    {
+      "id": "n1792",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 2824,
+      "endLine": 2824,
+      "target": "sym.var.lineNo",
+      "symbols": [
+        "sym.var.lineNo"
+      ]
+    },
+    {
+      "id": "n1793",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 2825,
+      "endLine": 2825,
+      "target": "sym.var.valueMat",
+      "symbols": [
+        "sym.var.valueMat"
+      ]
+    },
+    {
+      "id": "n1794",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 2826,
+      "endLine": 2826,
+      "target": "sym.var.valueLab",
+      "symbols": [
+        "sym.var.valueLab"
+      ]
+    },
+    {
+      "id": "n1795",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 2827,
+      "endLine": 2827,
+      "target": "sym.var.valueSpe",
+      "symbols": [
+        "sym.var.valueSpe"
+      ]
+    },
+    {
+      "id": "n1796",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 2828,
+      "endLine": 2828,
+      "target": "sym.var.groups",
+      "symbols": [
+        "sym.var.groups"
+      ]
+    },
+    {
+      "id": "n1797",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 2829,
+      "endLine": 2829,
+      "target": "sym.var.partNo",
+      "symbols": [
+        "sym.var.partNo"
+      ]
+    },
+    {
+      "id": "n1798",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 2830,
+      "endLine": 2830,
+      "target": "sym.var.partValue",
+      "symbols": [
+        "sym.var.partValue"
+      ]
+    },
+    {
+      "id": "n1799",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 2831,
+      "endLine": 2831
+    },
+    {
+      "id": "n1801",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 2832,
+      "endLine": 2832,
+      "symbols": [
+        "sym.var.GPS150"
+      ]
+    },
+    {
+      "id": "n1802",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 2833,
+      "endLine": 2833,
+      "target": "sym.var.create",
+      "symbols": [
+        "sym.var.create"
+      ]
+    },
+    {
+      "id": "n1803",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 2834,
+      "endLine": 2834,
+      "target": "sym.var.GPS020",
+      "symbols": [
+        "sym.var.GPS020"
+      ]
+    },
+    {
+      "id": "n1806",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 2835,
+      "endLine": 2835,
+      "target": "sym.var.GPS025",
+      "symbols": [
+        "sym.var.GPS025"
+      ]
+    },
+    {
+      "id": "n1807",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 2836,
+      "endLine": 2836
+    },
+    {
+      "id": "n1808",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 2837,
+      "endLine": 2845
+    },
+    {
+      "id": "n1826",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 2875,
+      "endLine": 2875
+    },
+    {
+      "id": "n1828",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 2876,
+      "endLine": 2876
+    },
+    {
+      "id": "n1829",
+      "kind": "Update",
+      "opcode": "UPDATE",
+      "startLine": 2877,
+      "endLine": 2877,
+      "target": "HSG71LF2",
+      "symbols": [
+        "sym.var.HSG71LR2"
+      ]
+    },
+    {
+      "id": "n1830",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 2878,
+      "endLine": 2878
+    },
+    {
+      "id": "n1832",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 2879,
+      "endLine": 2879
+    },
+    {
+      "id": "n1833",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 2880,
+      "endLine": 2880
+    },
+    {
+      "id": "n1834",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 2881,
+      "endLine": 2881
+    },
+    {
+      "id": "n1804",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 2834,
+      "endLine": 2834
+    },
+    {
+      "id": "n1809",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 2837,
+      "endLine": 2837,
+      "symbols": [
+        "sym.var.GPS040"
+      ]
+    },
+    {
+      "id": "n1810",
+      "kind": "Chain",
+      "opcode": "CHAIN",
+      "startLine": 2838,
+      "endLine": 2838,
+      "target": "ITLSMF3",
+      "symbols": [
+        "sym.file.ITLSMF3",
+        "sym.var.GPS050"
+      ]
+    },
+    {
+      "id": "n1811",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 2839,
+      "endLine": 2844
+    },
+    {
+      "id": "n1820",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 2845,
+      "endLine": 2845
+    },
+    {
+      "id": "n1827",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 2875,
+      "endLine": 2875
+    },
+    {
+      "id": "n1805",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 2834,
+      "endLine": 2834,
+      "symbols": [
+        "sym.var.GPS150"
+      ]
+    },
+    {
+      "id": "n1812",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 2839,
+      "endLine": 2839,
+      "symbols": [
+        "sym.var.SFRAN"
+      ]
+    },
+    {
+      "id": "n1814",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 2840,
+      "endLine": 2843
+    },
+    {
+      "id": "n1819",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 2844,
+      "endLine": 2844
+    },
+    {
+      "id": "n1813",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 2839,
+      "endLine": 2839
+    },
+    {
+      "id": "n1815",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 2840,
+      "endLine": 2840,
+      "symbols": [
+        "sym.var.GPS070",
+        "sym.var.partValue"
+      ]
+    },
+    {
+      "id": "n1816",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 2841,
+      "endLine": 2841,
+      "target": "sym.var.partNo",
+      "symbols": [
+        "sym.var.GPS050",
+        "sym.var.partNo"
+      ]
+    },
+    {
+      "id": "n1817",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 2842,
+      "endLine": 2842,
+      "target": "sym.var.partValue",
+      "symbols": [
+        "sym.var.GPS070",
+        "sym.var.partValue"
+      ]
+    },
+    {
+      "id": "n1818",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 2843,
+      "endLine": 2843
+    }
+  ],
+  "lineToNodeMap": {
+    "2800": [
+      "n1780"
+    ],
+    "2812": [
+      "n1782"
+    ],
+    "2814": [
+      "n1783"
+    ],
+    "2815": [
+      "n1784"
+    ],
+    "2817-2870": [
+      "n1785"
+    ],
+    "2871-2882": [
+      "n1822"
+    ],
+    "2885": [
+      "n1836"
+    ],
+    "2817": [
+      "n1786",
+      "n1787"
+    ],
+    "2818-2831": [
+      "n1788"
+    ],
+    "2832-2868": [
+      "n1800"
+    ],
+    "2870": [
+      "n1821"
+    ],
+    "2871": [
+      "n1823"
+    ],
+    "2874": [
+      "n1824"
+    ],
+    "2875-2878": [
+      "n1825"
+    ],
+    "2879-2881": [
+      "n1831"
+    ],
+    "2882": [
+      "n1835"
+    ],
+    "2818": [
+      "n1789"
+    ],
+    "2821": [
+      "n1790"
+    ],
+    "2822": [
+      "n1791"
+    ],
+    "2824": [
+      "n1792"
+    ],
+    "2825": [
+      "n1793"
+    ],
+    "2826": [
+      "n1794"
+    ],
+    "2827": [
+      "n1795"
+    ],
+    "2828": [
+      "n1796"
+    ],
+    "2829": [
+      "n1797"
+    ],
+    "2830": [
+      "n1798"
+    ],
+    "2831": [
+      "n1799"
+    ],
+    "2832": [
+      "n1801"
+    ],
+    "2833": [
+      "n1802"
+    ],
+    "2834": [
+      "n1803",
+      "n1804",
+      "n1805"
+    ],
+    "2835": [
+      "n1806"
+    ],
+    "2836": [
+      "n1807"
+    ],
+    "2837-2845": [
+      "n1808"
+    ],
+    "2875": [
+      "n1826",
+      "n1827"
+    ],
+    "2876": [
+      "n1828"
+    ],
+    "2877": [
+      "n1829"
+    ],
+    "2878": [
+      "n1830"
+    ],
+    "2879": [
+      "n1832"
+    ],
+    "2880": [
+      "n1833"
+    ],
+    "2881": [
+      "n1834"
+    ],
+    "2837": [
+      "n1809"
+    ],
+    "2838": [
+      "n1810"
+    ],
+    "2839-2844": [
+      "n1811"
+    ],
+    "2845": [
+      "n1820"
+    ],
+    "2839": [
+      "n1812",
+      "n1813"
+    ],
+    "2840-2843": [
+      "n1814"
+    ],
+    "2844": [
+      "n1819"
+    ],
+    "2840": [
+      "n1815"
+    ],
+    "2841": [
+      "n1816"
+    ],
+    "2842": [
+      "n1817"
+    ],
+    "2843": [
+      "n1818"
+    ]
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "astNode": {
+    "id": "n3468",
+    "kind": "Procedure",
+    "name": null,
+    "sem": "{\"sym.ds.Positions\":{\"refersTo\":\"sym.ds.Positions\"}}",
+    "outgoingEdges": [
+      "sym.ds.Positions"
+    ],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "startLine": 4336,
+      "startColumn": 7,
+      "endLine": 4362,
+      "endColumn": 24
+    },
+    "raw": {
+      "id": "n3468",
+      "kind": "Procedure",
+      "sem": {
+        "sym.ds.Positions": {
+          "refersTo": "sym.ds.Positions"
+        }
+      },
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+        "startLine": 4336,
+        "startLinePP": 4363,
+        "startCol": 7,
+        "startByte": 195676,
+        "endLine": 4362,
+        "endLinePP": 4389,
+        "endCol": 24,
+        "endByte": 196924
+      },
+      "props": {
+        "procedure_name": "getModules",
+        "opcode": "PROC",
+        "name": "readPositions"
+      },
+      "children": [
+        "n3469",
+        "n3470",
+        "n3471",
+        "n3472"
+      ]
+    }
+  },
+  "narrative": "### Node n3468: Procedure\n\nProcedure `n3468` expresses business logic derived from its semantic block and referenced symbols/files.\n\n- **Outgoing edges**:\n  - sym.ds.Positions\n\n- **Raw sem JSON**:\n```json\n{\n  \"sym.ds.Positions\" : {\n    \"refersTo\" : \"sym.ds.Positions\"\n  }\n}\n```\n",
+  "rpgSnippet": "     P readPositions   B\n     D readPositions   PI\n     D   dealerId                     3A   value\n     D   claimNo                      8A   value\n     D*****************************************************************\n       Dcl-S x Int(10) Inz(1);\n\n       clear Positions;\n       exec sql\n                SELECT LISTAGG(DISTINCT DIGITS(AHW075)),\n                       LISTAGG(DISTINCT DIGITS(AHW075))\n                       WITHIN GROUP (ORDER BY AHW075) AS AHW075\n                       into :Positions.List\n                       FROM (\n                             SELECT AHW000, AHW010, AHW020, AHW075 FROM HSAHWPF\n                                    UNION\n                             SELECT AHP000 AS AHW000, AHP010 AS AHW010,\n                                    AHP020 AS AHW020, AHP075 AS AHW075\n                             FROM HSAHPPF\n                       ) AS AHW\n                       JOIN HSG71PF\n                            ON AHW000 = G71000 AND AHW010 = G71010 AND\n                               AHW020 = G71020\n                       WHERE G71000 = :dealerId AND G71050  = :claimNo AND\n                             AHW075 > 0;\n       Positions = %ScanRpl(' ' : '0' : Positions);\n     P                 E",
+  "dbContracts": [],
+  "symbolMetadata": {},
+  "displayFiles": [
+    {
+      "symbolId": "sym.dspf.HS1212D",
+      "name": "HS1212D",
+      "fileId": "qsys:HSSRC/QDDSSRC/HS1212D",
+      "path": "/QSYS.LIB/HSSRC.LIB/QDDSSRC.FILE/HS1212D.MBR"
+    }
+  ]
+}

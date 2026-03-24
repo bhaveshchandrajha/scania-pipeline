@@ -1,0 +1,189 @@
+{
+  "programId": "HS1210",
+  "unitId": "qsys:HSSRC/QRPGLESRC/HS1210",
+  "entryNodeId": "n1983",
+  "nodesInSlice": [
+    {
+      "nodeId": "n1983",
+      "kind": "Procedure",
+      "name": "CheckV4",
+      "procedureName": "CheckClaim",
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+        "startLine": 3035,
+        "endLine": 3058
+      }
+    }
+  ],
+  "contextFiles": [
+    "/Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/context_index/HS1210_n1983.json"
+  ],
+  "dbFiles": [
+    {
+      "name": "AUFWKO",
+      "library": "HSSRC"
+    },
+    {
+      "name": "FISTAM",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HS1210D",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKLF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKLF8",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHPPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHTPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHWPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSBTSLF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSBTSPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSEPAF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSFLALF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG70F",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF2",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF7",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71PF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG73LF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG73PF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG79F",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGFIPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSLF2",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSLF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGSCPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSKAMPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "RWAPRL1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "ITLSMF3",
+      "library": "P400IMS"
+    },
+    {
+      "name": "PIPPMST",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F001",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F002",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F003",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F009",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F085",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3L004H",
+      "library": "S400CAS"
+    }
+  ],
+  "generatedFiles": [
+    "com/scania/warranty/domain/HsahkpfKey.java",
+    "com/scania/warranty/domain/HsepafKey.java",
+    "com/scania/warranty/domain/V4ValidationCriteria.java",
+    "com/scania/warranty/repository/HsahkpfRepository.java",
+    "com/scania/warranty/repository/HsepafRepository.java",
+    "com/scania/warranty/service/V4ValidationService.java",
+    "com/scania/warranty/dto/V4ValidationRequest.java",
+    "com/scania/warranty/dto/V4ValidationResponse.java",
+    "com/scania/warranty/web/V4ValidationController.java"
+  ],
+  "rpgSnippet": "     P CheckV4         B\n     D CheckV4         PI              N\n     D*****************************************************************\nRM#8   Monitor;\nRM#8      If %Subst(G71200:8:2) = 'V4';\n             Return *Off;\n          EndIf;\nRM#8      Chain (G71000:G71010:G71020:' ':\nRM#8             G71030:G71040:G71190:%Subst(G71200:8:2)) HSAHKPF;\nRM#8      If %Found(HSAHKPF);\nRM#8         SetLl (AHK000:AHK040:AHK050:AHK060:'V4') HSEPAF;\nRM#8         ReadE (AHK000:AHK040:AHK050:AHK060:'V4') HSEPAF;\nRM#8         DoW Not %EoF(HSEPAF);\nRM#8            If EPA_DATV = AHK080;\nRM#8               return *On;\nRM#8            EndIf;\nRM#8            ReadE (AHK000:AHK040:AHK050:AHK060:'V4') HSEPAF;\nRM#8         EndDo;\nRM#8      EndIf;\nRM#8   On-Error *All;\nRM#8\nRM#8   EndMon;\n       Return *Off;\n     P                 E",
+  "primaryServiceFile": "com/scania/warranty/service/V4ValidationService.java",
+  "runs": [
+    {
+      "contextFile": "/Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/context_index/HS1210_n1983.json",
+      "returnCode": 0,
+      "stdoutPreview": "// === domain/HsahkpfKey.java ===\npackage com.scania.warranty.domain;\n\nimport java.io.Serializable;\nimport java.util.Objects;\n\npublic class HsahkpfKey implements Serializable {\n    private String g71000;\n    private String g71010;\n    private String g71020;\n    private String space;\n    private String g71030;\n    private String g71040;\n    private String g71190;\n    private String v4Code;\n\n    public HsahkpfKey() {\n    }\n\n    public HsahkpfKey(String g71000, String g71010, String g71020, String space, \n                      String g71030, String g71040, String g71190, String v4Code) {\n        this.g71000 = g71000;\n        this.g71010 = g71010;\n        this.g71020 = g71020;\n        this.space = space;\n        this.g71030 = g71030;\n        this.g71040 = g71040;\n        this.g71190 = g71190;\n        this.v4Code = v4Code;\n    }\n\n    public String getG71000() {\n        return g71000;\n    }\n\n    public void setG71000(String g71000) {\n        this.g71000 = g71000;\n    }\n\n    public String getG71010() {\n        return g71010;\n    }\n\n    public void setG71010(String g71010) {\n        this.g71010 = g71010;\n    }\n\n    public String getG71020() {\n        return g71020;\n    }\n\n    public void setG71020(String g71020) {\n        this.g71020 = g71020;\n    }\n\n    public String getSpace() {\n        return space;\n    }\n\n    public void setSpace(String space) {\n        this.space = space;\n    }\n\n    public String getG71030() {\n        return g71030;\n    }\n\n    public void setG71030(String g71030) {\n        this.g71030 = g71030;\n    }\n\n    public String getG71040() {\n        return g71040;\n    }\n\n    public void setG71040(String g71040) {\n        this.g71040 = g71040;\n    }\n\n    public String getG71190() {\n        return g71190;\n    }\n\n    public void setG71190(String g71190) {\n        this.g71190 = g71190;\n    }\n\n    public String getV4Code() {\n        return v4Code;\n    }\n\n    public void setV4Code(String v4Code) {\n        this.v4Code = v4Code;\n    }\n\n    @Override\n    public boolean equals(Object o) {\n        if (this == o) return true;\n        if (o == null || getClass() != o.getClass()) return false;\n        HsahkpfKey that = (HsahkpfKey) o;\n        return Objects.equals(g71000, that.g71000) &&\n               Objects.equals(g71010, that.g71010) &&\n               Objects.equals(g71020, that.g71020) &&\n               Objects.equals(space, that.space) &&\n               Objects.equals(g71030, that.g71030) &&\n               Objects.equals(g71040, that.g71040) &&\n               Objects.equals(g71190, that.g71190) &&\n               Objects.equals(v4Code, that.v4Code);\n    }\n\n    @Override\n    public int hashCode() {\n        return Objects.hash(g71000, g71010, g71020, space, g71030, g71040, g71190, v4Code);\n    }\n}\n\n// ==========================================\n// === domain/HsepafKey.java ===\npackage com.scania.warranty.domain;\n\nimport java.io.Serializable;\nimport java.util.Objects;\n\npublic class HsepafKey implements Serializable {\n    private String ahk000;\n    private String ahk040;\n    private String ahk050;\n    private String ahk060;\n    private String v4Type;\n\n    public HsepafKey() {\n    }\n\n    public HsepafKey(String ahk000, String ahk040, String ahk050, String ahk060, String v4Type) {\n        this.ahk000 = ahk000;\n        this.ahk040 = ahk040;\n        this.ahk050 = ahk050;\n        this.ahk060 = ahk060;\n        this.v4Type = v4Type;\n    }\n\n    public String getAhk000() {\n        return ahk000;\n    }\n\n    public void setAhk000(String ahk000) {\n        this.ahk000 = ahk000;\n    }\n\n    public String getAhk040() {\n        return ahk040;\n    }\n\n    public void setAhk040(String ahk040) {\n        this.ahk040 = ahk040;\n    }\n\n    public String getAhk050() {\n        return ahk050;\n    }\n\n    public void setAhk050(String ahk050) {\n        this.ahk050 = ahk050;\n    }\n\n    public String getAhk060() {\n        return ahk060;\n    }\n\n    public void setAhk060(String ahk060) {\n        this.ahk060 = ahk060;\n    }\n\n    public String getV4Type() {\n        return",
+      "stderrPreview": "// Context package size: 4.4 KB\n// DB Contracts: 0, Total columns: 0\n// Loaded full RPG source from /Users/fkhan/Documents/ScaniaRPG2JavaAgentic/PoC_HS1210/HSSRC/QRPGLESRC/HS1210.sqlrpgle (lines 3035-3058, 817 chars)\n// Generating Pure Java (Track B) with layered architecture...\n// This may take 60-120 seconds for large packages...\n// Prompt size: 12.0 KB\n// Integration mode: writing into existing project warranty_demo\n// Starting Pure Java migration (Track B)...\n// Sending request to LLM (this may take 60-120 seconds for large prompts)...\n// LLM response received in 42.4 seconds\n// Parsing multi-file output...\n// Parser extracted 9 files:\n//   - domain/HsahkpfKey.java\n//   - domain/HsepafKey.java\n//   - domain/V4ValidationCriteria.java\n//   - dto/V4ValidationRequest.java\n//   - dto/V4ValidationResponse.java\n//   - repository/HsahkpfRepository.java\n//   - repository/HsepafRepository.java\n//   - service/V4ValidationService.java\n//   - web/V4ValidationController.java\n// Found 9 Java files to write\n// \u2705 Wrote com/scania/warranty/domain/HsahkpfKey.java (2850 chars)\n// \u2705 Wrote com/scania/warranty/domain/HsepafKey.java (2007 chars)\n// \u2705 Wrote com/scania/warranty/domain/V4ValidationCriteria.java (746 chars)\n// \u2705 Wrote com/scania/warranty/repository/HsahkpfRepository.java (2461 chars)\n// \u2705 Wrote com/scania/warranty/repository/HsepafRepository.java (1243 chars)\n// \u2705 Wrote com/scania/warranty/service/V4ValidationService.java (4015 chars)\n// \u2705 Wrote com/scania/warranty/dto/V4ValidationRequest.java (329 chars)\n// \u2705 Wrote com/scania/warranty/dto/V4ValidationResponse.java (218 chars)\n// \u2705 Wrote com/scania/warranty/web/V4ValidationController.java (1518 chars)\n\n// \u2705 Successfully generated 9 Java files\n// \ud83d\udcc1 Output directory: /Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/warranty_demo/src/main/java\n// \ud83d\udce6 Package structure:\n//    com/scania/warranty/domain/HsahkpfKey.java\n//    com/scania/warranty/domain/HsepafKey.java\n//    com/scania/warranty/domain/V4ValidationCriteria.java\n//    com/scania/warranty/dto/V4ValidationRequest.java\n//    com/scania/warranty/dto/V4ValidationResponse.java\n//    com/scania/warranty/repository/HsahkpfRepository.java\n//    com/scania/warranty/repository/HsepafRepository.java\n//    com/scania/warranty/service/V4ValidationService.java\n//    com/scania/warranty/web/V4ValidationController.java\n// \u2705 Migration complete! Files integrated into project: warranty_demo/src\n"
+    }
+  ],
+  "summary": "Migrated feature starting at HS1210 n1983 with 1 node(s); DB files involved: AUFWKO (HSSRC), FISTAM (HSSRC), HS1210D (HSSRC), HSAHKLF3 (HSSRC), HSAHKLF8 (HSSRC), HSAHKPF (HSSRC), HSAHPPF (HSSRC), HSAHTPF (HSSRC), HSAHWPF (HSSRC), HSBTSLF1 (HSSRC), HSBTSPF (HSSRC), HSEPAF (HSSRC), HSFLALF1 (HSSRC), HSG70F (HSSRC), HSG71LF2 (HSSRC), HSG71LF3 (HSSRC), HSG71LF7 (HSSRC), HSG71PF (HSSRC), HSG73LF1 (HSSRC), HSG73PF (HSSRC), HSG79F (HSSRC), HSGFIPF (HSSRC), HSGPSLF2 (HSSRC), HSGPSLF3 (HSSRC), HSGPSPF (HSSRC), HSGSCPF (HSSRC), HSKAMPF (HSSRC), RWAPRL1 (HSSRC), ITLSMF3 (P400IMS), PIPPMST (S400CAS), S3F001 (S400CAS), S3F002 (S400CAS), S3F003 (S400CAS), S3F009 (S400CAS), S3F085 (S400CAS), S3L004H (S400CAS)."
+}

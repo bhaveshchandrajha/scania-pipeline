@@ -1,0 +1,56 @@
+{
+  "astNode": {
+    "id": "n3445",
+    "kind": "Procedure",
+    "name": "getDates",
+    "sem": "{}",
+    "outgoingEdges": [],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "startLine": 4300,
+      "startColumn": 7,
+      "endLine": 4312,
+      "endColumn": 24
+    }
+  },
+  "narrative": "### Node n3445: Procedure `getDates`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Raw sem JSON**:\n```json\n{}\n```",
+  "rpgSnippet": "     P getDates        B\n     D getDates        PI\n     D*---------------------------------------------------------------\n       dates = *Blanks;\n       exec sql\n          declare c4 Cursor for select AHK080, AHK620\n            from HSAHKPF\n            where AHK000 = :G71000 and AHK010 = :G71010 and AHK020 = :G71020\n            and AHK030 = ' ' and AHK040 = :G71030 and AHK050 = :G71190;\n       exec sql open c4;\n       exec sql fetch next from c4 into :dates;\n       exec sql close c4;\n     P                 E",
+  "dbContracts": [],
+  "symbolMetadata": {},
+  "callGraph": {
+    "calls": [],
+    "calledBy": [
+      "n498",
+      "n2793",
+      "n3455"
+    ]
+  },
+  "statementNodes": [
+    {
+      "id": "n3446",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 4302,
+      "endLine": 4302
+    },
+    {
+      "id": "n3447",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4303,
+      "endLine": 4303,
+      "target": "sym.ds.dates",
+      "symbols": [
+        "sym.ds.dates"
+      ]
+    }
+  ],
+  "lineToNodeMap": {
+    "4302": [
+      "n3446"
+    ],
+    "4303": [
+      "n3447"
+    ]
+  }
+}

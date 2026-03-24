@@ -1,0 +1,62 @@
+{
+  "astNode": {
+    "id": "n2698",
+    "kind": "Procedure",
+    "name": null,
+    "sem": null,
+    "outgoingEdges": [],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "startLine": 3648,
+      "startColumn": 7,
+      "endLine": 3702,
+      "endColumn": 24
+    },
+    "raw": {
+      "id": "n2698",
+      "kind": "Procedure",
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+        "startLine": 3648,
+        "startLinePP": 3675,
+        "startCol": 7,
+        "startByte": 172194,
+        "endLine": 3702,
+        "endLinePP": 3729,
+        "endCol": 24,
+        "endByte": 173746
+      },
+      "props": {
+        "procedure_name": "loadTextGPS",
+        "opcode": "PROC",
+        "name": "loadTextFromSfl"
+      },
+      "children": [
+        "n2699",
+        "n2700",
+        "n2701",
+        "n2702",
+        "n2703",
+        "n2704",
+        "n2705",
+        "n2706",
+        "n2707",
+        "n2708",
+        "n2726",
+        "n2753"
+      ]
+    }
+  },
+  "narrative": "### Node n2698: Procedure\n\nProcedure `n2698` expresses business logic derived from its semantic block and referenced symbols/files.\n\n",
+  "rpgSnippet": "     P loadOrderTextSfl...\n     P                 B\n     D loadOrderTextSfl...\n     D                 PI\n     D*----------------------------------------------------------------\n       *IN90 = *Off;\n       *IN99 = *On;\n       ZLA = 0;\n       Write HS1212CA;\n       *IN99 = *OFF;\n       DATTXT = DATTX5;\n       DATTOP = DATTO5;\n\n       Chain(N) KEYGPS2 HSGPSPR;\n       DOW Not %EoF(HSGPSPF);\n           If GPS020 = *Blanks And GPS040 = 'TXT';\n              MARKA = *Blanks;\n              DATA  = *Blanks;\n              DAT5  = %Char(GPS150);\n              DAT6  = GPS080;\n              If %Subst(GPS080:1:1) <> '+';\n                 ZLA += 1;\n                 Write HS1212SA;\n               EndIf;\n           EndIf;\n           ReadE(N) KEYGPS2 HSGPSPR;\n       EndDo;\n\n       If ZLA <> 0;\n          *In90 = *On;\n          *In95 = *On;\n          Write HS1212WA;\n          ExFmt HS1212CA;\n          *In90 = *Off;\n          *In95 = *Off;\n\n          If Not *In12;\n              countZ = 0;\n              ReadC HS1212SA;\n              DoW Not %EoF(HS1212D);\n                  If MARKA <> *Blanks;\n                     countZ += 1;\n                     Chain countZ HS1212ST;\n                     If Not %EoF(HS1212D);\n                        TEXT = DAT6;\n                        Update HS1212ST;\n                     EndIf;\n                  EndIf;\n                  ReadC HS1212SA;\n              EndDo;\n              loadTextFromSfl();\n          EndIf;\n       EndIf;\n       *In12 = *Off;\n     P                 E",
+  "dbContracts": [],
+  "symbolMetadata": {},
+  "displayFiles": [
+    {
+      "symbolId": "sym.dspf.HS1212D",
+      "name": "HS1212D",
+      "fileId": "qsys:HSSRC/QDDSSRC/HS1212D",
+      "path": "/QSYS.LIB/HSSRC.LIB/QDDSSRC.FILE/HS1212D.MBR"
+    }
+  ]
+}

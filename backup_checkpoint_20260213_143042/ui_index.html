@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RPG → Java Migration Dashboard</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid #1f2937;
+      background: linear-gradient(90deg, #0f172a, #111827);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+    header span {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+    main {
+      display: grid;
+      grid-template-columns: 1.1fr 1.6fr;
+      gap: 12px;
+      padding: 12px 16px 20px;
+      height: calc(100vh - 60px);
+      box-sizing: border-box;
+    }
+    .card {
+      background: #020617;
+      border-radius: 10px;
+      border: 1px solid #1e293b;
+      padding: 10px 12px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .card h2 {
+      margin: 0 0 6px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #e5e7eb;
+    }
+    .card h2 span {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+    .toolbar {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+    button {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      background: #111827;
+      color: #e5e7eb;
+      cursor: pointer;
+    }
+    button.primary {
+      border-color: #4f46e5;
+      background: linear-gradient(90deg, #4f46e5, #7c3aed);
+      color: white;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+    th, td {
+      padding: 4px 6px;
+      border-bottom: 1px solid #111827;
+      text-align: left;
+      white-space: nowrap;
+    }
+    th {
+      font-weight: 600;
+      color: #9ca3af;
+      position: sticky;
+      top: 0;
+      background: #020617;
+      z-index: 1;
+    }
+    tr:hover td {
+      background: #020617;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      font-size: 10px;
+      background: #0f172a;
+      border: 1px solid #1f2937;
+      color: #9ca3af;
+    }
+    .status-pill span.dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #6b7280;
+    }
+    .status-pill.ready span.dot {
+      background: #10b981;
+    }
+    .status-pill.pending span.dot {
+      background: #f59e0b;
+    }
+    .status-pill.error span.dot {
+      background: #ef4444;
+    }
+    .scroll {
+      overflow: auto;
+      flex: 1;
+      border-radius: 6px;
+      border: 1px solid #111827;
+      background: radial-gradient(circle at top left, #020617, #020617 55%, #030712);
+    }
+    pre {
+      margin: 0;
+      padding: 8px 10px;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 11px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #e5e7eb;
+    }
+    .section-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #6b7280;
+      padding: 6px 8px 4px;
+      border-bottom: 1px solid #111827;
+    }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 4px 0;
+    }
+    .pill {
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      padding: 2px 6px;
+      font-size: 10px;
+      color: #9ca3af;
+      background: #020617;
+    }
+    .source-link {
+      color: #818cf8;
+      cursor: pointer;
+      text-decoration: underline;
+      text-decoration-style: dotted;
+    }
+    .source-link:hover {
+      color: #a5b4fc;
+    }
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .modal-overlay.visible {
+      display: flex;
+    }
+    .modal-box {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      max-width: 90vw;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .modal-box h3 {
+      margin: 0;
+      padding: 12px 14px;
+      font-size: 13px;
+      border-bottom: 1px solid #1e293b;
+      color: #e5e7eb;
+    }
+    .modal-box .modal-body {
+      padding: 10px;
+      overflow: auto;
+      flex: 1;
+      min-height: 200px;
+    }
+    .modal-box pre {
+      margin: 0;
+      font-size: 11px;
+    }
+    .modal-box .modal-actions {
+      padding: 8px 14px;
+      border-top: 1px solid #1e293b;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .split-vertical {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      height: 100%;
+    }
+    .validation-summary {
+      padding: 8px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-size: 11px;
+    }
+    .validation-summary.passed {
+      background: #064e3b;
+      border: 1px solid #10b981;
+      color: #6ee7b7;
+    }
+    .validation-summary.warning {
+      background: #78350f;
+      border: 1px solid #f59e0b;
+      color: #fcd34d;
+    }
+    .validation-summary.failed {
+      background: #7f1d1d;
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+    }
+    .validation-details {
+      font-size: 10px;
+      line-height: 1.5;
+    }
+    .validation-layer {
+      margin-bottom: 8px;
+      padding: 6px;
+      background: #020617;
+      border-radius: 4px;
+      border: 1px solid #111827;
+    }
+    .validation-layer h4 {
+      margin: 0 0 4px;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+    .score {
+      font-weight: 600;
+      font-size: 12px;
+    }
+    .score.high { color: #10b981; }
+    .score.medium { color: #f59e0b; }
+    .score.low { color: #ef4444; }
+    .check-item {
+      padding: 2px 0;
+      font-size: 10px;
+      color: #9ca3af;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>RPG → Java Migration</h1>
+    <span>Per‑subroutine context packages · dbContracts‑guarded LLM</span>
+  </div>
+  <span id="header-status">Idle</span>
+</header>
+
+<main>
+  <section class="card">
+    <h2>
+      Nodes
+      <span id="summary"></span>
+    </h2>
+    <div class="toolbar">
+      <button id="refresh-btn">Refresh manifest</button>
+      <span id="refresh-msg"></span>
+    </div>
+    <div class="scroll">
+      <table>
+        <thead>
+        <tr>
+          <th>Unit</th>
+          <th>Node</th>
+          <th>Kind</th>
+          <th>Source</th>
+          <th>DB Files</th>
+          <th>Calls</th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody id="nodes-body">
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>
+      Migration Detail
+      <span id="detail-title">Select a node to migrate</span>
+    </h2>
+    <div class="toolbar">
+      <span id="detail-status"></span>
+      <span id="context-info" style="margin-left: 8px; font-size: 11px; color: #6b7280;"></span>
+    </div>
+    <div class="split-vertical">
+      <div class="scroll" style="flex: 0.8">
+        <div class="section-label" style="display: flex; justify-content: space-between; align-items: center;">
+          <span>Generated Java</span>
+          <button id="compile-btn" class="primary" style="font-size: 10px; padding: 2px 8px;" disabled>Compile</button>
+        </div>
+        <div id="compile-result" style="display: none; padding: 6px 8px; margin-bottom: 4px; border-radius: 4px; font-size: 10px;"></div>
+        <pre id="java-output">// Java code will appear here after migration.</pre>
+      </div>
+      <div class="scroll" style="flex: 0.6">
+        <div class="section-label">Validation Results</div>
+        <div id="validation-results">
+          <div class="validation-summary" id="validation-summary">// Validation results will appear here</div>
+          <div class="validation-details" id="validation-details"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="rpg-modal" class="modal-overlay" aria-hidden="true">
+  <div class="modal-box">
+    <h3 id="rpg-modal-title">RPG source</h3>
+    <div class="modal-body">
+      <pre id="rpg-modal-snippet">Loading...</pre>
+    </div>
+    <div class="modal-actions">
+      <button type="button" id="rpg-modal-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const nodesBody = document.getElementById('nodes-body');
+  const summary = document.getElementById('summary');
+  const refreshBtn = document.getElementById('refresh-btn');
+  const refreshMsg = document.getElementById('refresh-msg');
+  const headerStatus = document.getElementById('header-status');
+  const detailTitle = document.getElementById('detail-title');
+  const detailStatus = document.getElementById('detail-status');
+  const javaOutput = document.getElementById('java-output');
+  const compileBtn = document.getElementById('compile-btn');
+  const compileResult = document.getElementById('compile-result');
+  const validationSummary = document.getElementById('validation-summary');
+  const validationDetails = document.getElementById('validation-details');
+
+  let manifest = null;
+
+  function escapeHtml(s) {
+    const div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  function bindSourceLinks() {
+    document.querySelectorAll('.source-link').forEach(el => {
+      el.onclick = () => showRpgSnippet(el.getAttribute('data-unit'), el.getAttribute('data-node'));
+    });
+  }
+
+  const rpgModal = document.getElementById('rpg-modal');
+  const rpgModalTitle = document.getElementById('rpg-modal-title');
+  const rpgModalSnippet = document.getElementById('rpg-modal-snippet');
+  const rpgModalClose = document.getElementById('rpg-modal-close');
+
+  function showRpgSnippet(unitId, nodeId) {
+    rpgModal.classList.add('visible');
+    rpgModal.setAttribute('aria-hidden', 'false');
+    rpgModalTitle.textContent = `RPG source: ${unitId}_${nodeId}`;
+    rpgModalSnippet.textContent = 'Loading...';
+    fetch(`/api/rpg-snippet?unitId=${encodeURIComponent(unitId)}&nodeId=${encodeURIComponent(nodeId)}`)
+      .then(r => {
+        if (!r.ok) throw new Error(r.status === 404 ? 'Context not found' : 'Failed to load snippet');
+        return r.json();
+      })
+      .then(data => {
+        rpgModalTitle.textContent = `RPG source: ${data.unitId}_${data.nodeId} (${data.sourceFileId || '—'})`;
+        rpgModalSnippet.textContent = data.rpgSnippet || '// No RPG snippet in context.';
+      })
+      .catch(e => {
+        rpgModalSnippet.textContent = '// Error: ' + e.message;
+      });
+  }
+
+  function closeRpgModal() {
+    rpgModal.classList.remove('visible');
+    rpgModal.setAttribute('aria-hidden', 'true');
+  }
+
+  rpgModalClose.addEventListener('click', closeRpgModal);
+  rpgModal.addEventListener('click', (e) => { if (e.target === rpgModal) closeRpgModal(); });
+
+  async function loadManifest() {
+    refreshBtn.disabled = true;
+    refreshMsg.textContent = 'Loading...';
+    headerStatus.textContent = 'Loading manifest...';
+    try {
+      const res = await fetch('/api/manifest');
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || ('HTTP ' + res.status));
+      }
+      manifest = await res.json();
+      const entries = manifest.entries || manifest.Entries || [];
+      nodesBody.innerHTML = '';
+      entries.forEach(entry => {
+        const tr = document.createElement('tr');
+        const dbFiles = (entry.dbFilesUsed || []).join(', ');
+        const calls = (entry.calls || []).join(', ');
+        const source = (entry.sourceFileId || '').trim();
+        const sourceCell = source
+          ? `<td><span class="source-link" data-unit="${entry.unitId}" data-node="${entry.nodeId}" title="Click to preview RPG snippet">${escapeHtml(source)}</span></td>`
+          : `<td></td>`;
+        tr.innerHTML = `
+          <td>${entry.unitId}</td>
+          <td>${entry.nodeId}</td>
+          <td>${entry.kind}</td>
+          ${sourceCell}
+          <td>${dbFiles}</td>
+          <td>${calls}</td>
+          <td><button class="primary" data-unit="${entry.unitId}" data-node="${entry.nodeId}" type="button">Migrate</button></td>
+        `;
+        nodesBody.appendChild(tr);
+      });
+      bindSourceLinks();
+      summary.textContent = `Total nodes: ${entries.length}`;
+      refreshMsg.textContent = '';
+      headerStatus.textContent = 'Ready';
+    } catch (e) {
+      console.error(e);
+      refreshMsg.textContent = 'Failed to load manifest: ' + e.message;
+      headerStatus.textContent = 'Error';
+    } finally {
+      refreshBtn.disabled = false;
+    }
+  }
+
+  function enableMigrateButtons() {
+    document.querySelectorAll('button[data-unit]').forEach(b => {
+      b.disabled = false;
+      const unitId = b.getAttribute('data-unit');
+      const nodeId = b.getAttribute('data-node');
+      b.textContent = 'Migrate';
+    });
+  }
+
+  async function migrate(unitId, nodeId) {
+    headerStatus.textContent = `Migrating ${unitId}_${nodeId}...`;
+    detailTitle.textContent = `${unitId}_${nodeId}`;
+    detailStatus.textContent = 'Calling LLM (this may take 30-120 seconds for large context packages)...';
+    javaOutput.textContent = '// Running migration...\n// Large context packages can take 60-120 seconds.\n// Please wait...';
+    compileBtn.disabled = true; // Disable compile button during migration
+    compileResult.style.display = 'none';
+    const contextInfoEl = document.getElementById('context-info');
+    if (contextInfoEl) contextInfoEl.textContent = `Context: ${unitId}_${nodeId}.json`;
+    
+    // Clear validation
+    validationSummary.textContent = '// Validation will run after migration completes';
+    validationSummary.className = 'validation-summary';
+    validationDetails.innerHTML = '';
+    
+    const startTime = Date.now();
+    let timeoutId;
+    
+    // Show progress indicator
+    const progressInterval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      detailStatus.textContent = `Calling LLM... (${elapsed}s elapsed)`;
+    }, 1000);
+    
+    // Abort after 20 minutes (very large context + 64k output tokens)
+    const abortController = new AbortController();
+    timeoutId = setTimeout(() => abortController.abort(), 20 * 60 * 1000);
+    
+    try {
+      const res = await fetch(`/api/migrate?unitId=${encodeURIComponent(unitId)}&nodeId=${encodeURIComponent(nodeId)}`, {
+        method: 'POST',
+        signal: abortController.signal
+      });
+      clearTimeout(timeoutId);
+      clearInterval(progressInterval);
+      
+      const rawText = await res.text();
+      let body;
+      try {
+        body = JSON.parse(rawText);
+      } catch (_) {
+        throw new Error('Server returned invalid JSON. Response may be too large or server error. Check server terminal.');
+      }
+      if (!res.ok) {
+        throw new Error(body.error || body.details || ('HTTP ' + res.status));
+      }
+      
+      const code = body.javaCode || '// No Java code returned.';
+      javaOutput.textContent = code;
+      compileBtn.disabled = false; // Enable compile button when code is available
+      compileResult.style.display = 'none'; // Hide previous compile result
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      detailStatus.textContent = 'Done in ' + elapsed + 's · model=' + (body.model || '');
+      headerStatus.textContent = 'Idle';
+
+      // Display validation results
+      if (body.validation) {
+        if (body.validation.error) {
+          // Show validation error
+          validationSummary.textContent = '✗ Validation error: ' + body.validation.error;
+          validationSummary.className = 'validation-summary error';
+          validationDetails.innerHTML = '<div class="validation-error">' + escapeHtml(body.validation.error) + '</div>';
+        } else {
+          displayValidationResults(body.validation);
+        }
+      } else {
+        validationSummary.textContent = '// Validation not available';
+        validationSummary.className = 'validation-summary';
+        validationDetails.innerHTML = '';
+      }
+    } catch (e) {
+      clearTimeout(timeoutId);
+      clearInterval(progressInterval);
+      let errorMsg = e.message;
+      if (e.name === 'AbortError') {
+        errorMsg = 'Request timed out after 20 minutes. The server may be stuck or the LLM is very slow. Run migration from the terminal: python3 migrate_with_claude.py context_index/' + unitId + '_' + nodeId + '.json --stream';
+      } else if (e.message.includes('timeout') || e.message.includes('504')) {
+        errorMsg = 'Migration timeout: The LLM request took too long. Try from terminal: python3 migrate_with_claude.py context_index/' + unitId + '_' + nodeId + '.json --stream';
+      } else if (e.message.includes('429') || e.message.includes('rate limit')) {
+        errorMsg = 'API rate limit (429): Wait one minute and try again, or use a smaller node.';
+      } else if (e.message.includes('401') || e.message.includes('authentication')) {
+        errorMsg = 'API authentication failed. Check your ANTHROPIC_API_KEY environment variable.';
+      } else if (e.message.includes('404') || e.message.includes('not_found')) {
+        errorMsg = 'Model not found. The specified model may not be available.';
+      }
+      javaOutput.textContent = '// Migration failed.\n' + errorMsg;
+      detailStatus.textContent = 'Error during migration';
+      headerStatus.textContent = 'Error';
+      validationSummary.textContent = '// Validation unavailable';
+      validationSummary.className = 'validation-summary';
+      validationDetails.innerHTML = '';
+    } finally {
+      enableMigrateButtons(); // Always re-enable buttons
+    }
+  }
+
+  function displayValidationResults(validation) {
+    const status = validation.overallStatus || 'UNKNOWN';
+    const score = validation.overallScore || 0;
+    const certified = validation.certified || false;
+    const comp = validation.compilation || {};
+    const compilable = !comp.skipped && comp.success;
+    const compFailed = !comp.skipped && !comp.success;
+    const compSkipped = comp.skipped === true;
+
+    // Summary: status, score, certified, and compilable (error-free code)
+    let compBadge = '';
+    if (compilable) {
+      compBadge = '<span style="color: #10b981;" title="Generated code compiles with javac (no syntax errors)">✓ Compiles</span>';
+    } else if (compFailed) {
+      compBadge = '<span style="color: #ef4444;" title="Compilation failed – see Compilation errors below">✗ Compilation failed</span>';
+    } else if (compSkipped) {
+      compBadge = '<span style="color: #9ca3af;" title="Compilation check skipped (add lib/ classpath to enable)">Compile check skipped</span>';
+    }
+
+    validationSummary.className = `validation-summary ${status.toLowerCase()}`;
+    validationSummary.innerHTML = `
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
+        <span><strong>${status}</strong> · Overall Score: <span class="score ${score >= 95 ? 'high' : score >= 80 ? 'medium' : 'low'}">${score.toFixed(1)}%</span></span>
+        ${certified ? '<span style="color: #10b981;">✓ CERTIFIED</span>' : ''}
+        ${compBadge}
+      </div>
+    `;
+
+    // Details
+    let detailsHtml = '';
+
+    // Structural (includes compilation check when run)
+    if (validation.structural) {
+      const s = validation.structural;
+      detailsHtml += `
+        <div class="validation-layer">
+          <h4>Structural <span class="score ${s.score >= 95 ? 'high' : s.score >= 80 ? 'medium' : 'low'}">${s.score.toFixed(1)}%</span></h4>
+          ${(s.checks || []).map(c => `<div class="check-item">${c}</div>`).join('')}
+          ${(s.failures || []).length > 0 ? `<div style="color: #ef4444; margin-top: 4px;">${s.failures.length} issue(s)</div>` : ''}
+        </div>
+      `;
+    }
+
+    // Compilation (javac) errors when check ran and failed
+    if (validation.compilation && !validation.compilation.skipped && !validation.compilation.success && validation.compilation.errors && validation.compilation.errors.length > 0) {
+      detailsHtml += `
+        <div class="validation-layer" style="border-color: #ef4444;">
+          <h4 style="color: #ef4444;">Compilation errors (javac)</h4>
+          <pre style="font-size: 10px; max-height: 120px; overflow: auto; margin: 0; color: #fca5a5;">${validation.compilation.errors.slice(0, 15).map(e => escapeHtml(e)).join('\n')}</pre>
+        </div>
+      `;
+    }
+
+    // Semantic
+    if (validation.semantic) {
+      const s = validation.semantic;
+      // Extract DB contract info from checks if available
+      const dbContractCheck = (s.checks || []).find(c => c.includes('dbContracts') || c.includes('dbContract'));
+      detailsHtml += `
+        <div class="validation-layer">
+          <h4>Semantic <span class="score ${s.score >= 95 ? 'high' : s.score >= 80 ? 'medium' : 'low'}">${s.score.toFixed(1)}%</span></h4>
+          ${(s.checks || []).map(c => `<div class="check-item">${c}</div>`).join('')}
+          ${(s.failures || []).length > 0 ? `<div style="color: #ef4444; margin-top: 4px;">${s.failures.length} issue(s)</div>` : ''}
+        </div>
+      `;
+    }
+
+    // Behavioral
+    if (validation.behavioral) {
+      const b = validation.behavioral;
+      detailsHtml += `
+        <div class="validation-layer">
+          <h4>Behavioral <span class="score ${b.score >= 95 ? 'high' : b.score >= 80 ? 'medium' : 'low'}">${b.score.toFixed(1)}%</span></h4>
+          ${(b.checks || []).map(c => `<div class="check-item">${c}</div>`).join('')}
+          ${(b.failures || []).length > 0 ? `<div style="color: #ef4444; margin-top: 4px;">${b.failures.length} issue(s)</div>` : ''}
+        </div>
+      `;
+    }
+
+    // Issues
+    if (validation.issues && validation.issues.length > 0) {
+      const hasUnbalanced = validation.issues.some(i => typeof i === 'string' && i.includes('Unbalanced braces'));
+      const hasColumns = validation.issues.some(i => typeof i === 'string' && i.includes('columns mapped'));
+      detailsHtml += `
+        <div class="validation-layer" style="border-color: #ef4444;">
+          <h4 style="color: #ef4444;">Issues (${validation.issues.length})</h4>
+          ${validation.issues.slice(0, 5).map(i => `<div class="check-item" style="color: #fca5a5;">${i}</div>`).join('')}
+          ${hasUnbalanced ? '<div class="check-item" style="color: #fcd34d; margin-top: 6px;">Tip: Add the missing <code>}</code> in the generated Java (e.g. at end of class or before the last closing brace).</div>' : ''}
+          ${hasColumns ? '<div class="check-item" style="color: #fcd34d; margin-top: 6px;">Tip: Add missing <code>@Column</code> fields to entity classes so every dbContract column is mapped.</div>' : ''}
+          ${validation.issues.some(i => typeof i === 'string' && i.includes('Compilation failed')) ? '<div class="check-item" style="color: #fcd34d; margin-top: 6px;">Tip: Fix syntax errors or ensure JPA is on classpath (run: mvn dependency:copy-dependencies -DoutputDirectory=lib).</div>' : ''}
+        </div>
+      `;
+    }
+
+    validationDetails.innerHTML = detailsHtml || '<div class="check-item">No validation details available</div>';
+  }
+
+  refreshBtn.addEventListener('click', loadManifest);
+
+  nodesBody.addEventListener('click', (ev) => {
+    const btn = ev.target.closest('button[data-unit]');
+    if (!btn) return;
+    
+    // Prevent multiple migrations
+    if (btn.disabled) return;
+    
+    const unitId = btn.getAttribute('data-unit');
+    const nodeId = btn.getAttribute('data-node');
+    
+    // Disable all migrate buttons during migration
+    document.querySelectorAll('button[data-unit]').forEach(b => {
+      b.disabled = true;
+      b.textContent = 'Migrating...';
+    });
+    
+    migrate(unitId, nodeId);
+  });
+
+  // Compile button: live compile check on generated Java
+  compileBtn.addEventListener('click', async () => {
+    const code = javaOutput.textContent || '';
+    if (!code || code.trim().length < 50 || code.includes('// Java code will appear') || code.includes('// Running migration')) {
+      compileResult.style.display = 'block';
+      compileResult.style.background = '#1f2937';
+      compileResult.style.color = '#fca5a5';
+      compileResult.textContent = 'No Java code to compile. Run a migration first.';
+      return;
+    }
+
+    compileBtn.disabled = true;
+    compileResult.style.display = 'block';
+    compileResult.style.background = '#1f2937';
+    compileResult.style.color = '#9ca3af';
+    compileResult.textContent = 'Compiling...';
+
+    try {
+      const res = await fetch('/api/compile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+        body: code
+      });
+      const result = await res.json();
+      
+      if (result.success) {
+        compileResult.style.background = '#064e3b';
+        compileResult.style.color = '#10b981';
+        compileResult.textContent = '✓ Compiles successfully (no syntax errors)';
+      } else if (result.skipped) {
+        compileResult.style.background = '#1f2937';
+        compileResult.style.color = '#9ca3af';
+        compileResult.textContent = '⚠ ' + (result.message || 'Compilation check skipped');
+      } else {
+        compileResult.style.background = '#7f1d1d';
+        compileResult.style.color = '#fca5a5';
+        const errorLines = result.errors && result.errors.length > 0 
+          ? result.errors.slice(0, 10).join('\n')
+          : (result.message || 'Compilation failed');
+        compileResult.innerHTML = `<div style="font-weight: 600; margin-bottom: 4px;">✗ Compilation failed</div><pre style="margin: 0; font-size: 9px; max-height: 150px; overflow: auto;">${escapeHtml(errorLines)}</pre>`;
+      }
+    } catch (e) {
+      compileResult.style.background = '#7f1d1d';
+      compileResult.style.color = '#fca5a5';
+      compileResult.textContent = '✗ Error: ' + e.message;
+    } finally {
+      compileBtn.disabled = false;
+    }
+  });
+
+  // Initial load
+  loadManifest();
+</script>
+
+</body>
+</html>
+

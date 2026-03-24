@@ -1,0 +1,1106 @@
+     A*%%TS  SD  20250812  110003  ELEIENDEC   REL-V7R5M0  5770-WDS
+     A*Z: CRTDSPF RSTDSP(*YES)
+     A**************************************************************************
+     A* #ND.-DATUM  KZL  BESCHREIBUNG                                          *
+     A* -- -- ----  ---  ------------------------------------------------------*
+     A* 16.09.2019  RM   Erweiterung IRM                              DEV-884  *
+     A**************************************************************************
+     A*%%EC
+     A                                      DSPSIZ(24 80 *DS3)
+     A                                      REF(*LIBL/HSREF)
+     A                                      PRINT
+     A          R HS1212S1                  SFL
+     A*%%TS  SD  20240418  161335  RMUELLER    REL-V7R3M0  5770-WDS
+     A  93                                  SFLNXTCHG
+     A            SUB065         2A  H
+     A            SUB02O         8A  H
+     A            SUB280         8S 0H
+     A            MARK1          2A  B 13  3
+     A  70                                  DSPATR(RI)
+     A  71                                  DSPATR(ND)
+     A            SUB060         2A  O 13  8
+     A  71                                  DSPATR(ND)
+     A            SUB240         1A  O 13 13
+     A  71                                  DSPATR(ND)
+     A            SUB080         2A  O 13 16
+     A  71                                  DSPATR(ND)
+     A            SUB070        16A  O 13 20
+     A  71                                  DSPATR(ND)
+     A            SUB100         2A  O 13 37
+     A  71                                  DSPATR(ND)
+     A            SUB110         2A  O 13 40
+     A  71                                  DSPATR(ND)
+     A            SUB140         2A  O 13 44
+     A  71                                  DSPATR(ND)
+     A            SUB150         2A  O 13 47
+     A  71                                  DSPATR(ND)
+     A            SUBGUT         6A  O 13 50
+     A  71                                  DSPATR(ND)
+     A            SUBWERT        7Y 2O 13 57
+     A  71                                  DSPATR(ND)
+     A                                      EDTWRD('   0 ,  ')
+     A            SUB180         3Y 0O 13 67EDTWRD(' 0 ')
+     A  71                                  DSPATR(ND)
+     A            SUB190         3Y 0O 13 71EDTWRD(' 0 ')
+     A  71                                  DSPATR(ND)
+     A            SUB200         3Y 0O 13 75EDTWRD(' 0 ')
+     A  71                                  DSPATR(ND)
+     A            SUBSTA         2   O 13 79
+     A  71                                  DSPATR(ND)
+     A  79                                  COLOR(BLU)
+     A  83                                  COLOR(RED)
+     A  72                                  COLOR(YLW)
+     A          R HS1212C1                  SFLCTL(HS1212S1)
+     A*%%TS  SD  20240418  161335  RMUELLER    REL-V7R3M0  5770-WDS
+     A                                      SFLSIZ(0009)
+     A                                      SFLPAG(0008)
+     A                                      CA03(03 'Verlassen')
+     A                                      CF05(05 'Aktualisieren')
+     A N60                                  CF06(06 'Erstellen')
+     A                                      CF08(08 'Fahrzeuginfo')
+     A                                      CA12(12 'Zurück')
+     A N60                                  CF16(16 'Neuer Claim')
+     A                                      CF18(18 'Kopfdaten ändern')
+     A                                      OVERLAY
+     A                                      SFLCSRRRN(&REC1)
+     A  90                                  SFLDSP
+     A  90                                  SFLDSPCTL
+     A  99                                  SFLDLT
+     A  95                                  SFLEND(*MORE)
+     A  55                                  SFLMSG('Auswahl 1 ist für diesen Li-
+     A                                      steneintrag ungültig.')
+     A  56                                  SFLMSG('Angegebene Auswahlnummer ni-
+     A                                      cht zulässig.')
+     A  57                                  SFLMSG('Bearbeiten/Löschen mit dies-
+     A                                      em Status nicht zulässig.')
+     A            REC1           5S 0H
+     A            PAG1           4S 0H      SFLRCDNBR(CURSOR)
+     A                                  1  2'HS1212C1'
+     A                                  1 12'SDPS Verwaltung Garantieanträge'
+     A                                      COLOR(WHT)
+     A                                  1 59USER
+     A                                      COLOR(BLU)
+     A                                  1 70SYSNAME
+     A                                      COLOR(BLU)
+     A N60                              2 12'# N D E R N'
+     A                                      COLOR(WHT)
+     A  60                              2 12'A N Z E I G E N'
+     A                                      COLOR(WHT)
+     A            XXDAT          9Y 0O  2 69COLOR(BLU)
+     A                                      EDTWRD('0  .  .    ')
+     A                                  3  2'Rechnung'
+     A            G7101P         5A  O  3 14
+     A                                  3 23'vom'
+     A            G7102D        10A  O  3 28
+     A                                  3 39'Auftrag'
+     A            G7103P         5A  O  3 50
+     A            G7104P         1A  O  3 56
+     A            G71000         3A  O  3 59
+     A                                  3 70TIME
+     A                                      COLOR(BLU)
+     A                                  4  2'Claim-Nr.'
+     A            G71050         8A  O  4 14
+     A                                  4 23'Scas'
+     A            G71160A        8A  O  4 28
+     A                                  4 39'Status'
+     A            STATXT        20A  O  4 50
+     A                                  5  2'Chassis Nr.'
+     A            G71060         7A  O  5 14
+     A                                  5 39'Rep.-Datum'
+     A            G7109D        10A  O  5 50
+     A                                  5 61'Kilometer'
+     A            G71100         3Y 0O  5 71EDTWRD(' 0 ')
+     A                                  5 75'000'
+     A                                  7  2'Auswahl eingeben und Eingabetaste -
+     A                                      drücken.'
+     A                                      COLOR(BLU)
+     A N60                              8  3'2=#ndern'
+     A                                      COLOR(BLU)
+     A N60                              8 12'4=Löschen'
+     A                                      COLOR(BLU)
+     A                                  8 22'5=Anzeigen'
+     A                                      COLOR(BLU)
+     A  60                              8 33'6=Positionen anzeigen'
+     A                                      COLOR(BLU)
+     A N60                              8 33'6=Positionen ändern'
+     A                                      COLOR(BLU)
+     A  77N60                           8 55'7=Positionen zuordnen'
+     A                                      COLOR(BLU)
+     A  77        ANZPOS         2Y 0O  8 77COLOR(BLU)
+     A                                      EDTWRD('0 ')
+     A  62                              9 31'12=SCAS'
+     A                                      COLOR(BLU)
+     A  62
+     AO 73                              9 39'15=Ergebnis'
+     A                                      COLOR(BLU)
+     A  62                              9 51'17=Gutschrift'
+     A                                      COLOR(BLU)
+     A  62N60                           9 65'20=Folgeantrag'
+     A                                      COLOR(BLU)
+     A                                 11  2'Aus-'
+     A                                      COLOR(WHT)
+     A                                 11  7'Fehl.'
+     A                                      COLOR(WHT)
+     A                                 11 13'C'
+     A                                      COLOR(WHT)
+     A                                 11 15'Hpt.'
+     A                                      COLOR(WHT)
+     A                                 11 20'Fehler'
+     A                                      COLOR(WHT)
+     A                                 11 27'Teile-Nr.'
+     A                                      COLOR(WHT)
+     A                                 11 37'Schad.'
+     A                                      COLOR(WHT)
+     A                                 11 44'Steu.'
+     A                                      COLOR(WHT)
+     A                                 11 50'Gut'
+     A                                      COLOR(WHT)
+     A                                 11 67'Vergütung'
+     A                                      COLOR(WHT)
+     A                                 11 79'St'
+     A                                      COLOR(WHT)
+     A                                 12  2'wahl'
+     A                                      COLOR(WHT)
+     A                                 12  8'Nr.'
+     A                                      COLOR(WHT)
+     A                                 12 13'T'
+     A                                      COLOR(WHT)
+     A                                 12 15'Grp.'
+     A                                      COLOR(WHT)
+     A                                 12 20'/Kampagnen-Nr.'
+     A                                      COLOR(WHT)
+     A                                 12 38'Code'
+     A                                      COLOR(WHT)
+     A                                 12 44'Code'
+     A                                      COLOR(WHT)
+     A                                 12 50'schrift'
+     A                                      COLOR(WHT)
+     A                                 12 61'Wert'
+     A                                      COLOR(WHT)
+     A                                 12 66'Mat.Arb.Spe.'
+     A                                      COLOR(WHT)
+     A                                 12 79'us'
+     A                                      COLOR(WHT)
+     A N60                              9 21'10=Senden'
+     A N60                                  COLOR(BLU)
+     A                                  9  3'8=Anhänge'
+     A                                      COLOR(BLU)
+     A                                  9 13'9=Druck'
+     A                                      COLOR(BLU)
+     A            GANRN          5S 0O  3 63
+     A          R HS121201
+     A*%%TS  SD  20111025  151433  RMUELLER    REL-V5R4M0  5722-WDS
+     A                                      OVERLAY
+     A                                 22  2'F3=Verlassen'
+     A                                      COLOR(BLU)
+     A                                 22 17'F5=Aktualisieren'
+     A                                      COLOR(BLU)
+     A N60                             22 36'F6=Erstellen'
+     A                                      COLOR(BLU)
+     A                                 23  2'F12=Zurück'
+     A                                      COLOR(BLU)
+     A N62                             23 36'F18=Kopfdaten ändern'
+     A                                      COLOR(BLU)
+     A  62                             23 36'F18=Kopfdaten anzeigen'
+     A                                      COLOR(BLU)
+     A N60                             23 17'F16=Neuer Claim'
+     A                                      COLOR(BLU)
+     A                                 22 59'F8=Fahrzeuginfo'
+     A                                      COLOR(BLU)
+     A          R HS1212F8
+     A*%%TS  SD  20170410  143346  RMUELLER    REL-V7R2M0  5770-WDS
+     A                                      CA03(03 'Verlassen')
+     A                                      CA12(12 'Zurück')
+     A                                  1  2'HS1212F8'
+     A                                  1 12'SDPS Verwaltung Garantieanträge'
+     A                                      COLOR(WHT)
+     A                                  1 37'Anzeigen'
+     A                                      COLOR(WHT)
+     A                                  1 59USER
+     A                                      COLOR(BLU)
+     A                                  1 70SYSNAME
+     A                                      COLOR(BLU)
+     A                                  2 12'# N D E R N'
+     A                                      COLOR(WHT)
+     A                                  2 28'Kopfdaten'
+     A                                      COLOR(WHT)
+     A            XXDAT          9Y 0O  2 69COLOR(BLU)
+     A                                      EDTWRD('0  .  .    ')
+     A                                  3 70TIME
+     A                                      COLOR(BLU)
+     A                                  4  2'Rechnung'
+     A            G7101P         5A  O  4 12
+     A                                  4 18'vom'
+     A            G7102D        10A  O  4 22
+     A                                  4 38'Auftrag'
+     A            G7103P         5A  O  4 46
+     A            G7104P         1A  O  4 52
+     A                                  5  2'Claim-Nr.'
+     A            G71050         8A  O  5 12
+     A                                  5 38'Status'
+     A            STATXT        20A  O  5 46
+     A                                  7  2'Produkt-Typ..............'
+     A            G7111A         1A  B  7 28COLOR(WHT)
+     A  50                                  ERRMSG('Nur Produkt Typ 1=LKW/2=Bus-
+     A                                      /3=Motor/4=Trailer möglich!')
+     A                                  7 30'1=LKW, 2=Bus, 3=Motor, 4=Trailer'
+     A                                      COLOR(BLU)
+     A                                  9  2'Chassis Nr. .............'
+     A            G7106A         7A  B  9 28COLOR(WHT)
+     A  51                                  ERRMSG('Chassis-Nr. ungültig oder f-
+     A                                      ehlt!')
+     A                                 11  2'Amtl. Kennzeichen........'
+     A            G7107A        10A  O 11 28
+     A                                 13  2'Zulassungsdatum.Antrag...'
+     A            G7108A          L  B 13 28DATFMT(*EUR)
+     A                                      MAPVAL(('01.01.0001' *BLANK))
+     A                                      COLOR(WHT)
+     A                                 15  2'Reparatur Datum..........'
+     A            G7109A         8Y 0O 15 28EDTWRD('  .  .    ')
+     A  52                                  ERRMSG('Reparaturdatum ungültig!')
+     A                                 15 40'Kilometer'
+     A            G7110A         3Y 0B 15 50EDTWRD(' 0 ')
+     A                                      COLOR(WHT)
+     A  53                                  ERRMSG('Kilometerstand muß > 0 sein-
+     A                                      .')
+     A  54                                  ERRMSG('Wenn keine Chassis-Nr. eing-
+     A                                      egeben ist, muss Kilometerstand = 0-
+     A                                       sein.')
+     A  49                                  ERRMSG('Zulassungsdatum fehlt. Bitt-
+     A                                      e PDI melden.')
+     A                                 15 54'000'
+     A                                 16  2'Anhang...................'
+     A                                      DSPATR(ND)
+     A            G7112A         1A  B 16 28DSPATR(ND)
+     A                                      DSPATR(PR)
+     A                                      COLOR(WHT)
+     A                                 16 30'X'
+     A                                      COLOR(BLU)
+     A                                      DSPATR(ND)
+     A                                 17  2'Ausländer................'
+     A            G7113A         1A  O 17 28
+     A N64                             19  2'Minimumantrag............'
+     A N64        MINIMUM        1A  B 19 28
+     A  50                                  ERRMSG('Nur Produkt Typ 1=LKW/2=Bus-
+     A                                       möglich!')
+     A                                      VALUES('J' 'N')
+     A                                      COLOR(WHT)
+     A N64                             19 30'J=Ja, N=Nein'
+     A                                      COLOR(BLU)
+     A N64                             19 43'Betrag'
+     A N64        MINIMUM_W      9Y 2O 19 50EDTWRD('     0 ,  ')
+     A                                 22  2'F3=Verlassen'
+     A                                      COLOR(BLU)
+     A                                 22 16'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                 13 39'Zulassungsdatum Fahrzeugstamm'
+     A            G7108F          L  O 13 69DATFMT(*EUR)
+     A                                      MAPVAL(('01.01.0001' *BLANK))
+     A          R HS1212A8
+     A*%%TS  SD  20120410  091918  RMUELLER    REL-V6R1M0  5761-WDS
+     A                                      CA03(03 'Verlassen')
+     A                                      CA12(12 'Zurück')
+     A                                  1  2'HS1212A8'
+     A                                  1 12'SDPS Verwaltung Garantieanträge'
+     A                                      COLOR(WHT)
+     A                                  1 37'Anzeigen'
+     A                                      COLOR(WHT)
+     A                                  1 59USER
+     A                                      COLOR(BLU)
+     A                                  1 70SYSNAME
+     A                                      COLOR(BLU)
+     A                                  2 12'A N Z E I G E N'
+     A                                      COLOR(WHT)
+     A                                  2 28'Kopfdaten'
+     A                                      COLOR(WHT)
+     A            XXDAT          9Y 0O  2 69COLOR(BLU)
+     A                                      EDTWRD('0  .  .    ')
+     A                                  3 70TIME
+     A                                      COLOR(BLU)
+     A                                  4  2'Rechnung'
+     A            G7101P         5A  O  4 12
+     A                                  4 18'vom'
+     A            G7102D        10A  O  4 22
+     A                                  4 38'Auftrag'
+     A            G7103P         5A  O  4 46
+     A            G7104P         1A  O  4 52
+     A                                  5  2'Claim-Nr.'
+     A            G71050         8A  O  5 12
+     A                                  5 38'Status'
+     A            STATXT        20A  O  5 46
+     A                                  7  2'Produkt-Typ..............'
+     A            G7111A         1A  O  7 28
+     A                                  9  2'Chassis Nr. .............'
+     A            G7106A         7A  O  9 28
+     A                                 11  2'Amtl. Kennzeichen........'
+     A            G7107A        10A  O 11 28
+     A                                 13  2'Zulassungsdatum.Antrag...'
+     A            G7108A          L  O 13 28DATFMT(*EUR)
+     A                                      MAPVAL(('01.01.0001' *BLANK))
+     A                                 13 39'Zulassungsdatum Fahrzeugstamm'
+     A            G7108F          L  O 13 69DATFMT(*EUR)
+     A                                      MAPVAL(('01.01.0001' *BLANK))
+     A                                 15  2'Reparatur Datum..........'
+     A            G7109A         8Y 0O 15 28EDTWRD('  .  .    ')
+     A                                 15 40'Kilometer'
+     A            G7110A         3Y 0O 15 50EDTWRD(' 0 ')
+     A                                 15 54'000'
+     A                                 16  2'Anhang...................'
+     A                                      DSPATR(ND)
+     A            G7112A         1A  O 16 28DSPATR(ND)
+     A                                 17  2'Ausländer................'
+     A            G7113A         1A  O 17 28
+     A N64                             19  2'Minimumantrag............'
+     A N64        MINIMUM        1A  O 19 28
+     A N64                             19 30'J=Ja, N=Nein'
+     A                                      COLOR(BLU)
+     A N64                             19 43'Betrag'
+     A N64        MINIMUM_W      9Y 2O 19 50EDTWRD('     0 ,  ')
+     A                                 22  2'F3=Verlassen'
+     A                                      COLOR(BLU)
+     A                                 22 16'F12=Zurück'
+     A                                      COLOR(BLU)
+     A          R HS1212S4                  SFL
+     A*%%TS  SD  20000713  170737  HS_PGMRRM   REL-V4R4M0  5769-PW1
+     A            MARK4          2A  O  8  3
+     A            SUB060         2A  O  8  8
+     A            SUB070        16A  O  8 20
+     A            SUB080         2A  O  8 16
+     A            SUB100         2A  O  8 39
+     A            SUB110         2A  O  8 42
+     A            SUB140         2A  O  8 46
+     A            SUB150         2A  O  8 51
+     A            SUB17D        10A  O  8 59
+     A            SUB160         4Y 0O  8 54EDTWRD('  0 ')
+     A            SUB180         3Y 0O  8 70EDTWRD(' 0 ')
+     A            SUB190         3Y 0O  8 74EDTWRD(' 0 ')
+     A            SUB200         3Y 0O  8 78EDTWRD(' 0 ')
+     A            SUB240         1A  O  8 13
+     A          R HS1212C4                  SFLCTL(HS1212S4)
+     A*%%TS  SD  20000228  181649  HS_PGMRRM   REL-V4R4M0  5769-PW1
+     A                                      SFLSIZ(0013)
+     A                                      SFLPAG(0012)
+     A                                      CA12(12 'Zurück')
+     A                                      OVERLAY
+     A  90                                  SFLDSP
+     A  90                                  SFLDSPCTL
+     A  99                                  SFLDLT
+     A  95                                  SFLEND(*MORE)
+     A                                  3  2'Eingabetaste drücken, um Auswahl 4-
+     A                                      =Löschen zu bestätigen.'
+     A                                      COLOR(BLU)
+     A                                  4  2'Mit F12 zur vorherigen Anzeige zur-
+     A                                      ückkehren, um die Auswahl zu ändern-
+     A                                      .'
+     A                                      COLOR(BLU)
+     A                                  6  2'Aus-'
+     A                                      COLOR(WHT)
+     A                                  7  2'wahl'
+     A                                      COLOR(WHT)
+     A                                  7  8'Nr.'
+     A                                      COLOR(WHT)
+     A                                  6 15'Hpt.'
+     A                                      COLOR(WHT)
+     A                                  7 15'Grp.'
+     A                                      COLOR(WHT)
+     A                                  6 20'Fehler'
+     A                                      COLOR(WHT)
+     A                                  7 20'Teile-Nr.'
+     A                                      COLOR(WHT)
+     A                                  6  7'Fehl.'
+     A                                      COLOR(WHT)
+     A                                  6 37'Schad.'
+     A                                      COLOR(WHT)
+     A                                  7 38'Code'
+     A                                      COLOR(WHT)
+     A                                  6 44'Steuer'
+     A                                      COLOR(WHT)
+     A                                  7 45'Code'
+     A                                      COLOR(WHT)
+     A                                  6 52'Bewilligung'
+     A                                      COLOR(WHT)
+     A                                  7 52'Code'
+     A                                      COLOR(WHT)
+     A                                  7 59'Datum'
+     A                                      COLOR(WHT)
+     A                                  6 69'Vergütung'
+     A                                      COLOR(WHT)
+     A                                  7 69'Mat.Arb.Spe.'
+     A                                      COLOR(WHT)
+     A                                  1  3'HS1212C4'
+     A                                  1 12'SDPS Verwaltung Garantieanträge'
+     A                                      COLOR(WHT)
+     A                                  1 59USER
+     A                                      COLOR(BLU)
+     A                                  1 70SYSNAME
+     A                                      COLOR(BLU)
+     A            XXDAT          9Y 0O  2 69COLOR(BLU)
+     A                                      EDTWRD('0  .  .    ')
+     A                                  3 70TIME
+     A                                      COLOR(BLU)
+     A                                  2 12'L § S C H E N'
+     A                                      COLOR(WHT)
+     A                                  6 13'C'
+     A                                      COLOR(WHT)
+     A                                  7 13'T'
+     A                                      COLOR(WHT)
+     A          R HS121240
+     A*%%TS  SD  19980416  133913  MUELLERRAL  REL-V3R7M0  5716-PW1
+     A                                      OVERLAY
+     A                                 22  2'F12=Zurück'
+     A                                      COLOR(BLU)
+     A          R HS1212W5
+     A*%%TS  SD  20250812  110003  ELEIENDEC   REL-V7R5M0  5770-WDS
+     A                                      WINDOW(1 2 21 75)
+     A                                      CA12(12 'Zurück')
+     A                                      CF04(04 'Schadenstext')
+     A                                      OVERLAY
+     A                                  1  1'HS1212W5'
+     A                                  1 10'Anzeigen Garantie-Antrag'
+     A                                      COLOR(WHT)
+     A                                  1 37'Claim-Nr.'
+     A            G71050         8A  O  1 47
+     A            G7306A         2A  O  1 56
+     A            G73065         2A  O  1 59
+     A                                  1 62'Fg.Nr.'
+     A            G71060         7A  O  2  1
+     A                                  2 37'Rep.Datum'
+     A            G7109D        10A  O  2 47
+     A            G71100         3Y 0O  2 58EDTWRD(' 0 ')
+     A                                  2 62'tkm'
+     A                                  4  1'Claim-Typ'
+     A            G7324A         1A  O  4 11COLOR(WHT)
+     A                                  4 13'vor.Rep.Dat.'
+     A            G7325A         8Y 0O  4 26COLOR(WHT)
+     A                                      EDTCDE(Y)
+     A            G7326A         3Y 0O  4 37EDTWRD(' 0 ')
+     A                                      COLOR(WHT)
+     A                                  4 41'tkm'
+     A                                  4 45'Kampagne'
+     A            G7328A         8A  O  4 54
+     A                                  4 64'Feldt'
+     A            G7327A         6Y 0O  4 70COLOR(WHT)
+     A                                      EDTWRD('      ')
+     A                                  5  1'Schadens-'
+     A            G7312A        65A  O  5 11COLOR(WHT)
+     A                                  6  1'text'
+     A            G7313A        65A  O  6 11COLOR(WHT)
+     A            G7332A        65A  O  7 11COLOR(WHT)
+     A            G7333A        65A  O  8 11COLOR(WHT)
+     A                                  9  1'Steuercod'
+     A            G7314A         2A  O  9 11COLOR(WHT)
+     A            STEUER        30A  O  9 14
+     A                                  9 45'Mat.'
+     A            G7318A         3Y 0O  9 50EDTWRD(' 0 ')
+     A                                  9 54'%'
+     A                                  9 56'Arb.'
+     A            G7319A         3Y 0O  9 61EDTWRD(' 0 ')
+     A                                  9 65'Spe.'
+     A            G7320A         3Y 0O  9 70EDTWRD(' 0 ')
+     A                                  9 74'%'
+     A  42                             10  1'EPS   '
+     A  42        A_EPS         20A  O 10 11COLOR(WHT)
+     A  42        D_EPS         44A  O 10 32
+     A                                 11  1'Hauptgrp.'
+     A            G7308A         2A  O 11 11COLOR(WHT)
+     A            HGRP          30A  O 11 17
+     A                                 12  1'Teil'
+     A                                 12  1'Schad.Cod'
+     A                                      COLOR(BLU)
+     A            G7307A        18A  O 12 11COLOR(WHT)
+     A            TEIL          30A  O 12 30
+     A                                 13  1'Anhang'
+     A            G7335A         1A  O 13  1COLOR(WHT)
+     A                                 13  1'Y'
+     A                                      COLOR(BLU)
+     A                                 13  1'Ursache'
+     A                                 13  1'Schad.Cod'
+     A  42        A_C1           5A  O 13 11COLOR(WHT)
+     A            G7310A         2A  O 13 11COLOR(WHT)
+     A            G7311A         2A  O 13 14COLOR(WHT)
+     A  42        D_C1          59A  O 13 17
+     A N42        SCOD          50A  O 13 17
+     A  42                             14  1'Bereich '
+     A  42        A_C2           5A  O 14 11COLOR(WHT)
+     A  42        D_C2          59A  O 14 17
+     A  42                             15  1'Symptom'
+     A  42        A_C3           5A  O 15 11COLOR(WHT)
+     A  42        D_C3          59A  O 15 17
+     A  42                             16  1'Fehler '
+     A  42        A_C4           5A  O 16 11COLOR(WHT)
+     A  42        D_C4          59A  O 16 17
+     A  42                             17  1'Lokation'
+     A  42        A_C5           5A  O 17 11COLOR(WHT)
+     A  42        D_C5          59A  O 17 17
+     A  42                             18  1'Reparatur'
+     A  42        A_C6           5A  O 18 11COLOR(WHT)
+     A  42        D_C6          59A  O 18 17
+     A                                 20  1'F4=Schadenstext'
+     A                                      COLOR(BLU)
+     A                                 20 19'F12=Zurück'
+     A                                      COLOR(BLU)
+     A          R HS1212W6
+     A*%%TS  SD  20250812  110003  ELEIENDEC   REL-V7R5M0  5770-WDS
+     A                                      WINDOW(1 2 21 75)
+     A                                      OVERLAY
+     A                                      CA12(12 'Zurück')
+     A                                      CF04(04 'Bedienerführung')
+     A                                      RTNCSRLOC(&REC6 &FLD6 &POS6)
+     A            POS6           4S 0H
+     A            FLD6          10A  H
+     A            REC6          10A  H
+     A                                  1  1'HS1212W6'
+     A                                  1 10'Erstellen Garantie-Antrag'
+     A                                      COLOR(WHT)
+     A                                  1 37'Claim-Nr.'
+     A            G71050         8A  O  1 47
+     A            G7306A         2A  O  1 56
+     A            G73065         2A  O  1 59
+     A                                  1 62'Fg.Nr.'
+     A            G71060         7A  O  1 69
+     A                                  2 37'Rep.Datum'
+     A            G7109D        10A  O  2 47
+     A            G71100         3Y 0O  2 58EDTWRD(' 0 ')
+     A                                  2 62'tkm'
+     A                                  4  1'Claim-Typ'
+     A                                      COLOR(BLU)
+     A            G7324A         1A  B  4 11
+     A  41
+     AO 44                                  DSPATR(PR)
+     A                                      COLOR(WHT)
+     A  50                                  ERRMSG('Nur Claim Typ 1,2,4,6,8 ode-
+     A                                      r 9 zulässig!')
+     A                                  4 13'vor.Rep.Dat.'
+     A            G7325A         8Y 0B  4 26COLOR(WHT)
+     A                                      EDTMSK('  &  &    ')
+     A  41                                  DSPATR(PR)
+     A  31                                  DSPATR(PC)
+     A                                      EDTCDE(Y)
+     A  51                                  ERRMSG('Vorheriges Reparaturdatum u-
+     A                                      ngültig!')
+     A  52                                  ERRMSG('Bei Claim Typ 2,3 Rep.-Datu-
+     A                                      m und Kilometer zwingend anzugeben!-
+     A                                      ')
+     A  53                                  ERRMSG('Vorheriges Rep.-Datum oder -
+     A                                      Kilometer größer als Rep.-Datum Kil-
+     A                                      ometer!')
+     A            G7326A         3Y 0B  4 37EDTWRD(' 0 ')
+     A                                      COLOR(WHT)
+     A  41                                  DSPATR(PR)
+     A                                  4 41'tkm'
+     A                                  4 45'Kampagne'
+     A            G7328A         8A  O  4 54
+     A                                  4 64'Feldt'
+     A            G7327A         6Y 0B  4 70COLOR(WHT)
+     A  41                                  DSPATR(PR)
+     A                                  5  1'Schadens-'
+     A                                      COLOR(BLU)
+     A            G7312A        65A  B  5 11COLOR(WHT)
+     A  41                                  DSPATR(PR)
+     A                                      CHECK(LC)
+     A  54                                  ERRMSG('Es muß eine Beschreibung an-
+     A                                      gegeben werden!')
+     A  32                                  DSPATR(PC)
+     A                                  6  1'text'
+     A                                      COLOR(BLU)
+     A                                  6  6'[F4]'
+     A                                      COLOR(BLU)
+     A            G7313A        65A  B  6 11COLOR(WHT)
+     A  41                                  DSPATR(PR)
+     A                                      CHECK(LC)
+     A            G7332A        65A  B  7 11COLOR(WHT)
+     A  41                                  DSPATR(PR)
+     A                                      CHECK(LC)
+     A            G7333A        65A  B  8 11COLOR(WHT)
+     A  41                                  DSPATR(PR)
+     A                                      CHECK(LC)
+     A                                  9  1'Steuercod'
+     A                                      COLOR(BLU)
+     A            G7314A         2A  B  9 11COLOR(WHT)
+     A  33N41                               DSPATR(PC)
+     A  41                                  DSPATR(PR)
+     A  58                                  ERRMSG('Steuercode ungültig!')
+     A  59                                  ERRMSG('Steuercode ungültig, Chassi-
+     A                                      s besitzt keinen passenden Vertrag.-
+     A                                      ')
+     A  74                                  ERRMSG('Mischung von Steuercodes ni-
+     A                                      cht möglich. Bitte neuen Claim erst-
+     A                                      ellen.')
+     A  76                                  ERRMSG('Steuercode für alte Claims -
+     A                                      ungültig. Bitte neu erstellen.')
+     A  75                                  ERRMSG('Steuercode für diesen Auftr-
+     A                                      agssplitt ungültig oder kein gültig-
+     A                                      er Vertrag.')
+     A            STEUER        30A  O  9 14
+     A  41                              9 45'Mat.'
+     A  41        G7318A         3Y 0O  9 50EDTWRD(' 0 ')
+     A  41                              9 54'%'
+     A  41                              9 56'Arb.'
+     A  41        G7319A         3Y 0O  9 61EDTWRD(' 0 ')
+     A  41                              9 65'%'
+     A  41                              9 67'Sp.'
+     A  41        G7320A         3Y 0O  9 71EDTWRD(' 0 ')
+     A  41                              9 75'%'
+     A  41                             10  1'Hauptgrp.'
+     A                                      COLOR(BLU)
+     A  41        G7308A         2A  B 10 11
+     A  34                                  DSPATR(PC)
+     A                                      COLOR(WHT)
+     A  55                                  ERRMSG('Hauptgruppe ungültig oder f-
+     A                                      ehlt!')
+     A  41        HGRP          30A  O 10 17
+     A  41                             11  1'Teil'
+     A                                      COLOR(BLU)
+     A  41N42                          11  1'Schad.Cod'
+     A                                      COLOR(BLU)
+     A  41        G7307A        18A  B 11 11COLOR(WHT)
+     A  36                                  DSPATR(PC)
+     A  56                                  ERRMSG('Teile-Nr. ungültig!')
+     A  41        TEIL          30A  O 11 30
+     A  41 42N43                       12  1'EPS   '
+     A                                      COLOR(BLU)
+     A  41 42N43  A_EPS         20A  B 12 11DSPATR(PR)
+     A  63                                  ERRMSG('EPS für dieses Chassis ungü-
+     A                                      ltig (F4).')
+     A  41 42     D_EPS         44A  O 12 32
+     A  41                             12 66'Anhang'
+     A  41        G7335A         1A  B 12 73COLOR(WHT)
+     A  35                                  DSPATR(PC)
+     A                                      VALUES('Y' ' ')
+     A  41                             12 75'Y'
+     A                                      COLOR(BLU)
+     A  41 42                          13  1'Ursache'
+     A N46                                  COLOR(BLU)
+     A  41N42                          13  1'Schad.Cod'
+     A N42                                  COLOR(BLU)
+     A  41 42     A_C1           5A  B 13 11
+     A  46                                  DSPATR(PR)
+     A N46                                  COLOR(WHT)
+     A  37                                  DSPATR(PC)
+     A  66                                  ERRMSG('Code ungültig (F4).')
+     A  41N42     G7310A         2A  B 13 11COLOR(WHT)
+     A  57                                  ERRMSG('Schadenscode ungültig!')
+     A  37                                  DSPATR(PC)
+     A  41N42     G7311A         2A  B 13 14COLOR(WHT)
+     A  41 42     D_C1          59A  O 13 17
+     A  41N42     SCOD          50A  O 13 17
+     A  41 42                          14  1'Bereich '
+     A N46                                  COLOR(BLU)
+     A  41 42     A_C2           5A  B 14 11
+     A  38                                  DSPATR(PC)
+     A  46                                  DSPATR(PR)
+     A N46                                  COLOR(WHT)
+     A  67                                  ERRMSG('Code ungültig (F4).')
+     A  41 42     D_C2          59A  O 14 17
+     A  41 42                          15  1'Symptom'
+     A N46                                  COLOR(BLU)
+     A  41 42     A_C3           5A  B 15 11
+     A  39                                  DSPATR(PC)
+     A  46                                  DSPATR(PR)
+     A N46                                  COLOR(WHT)
+     A  68                                  ERRMSG('Code ungültig (F4).')
+     A  41 42     D_C3          59A  O 15 17
+     A  41 42                          16  1'Fehler '
+     A                                      COLOR(BLU)
+     A  41 42     A_C4           5A  B 16 11COLOR(WHT)
+     A  44                                  DSPATR(PC)
+     A  86                                  ERRMSG('Code ungültig (F4).')
+     A  41 42     D_C4          59A  O 16 17
+     A  41 42                          17  1'Lokation'
+     A                                      COLOR(BLU)
+     A  41 42     A_C5           5A  B 17 11COLOR(WHT)
+     A  45                                  DSPATR(PC)
+     A  87                                  ERRMSG('Code ungültig (F4).')
+     A  41 42     D_C5          59A  O 17 17
+     A  41 42                          18  1'Reparatur'
+     A                                      COLOR(BLU)
+     A  41 42     A_C6           5A  B 18 11COLOR(WHT)
+     A  47                                  DSPATR(PC)
+     A  88                                  ERRMSG('Code ungültig (F4).')
+     A  41 42     D_C6          59A  O 18 17
+     A                                 20  1'F4=Bedienerführung'
+     A                                      COLOR(BLU)
+     A                                 20 22'F12=Zurück'
+     A                                      COLOR(BLU)
+     A          R HS1212SA                  SFL
+     A*%%TS  SD  20110531  161945  RMUELLER    REL-V5R4M0  5722-WDS
+     A            MARKA          1A  B  8  3COLOR(WHT)
+     A            DATA          50A  O  8  7
+     A          R HS1212CA                  SFLCTL(HS1212SA)
+     A*%%TS  SD  20110624  133221  RMUELLER    REL-V5R4M0  5722-WDS
+     A                                      SFLSIZ(0008)
+     A                                      SFLPAG(0007)
+     A                                      WINDOW(HS1212WA)
+     A                                      CF11(11 'Anzeige')
+     A                                      CA12(12 'Zurück')
+     A                                      BLINK
+     A                                      OVERLAY
+     A  90                                  SFLDSP
+     A  90                                  SFLDSPCTL
+     A  99                                  SFLCLR
+     A  95                                  SFLEND(*MORE)
+     A                                  1  1'HS1212CA'
+     A                                  1 10'Bedienerführung'
+     A                                      COLOR(WHT)
+     A            DATTXT        20A  O  2 10COLOR(WHT)
+     A            DATTOP        50A  O  7  7COLOR(WHT)
+     A                                  7  2'Wahl'
+     A                                      COLOR(WHT)
+     A                                  4  1'Auswahl eingeben und Eingabetaste -
+     A                                      drücken.'
+     A                                      COLOR(BLU)
+     A                                  5  3'1=Auswählen'
+     A                                      COLOR(BLU)
+     A  43                              5 15'(1/2/3/4)= Zeilen-Nr.'
+     A                                      COLOR(BLU)
+     A          R HS1212WA
+     A*%%TS  SD  20110624  133221  RMUELLER    REL-V5R4M0  5722-WDS
+     A                                      WINDOW(4 9 17 58 *NOMSGLIN *NORSTCS-
+     A                                      R)
+     A                                      OVERLAY
+     A            F11TXT        25A  O 16  1COLOR(BLU)
+     A                                 16 28'F12=Zurück'
+     A                                      COLOR(BLU)
+     A          R HS1212W9
+     A*%%TS  SD  20020828  143456  MUELLERRAL  REL-V5R1M0  5722-WDS
+     A                                      WINDOW(5 2 7 75)
+     A                                      CA03(03 'Verlassen')
+     A                                      CA12(12 'Zurück')
+     A                                  1 31'Antrag abgelehnt'
+     A                                      COLOR(WHT)
+     A                                  3  2'Grund:'
+     A            MSG001        33A  O  3 22
+     A            MSG002        33A  O  4 22
+     A            MSG003        33A  O  5 22
+     A                                  6  2'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  1  2'HS1212W9'
+     A          R HS1212S2                  SFL
+     A*%%TS  SD  20110518  132211  RMUELLER    REL-V5R4M0  5722-WDS
+     A            AUSWAHL        1A  B 12  2COLOR(WHT)
+     A  61                                  DSPATR(ND)
+     A  61                                  DSPATR(PR)
+     A            SU1060         7A  O 12  6
+     A  61                                  DSPATR(ND)
+     A            SU1070        10A  O 12 14
+     A  61                                  DSPATR(ND)
+     A            SU3050         8A  O 12 25
+     A  61                                  DSPATR(ND)
+     A            SU3060         2A  O 12 34
+     A  61                                  DSPATR(ND)
+     A            SU1090        10A  O 12 37
+     A  61                                  DSPATR(ND)
+     A            SU3080         2A  O 12 48
+     A  61                                  DSPATR(ND)
+     A            SU3WERT        9Y 2O 12 51
+     A  61                                  DSPATR(ND)
+     A                                      EDTWRD('     0 ,  ')
+     A            SU3070        14A  O 12 62
+     A  61                                  DSPATR(ND)
+     A          R HS1212C2                  SFLCTL(HS1212S2)
+     A*%%TS  SD  20110518  132211  RMUELLER    REL-V5R4M0  5722-WDS
+     A                                      SFLSIZ(0008)
+     A                                      SFLPAG(0007)
+     A                                      WINDOW(HS1212W2)
+     A                                      CA12(12 'Zurück')
+     A                                      OVERLAY
+     A                                      SFLCSRRRN(&REC2)
+     A  90                                  SFLDSP
+     A  90                                  SFLDSPCTL
+     A  99                                  SFLCLR
+     A  91                                  SFLEND(*MORE)
+     A            REC2           5S 0H
+     A            PAG2           4S 0H      SFLRCDNBR(CURSOR)
+     A                                  1  1'HS1212W2'
+     A                                  1 10'Claim kopieren'
+     A                                      COLOR(WHT)
+     A                                  7  1'Eingabetaste drücken um den gewähl-
+     A                                      ten Claim zu kopieren.'
+     A                                      COLOR(BLU)
+     A                                  3  1'Kopieren von Claim-Nr.'
+     A            KOPIECNR       8A  B  3 24COLOR(WHT)
+     A  51                                  ERRMSG('Claim Nr./Fehler Nr. nicht -
+     A                                      vorhanden!')
+     A                                      CHECK(RZ)
+     A  61                                  DSPATR(PC)
+     A            KOPIEFNR       2A  B  3 33COLOR(WHT)
+     A                                      CHECK(RZ)
+     A                                  3 36'oder Suche über'
+     A                                  4  1'Kennzeichen'
+     A                                  4 25'Fahrgestell-Nr.'
+     A                                  5  1'Hauptgruppe'
+     A                                  5 25'Schad. Teil'
+     A                                  5 60'Schadenscode'
+     A                                 10  1'Aus-'
+     A                                      COLOR(WHT)
+     A                                 11  1'wahl'
+     A                                      COLOR(WHT)
+     A                                 11 25'Nr.'
+     A                                      COLOR(WHT)
+     A                                 11 37'Rep.-Datum'
+     A                                      COLOR(WHT)
+     A                                 10 48'Ha'
+     A                                      COLOR(WHT)
+     A                                 11 48'gr'
+     A                                      COLOR(WHT)
+     A                                 11 55'Betrag'
+     A                                      COLOR(WHT)
+     A                                 10 62'Fehler'
+     A                                      COLOR(WHT)
+     A                                 11 62'Teile-Nr.'
+     A                                      COLOR(WHT)
+     A                                 11  6'Fg.-Nr.'
+     A                                      COLOR(WHT)
+     A                                 11 14'Kennzeich.'
+     A                                      COLOR(WHT)
+     A            SUCHKZ        10A  B  4 14COLOR(WHT)
+     A            SUCHFG         7A  B  4 41COLOR(WHT)
+     A            SUCHHG         2A  B  5 14COLOR(WHT)
+     A            SUCHST        18A  B  5 41COLOR(WHT)
+     A            SUCHSC         2A  B  5 73COLOR(WHT)
+     A                                 10 25'Claim-'
+     A                                      COLOR(WHT)
+     A                                  8  2'1=Auswählen'
+     A                                      COLOR(BLU)
+     A          R HS1212W2
+     A*%%TS  SD  20020913  144642  MUELLERRAL  REL-V5R1M0  5722-WDS
+     A                                      CA12(12 'Zurück')
+     A                                      WINDOW(1 2 21 75)
+     A                                 20  2'F12=Zurück'
+     A                                      COLOR(BLU)
+     A          R HS1212WK
+     A*%%TS  SD  20250812  110003  ELEIENDEC   REL-V7R5M0  5770-WDS
+     A                                      WINDOW(1 2 21 75)
+     A                                      CA12(12 'Zurück')
+     A                                  1  1'HS1212WK'
+     A N25                              1 11'Erstellen Kampagnen-Antrag'
+     A                                      COLOR(WHT)
+     A  25                              1 11'Anzeigen Kampagnen-Antrag'
+     A                                      COLOR(WHT)
+     A                                 16  1'Claim-Nr.'
+     A            G71050         8A  O 16 11
+     A                                 11  1'Chassis'
+     A            G71060         7A  O 11 11
+     A                                 13  1'Rep.Datum'
+     A            G7109D        10A  O 13 11
+     A                                 14  1'Kilometer'
+     A            G71100         3Y 0O 14 11
+     A                                 17  1'Fehler'
+     A            G7306A         2A  O 17 11
+     A                                  3  1'Kampagne'
+     A            G7328A         8A  O  3 11
+     A                                  5  1'Text'
+     A            G7312A        65A  O  5 11
+     A            G7313A        65A  O  6 11
+     A            G7332A        65A  O  7 11
+     A                                 20  2'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  8  1'Variante'
+     A                                  9  1'Action'
+     A            G7330A         2Y 0O  8 11
+     A            G7331A         2Y 0O  9 11
+     A N25                             20 15'Datenfreigabe um die Kampagne anzu-
+     A                                      legen'
+     A                                      COLOR(BLU)
+     A                                 14 15'tkm'
+     A          R HS1212WM
+     A*%%TS  SD  20020902  142634  MUELLERRAL  REL-V5R1M0  5722-WDS
+     A                                      WINDOW(5 2 9 75)
+     A                                      CA03(03 'Verlassen')
+     A                                      CA12(12 'Zurück')
+     A                                  8  2'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  1  2'HS1212WM'
+     A                                  1 11'Erstellen'
+     A                                      COLOR(WHT)
+     A                                  3  2'Erstellen nicht möglich, da keine -
+     A                                      freie Folgenummer vorhanden.'
+     A          R HS1212WN
+     A*%%TS  SD  20020913  144642  MUELLERRAL  REL-V5R1M0  5722-WDS
+     A                                      CA03(03 'Verlassen')
+     A                                      CA12(12 'Zurück')
+     A                                      WINDOW(5 2 9 75)
+     A                                  8  2'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  1  2'HS1212WN'
+     A                                  1 11'Erstellen'
+     A                                      COLOR(WHT)
+     A                                  3  2'Erstellen nicht möglich, da bereit-
+     A                                      s 9 Fehler existieren.      '
+     A                                  4  2'Für weitere Fehler muss ein neuer -
+     A                                      Claim erstellt werden.'
+     A                                  6  2'Eingabetaste drücken um einen neue-
+     A                                      n Claim zu erstellen.'
+     A                                      COLOR(BLU)
+     A          R HS1212WO
+     A*%%TS  SD  20020903  091440  MUELLERRAL  REL-V5R1M0  5722-WDS
+     A                                      WINDOW(5 2 9 75)
+     A                                      CA03(03 'Verlassen')
+     A                                      CA12(12 'Zurück')
+     A                                  8  2'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  1  2'HS1212WO'
+     A                                  1 11'Erstellen'
+     A                                      COLOR(WHT)
+     A                                  6  2'Eingabetaste drücken um einen neue-
+     A                                      n Claim zu erstellen.'
+     A                                      COLOR(BLU)
+     A                                  3  2'Welche Positionen sollen auf den n-
+     A                                      euen Claim übernommen werden?'
+     A            WELCHE         1   B  3 66COLOR(WHT)
+     A                                      VALUES('A' 'N')
+     A                                  3 68'(A/N)'
+     A                                      COLOR(BLU)
+     A                                  4  2'A=Alle Positionen/N=Nur nicht über-
+     A                                      nommene Positionen'
+     A                                      COLOR(BLU)
+     A          R HS1212WP
+     A*%%TS  SD  20060810  163336  MUELLERRAL  REL-V5R3M0  5722-WDS
+     A                                      WINDOW(4 2 13 75)
+     A                                      CA03(03 'Verlassen')
+     A                                      CA12(12 'Zurück')
+     A                                 12  2'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  1  2'HS1212WP'
+     A                                  1 11'Model Claim'
+     A                                      COLOR(WHT)
+     A                                  3  2'Der Antrag erfüllt die Vorraussetz-
+     A                                      ungen eines Model Claims.'
+     A                                      COLOR(BLU)
+     A            RSD1MA        60A  O  7  9COLOR(WHT)
+     A            RSD2MA        60A  O  8  9COLOR(WHT)
+     A            RSD3MA        60A  O  9  9COLOR(WHT)
+     A            RSD4MA        60A  O 10  9COLOR(WHT)
+     A                                  5  2'Wollen sie jetzt einen Model Claim-
+     A                                       erstellen?'
+     A            FRAGE_MC       1   B  5 48COLOR(WHT)
+     A                                  5 50'J=Ja, N=Nein'
+     A                                      COLOR(BLU)
+     A          R HS1212WZ
+     A*%%TS  SD  20080806  140916  MUELLERRAL  REL-V5R4M0  5722-WDS
+     A                                      WINDOW(5 2 9 75)
+     A                                      CA03(03 'Verlassen')
+     A                                      CA12(12 'Zurück')
+     A                                  8  2'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  1  2'HS1212WZ'
+     A                                  1 11'Folgeantrag erstellen'
+     A                                      COLOR(WHT)
+     A                                  3  2'Ein Folgeantrag kann nur innerhalb-
+     A                                       von'
+     A            TAGE           5Y 0O  3 41EDTWRD('   0 ')
+     A                                  3 47'Tagen nach Erstellung der'
+     A                                  4  2'Gutschrift erfolgen.'
+     A                                  5  2'Die Gutschrift wurde am'
+     A            VGLDAT1         L  O  5 26DATFMT(*EUR)
+     A                                  5 37'erstellt.'
+     A          R HS1212WW
+     A*%%TS  SD  20140321  155216  RMUELLER    REL-V6R1M0  5761-WDS
+     A                                      CA03(03 'Verlassen')
+     A  69                                  CF11(11 'Zweite Seite')
+     A                                      CA12(12 'Zurück')
+     A                                      OVERLAY
+     A                                      WINDOW(4 2 16 75)
+     A                                  1  1'HS1212WW'
+     A                                  1 10'Statusabfrage Claim'
+     A                                      COLOR(WHT)
+     A                                  3  1'Ergebnis.'
+     A                                      COLOR(WHT)
+     A            RESTXT       128A  B  3 12CHGINPDFT
+     A                                      CNTFLD(064)
+     A                                      WRDWRAP
+     A                                      DSPATR(PC)
+     A                                  5  1'Fehler...'
+     A                                      COLOR(WHT)
+     A            FLTTXT       128A  B  5 12CHGINPDFT
+     A                                      CNTFLD(064)
+     A                                      WRDWRAP
+     A                                      DSPATR(PC)
+     A                                  9  1'Erklärung'
+     A                                      COLOR(WHT)
+     A            RPYTXT       128A  B  7 12CHGINPDFT
+     A                                      CNTFLD(064)
+     A                                      WRDWRAP
+     A                                      DSPATR(PC)
+     A                                  7  1'Antwort..'
+     A                                      COLOR(WHT)
+     A            EXPTXT       256A  B  9 12CHGINPDFT
+     A                                      CNTFLD(064)
+     A                                      WRDWRAP
+     A                                      DSPATR(PC)
+     A                                 13  1'Beantragt'
+     A                                      COLOR(WHT)
+     A            CLAIMREQ       9Y 2O 13 12EDTWRD('     0 ,  ')
+     A                                 13 24'Vergütet'
+     A                                      COLOR(WHT)
+     A            CLAIMCMP       9Y 2O 13 33EDTWRD('     0 ,  ')
+     A            MIAINF        32A  O 13 44COLOR(RED)
+     A N69                             15  1'F12=Zurück'
+     A                                      COLOR(BLU)
+     A  69                             15  1'F11=Kommentar Bearbeiter'
+     A                                      COLOR(BLU)
+     A  69                             15 28'F12=Zurück'
+     A                                      COLOR(BLU)
+     A          R HS1212WD
+     A*%%TS  SD  20140321  155216  RMUELLER    REL-V6R1M0  5761-WDS
+     A                                      CA03(03 'Verlassen')
+     A                                      CF11(11 'Zweite Seite')
+     A                                      CA12(12 'Zurück')
+     A                                      OVERLAY
+     A                                      WINDOW(4 2 16 75)
+     A                                 15 28'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  1  1'HS1212WD'
+     A                                  1 10'Statusabfrage Claim'
+     A                                      COLOR(WHT)
+     A                                  3  1'Kommentar'
+     A                                      COLOR(WHT)
+     A            REPTXT       640A  B  3 12CHGINPDFT
+     A                                      CNTFLD(064)
+     A                                      WRDWRAP
+     A                                      DSPATR(PC)
+     A  69                             15  1'F11=Zurück zum Ergebnis'
+     A                                      COLOR(BLU)
+     A          R HS1212ST                  SFL
+     A*%%TS  SD  20220901  075719  RMUELLER    REL-V7R3M0  5770-WDS
+     A            TEXT          65A  B  5  3CHECK(LC)
+     A  78                                  DSPATR(PR)
+     A  78                                  COLOR(GRN)
+     A N78                                  COLOR(WHT)
+     A          R HS1212CT                  SFLCTL(HS1212ST)
+     A*%%TS  SD  20220706  110300  RMUELLER    REL-V7R3M0  5770-WDS
+     A                                      CF04(04 'Auftragstext')
+     A                                      CF10(10 'Komplett')
+     A                                      CA12(12 'Zurück')
+     A                                      BLINK
+     A                                      OVERLAY
+     A  90                                  SFLDSP
+     A  90                                  SFLDSPCTL
+     A  99                                  SFLCLR
+     A  95                                  SFLEND(*MORE)
+     A                                      SFLSIZ(0099)
+     A                                      SFLPAG(0010)
+     A                                      WINDOW(HS1212WT)
+     A                                      RTNCSRLOC(&RECT &FLDT &POST)
+     A            POST           4S 0H
+     A            FLDT          10A  H
+     A            RECT          10A  H
+     A                                  1  1'HS1212CT'
+     A                                  1 10'Schadenstext bearbeiten'
+     A                                      COLOR(WHT)
+     A                                  3  2'Auswahl eingeben und Eingabetaste -
+     A                                      drücken.'
+     A                                      COLOR(BLU)
+     A          R HS1212WT
+     A*%%TS  SD  20220901  074644  RMUELLER    REL-V7R3M0  5770-WDS
+     A                                      WINDOW(4 4 17 70 *NOMSGLIN *NORSTCS-
+     A                                      R)
+     A                                      OVERLAY
+     A N78                             16 58'F12=Zurück'
+     A                                      COLOR(BLU)
+     A N78                             16  1'F4=Auftragstext übernehmen'
+     A                                      COLOR(BLU)
+     A N78                             16 30'F10=Auftragstext komplett'
+     A                                      COLOR(BLU)
+     A  78                             16  1'F12=Zurück'
+     A                                      COLOR(BLU)

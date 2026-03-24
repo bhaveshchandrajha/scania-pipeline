@@ -1,0 +1,323 @@
+{
+  "astNode": {
+    "id": "n1983",
+    "kind": "Procedure",
+    "name": "CheckV4",
+    "sem": "{}",
+    "outgoingEdges": [],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1210",
+      "startLine": 3035,
+      "startColumn": 7,
+      "endLine": 3058,
+      "endColumn": 24
+    }
+  },
+  "narrative": "### Node n1983: Procedure `CheckV4`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Raw sem JSON**:\n```json\n{}\n```",
+  "rpgSnippet": "     P CheckV4         B\n     D CheckV4         PI              N\n     D*****************************************************************\nRM#8   Monitor;\nRM#8      If %Subst(G71200:8:2) = 'V4';\n             Return *Off;\n          EndIf;\nRM#8      Chain (G71000:G71010:G71020:' ':\nRM#8             G71030:G71040:G71190:%Subst(G71200:8:2)) HSAHKPF;\nRM#8      If %Found(HSAHKPF);\nRM#8         SetLl (AHK000:AHK040:AHK050:AHK060:'V4') HSEPAF;\nRM#8         ReadE (AHK000:AHK040:AHK050:AHK060:'V4') HSEPAF;\nRM#8         DoW Not %EoF(HSEPAF);\nRM#8            If EPA_DATV = AHK080;\nRM#8               return *On;\nRM#8            EndIf;\nRM#8            ReadE (AHK000:AHK040:AHK050:AHK060:'V4') HSEPAF;\nRM#8         EndDo;\nRM#8      EndIf;\nRM#8   On-Error *All;\nRM#8\nRM#8   EndMon;\n       Return *Off;\n     P                 E",
+  "dbContracts": [],
+  "symbolMetadata": {},
+  "callGraph": {
+    "calls": [],
+    "calledBy": [
+      "n404"
+    ],
+    "tableAccess": {
+      "HSAHKPF": [
+        {
+          "nodeId": "n1991",
+          "opcode": "CHAIN",
+          "line": 3042
+        }
+      ],
+      "HSEPAF": [
+        {
+          "nodeId": "n1996",
+          "opcode": "SETLL",
+          "line": 3045
+        }
+      ]
+    }
+  },
+  "statementNodes": [
+    {
+      "id": "n1984",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 3037,
+      "endLine": 3037
+    },
+    {
+      "id": "n1985",
+      "kind": "Monitor",
+      "opcode": "MONITOR",
+      "startLine": 3038,
+      "endLine": 3056
+    },
+    {
+      "id": "n2008",
+      "kind": "Return",
+      "opcode": "RETURN",
+      "startLine": 3057,
+      "endLine": 3057
+    },
+    {
+      "id": "n1986",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 3039,
+      "endLine": 3041
+    },
+    {
+      "id": "n1991",
+      "kind": "Chain",
+      "opcode": "CHAIN",
+      "startLine": 3042,
+      "endLine": 3043,
+      "target": "HSAHKPF",
+      "symbols": [
+        "sym.file.HSAHKPF",
+        "sym.var.3044"
+      ]
+    },
+    {
+      "id": "n1993",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 3044,
+      "endLine": 3053,
+      "symbols": [
+        "sym.file.HSEPAF",
+        "sym.var.AHK040",
+        "sym.var.AHK050",
+        "sym.var.AHK060",
+        "sym.var.AHK000",
+        "sym.var.3048"
+      ]
+    },
+    {
+      "id": "n2006",
+      "kind": "OnError",
+      "opcode": "ONERROR",
+      "startLine": 3054,
+      "endLine": 3054
+    },
+    {
+      "id": "n2007",
+      "kind": "EndMon",
+      "opcode": null,
+      "startLine": 3056,
+      "endLine": 3056
+    },
+    {
+      "id": "n1987",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3039,
+      "endLine": 3039
+    },
+    {
+      "id": "n1989",
+      "kind": "Return",
+      "opcode": "RETURN",
+      "startLine": 3040,
+      "endLine": 3040
+    },
+    {
+      "id": "n1990",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 3041,
+      "endLine": 3041
+    },
+    {
+      "id": "n1992",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 3043,
+      "endLine": 3043
+    },
+    {
+      "id": "n1994",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3044,
+      "endLine": 3044
+    },
+    {
+      "id": "n1996",
+      "kind": "SetLL",
+      "opcode": "SETLL",
+      "startLine": 3045,
+      "endLine": 3045,
+      "target": "HSEPAF",
+      "symbols": [
+        "sym.file.HSEPAF",
+        "sym.var.AHK040",
+        "sym.var.AHK050",
+        "sym.var.AHK060",
+        "sym.var.AHK000",
+        "sym.var.3047"
+      ]
+    },
+    {
+      "id": "n1997",
+      "kind": "DoW",
+      "opcode": "DOW",
+      "startLine": 3047,
+      "endLine": 3052,
+      "symbols": [
+        "sym.file.HSEPAF",
+        "sym.var.AHK040",
+        "sym.var.AHK050",
+        "sym.var.AHK060",
+        "sym.var.AHK000",
+        "sym.var.3053"
+      ]
+    },
+    {
+      "id": "n2005",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 3053,
+      "endLine": 3053
+    },
+    {
+      "id": "n1988",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 3039,
+      "endLine": 3039
+    },
+    {
+      "id": "n1995",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 3044,
+      "endLine": 3044
+    },
+    {
+      "id": "n1998",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3047,
+      "endLine": 3047
+    },
+    {
+      "id": "n2000",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 3048,
+      "endLine": 3050
+    },
+    {
+      "id": "n2004",
+      "kind": "EndDo",
+      "opcode": null,
+      "startLine": 3052,
+      "endLine": 3052
+    },
+    {
+      "id": "n1999",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 3047,
+      "endLine": 3047
+    },
+    {
+      "id": "n2001",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3048,
+      "endLine": 3048,
+      "symbols": [
+        "sym.var.EPA_DATV"
+      ]
+    },
+    {
+      "id": "n2002",
+      "kind": "Return",
+      "opcode": "RETURN",
+      "startLine": 3049,
+      "endLine": 3049
+    },
+    {
+      "id": "n2003",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 3050,
+      "endLine": 3050
+    }
+  ],
+  "lineToNodeMap": {
+    "3037": [
+      "n1984"
+    ],
+    "3038-3056": [
+      "n1985"
+    ],
+    "3057": [
+      "n2008"
+    ],
+    "3039-3041": [
+      "n1986"
+    ],
+    "3042-3043": [
+      "n1991"
+    ],
+    "3044-3053": [
+      "n1993"
+    ],
+    "3054": [
+      "n2006"
+    ],
+    "3056": [
+      "n2007"
+    ],
+    "3039": [
+      "n1987",
+      "n1988"
+    ],
+    "3040": [
+      "n1989"
+    ],
+    "3041": [
+      "n1990"
+    ],
+    "3043": [
+      "n1992"
+    ],
+    "3044": [
+      "n1994",
+      "n1995"
+    ],
+    "3045": [
+      "n1996"
+    ],
+    "3047-3052": [
+      "n1997"
+    ],
+    "3053": [
+      "n2005"
+    ],
+    "3047": [
+      "n1998",
+      "n1999"
+    ],
+    "3048-3050": [
+      "n2000"
+    ],
+    "3052": [
+      "n2004"
+    ],
+    "3048": [
+      "n2001"
+    ],
+    "3049": [
+      "n2002"
+    ],
+    "3050": [
+      "n2003"
+    ]
+  }
+}

@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <script>window.APP_PORT='__APP_PORT__';</script>
+  <title>Global Context / Knowledge Graph Builder</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #020617;
+      color: #e5e7eb;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: #0b1120;
+      border-bottom: 1px solid #1f2937;
+    }
+    header h1 {
+      font-size: 18px;
+      margin: 0;
+    }
+    header span {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+    .container {
+      max-width: 960px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+    .card {
+      background: #020617;
+      border-radius: 8px;
+      padding: 16px 20px;
+      border: 1px solid #1f2937;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    }
+    .card h2 {
+      margin-top: 0;
+      margin-bottom: 4px;
+      font-size: 16px;
+    }
+    .card p {
+      margin-top: 4px;
+      margin-bottom: 8px;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+    label {
+      font-size: 12px;
+      color: #d1d5db;
+      display: inline-block;
+      width: 120px;
+    }
+    input, select {
+      background: #020617;
+      color: #e5e7eb;
+      border: 1px solid #374151;
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-size: 12px;
+    }
+    button.primary {
+      background: #3b82f6;
+      color: white;
+      border: 1px solid #2563eb;
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    button.primary:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+    .status {
+      margin-top: 8px;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+    .status.info {
+      background: #111827;
+      border: 1px solid #1f2937;
+      color: #e5e7eb;
+    }
+    .status.success {
+      background: #022c22;
+      border: 1px solid #047857;
+      color: #bbf7d0;
+    }
+    .status.error {
+      background: #450a0a;
+      border: 1px solid #b91c1c;
+      color: #fecaca;
+    }
+    pre {
+      margin-top: 10px;
+      padding: 10px;
+      background: #020617;
+      border-radius: 4px;
+      border: 1px solid #1f2937;
+      font-size: 11px;
+      max-height: 280px;
+      overflow: auto;
+    }
+    .file-tree {
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      line-height: 1.6;
+      padding: 12px;
+      background: #020617;
+      border: 1px solid #1f2937;
+      border-radius: 6px;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+    .file-tree .file {
+      color: #60a5fa;
+    }
+    .file-tree .dir {
+      color: #fbbf24;
+      font-weight: bold;
+    }
+    #val-java-preview.val-java-code {
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 11px;
+      line-height: 1.4;
+      padding: 8px;
+      white-space: pre;
+    }
+    #val-java-preview .val-java-line {
+      font-family: inherit;
+    }
+    #val-java-preview .val-java-origin {
+      cursor: pointer;
+    }
+    #val-java-preview .val-java-origin:hover {
+      background: rgba(59, 130, 246, 0.15);
+    }
+  </style>
+</head>
+<body>
+  <div id="fetch-error-banner" style="display:none; background:#7f1d1d; color:#fecaca; padding:10px 20px; font-size:13px;">
+    <div style="text-align:center;">
+      <strong>Failed to connect.</strong> Page: <code id="diag-origin"></code> → API: <code id="diag-api"></code>
+      <br>Ensure <code>python3 ui_global_context_server.py</code> is running. Open
+      <a href="http://127.0.0.1:8003/" target="_blank" style="color:#fef08a; font-weight:bold;">http://127.0.0.1:8003/</a>
+      and verify the URL bar shows exactly that.
+    </div>
+    <div id="diag-detail" style="margin-top:8px; font-size:11px; font-family:monospace;"></div>
+  </div>
+  <header>
+    <div>
+      <h1>Global Context / Knowledge Graph Builder</h1>
+      <span>Build DB registry, program-level context, and call graph from AST + RPG.</span>
+    </div>
+    <span style="font-size: 10px; color: #9ca3af;">
+      Backend: /api/build-global-context
+      <span id="server-hint" style="margin-left:8px;"></span>
+    </span>
+  </header>
+
+  <div class="container">
+    <div class="tabs" style="display: flex; gap: 8px; margin-bottom: 12px;">
+      <div class="tab active" data-tab="step1" style="padding: 6px 10px; cursor: pointer; font-size: 12px; border-radius: 4px; background: #111827; border: 1px solid #1f2937;">1. Build Global Context</div>
+      <div class="tab" data-tab="step2" style="padding: 6px 10px; cursor: pointer; font-size: 12px; border-radius: 4px; background: #020617; border: 1px solid #1f2937; color: #9ca3af;">2. Migrate Feature</div>
+      <div class="tab" data-tab="step3" style="padding: 6px 10px; cursor: pointer; font-size: 12px; border-radius: 4px; background: #020617; border: 1px solid #1f2937; color: #9ca3af;">3. Validation</div>
+      <div class="tab" data-tab="step4" style="padding: 6px 10px; cursor: pointer; font-size: 12px; border-radius: 4px; background: #020617; border: 1px solid #1f2937; color: #9ca3af;">4. Build Application</div>
+      <div class="tab" data-tab="step5" style="padding: 6px 10px; cursor: pointer; font-size: 12px; border-radius: 4px; background: #020617; border: 1px solid #1f2937; color: #9ca3af;">5. Run & Demo</div>
+    </div>
+
+    <div id="tab-step1" class="tab-content" style="display: block;">
+      <div class="card">
+        <h2>1. Inputs & Global Context</h2>
+      <p>Point to your AST directory (with *-ast.json files) and the RPG root directory (e.g. extracted PoC_HS1210).
+         Then click <strong>Build Global Context</strong>. Neo4j Cypher export is written to <code>global_context/neo4j_export.cypher</code>.</p>
+
+        <div style="margin-bottom: 8px;">
+          <label>AST Directory:</label>
+          <select id="ast-dir" style="width: 320px;"></select>
+        </div>
+        <div style="margin-bottom: 8px;">
+          <label>RPG Directory:</label>
+          <input type="text" id="rpg-dir" style="width: 340px;" placeholder="/Users/you/Downloads/PoC_HS1210">
+        </div>
+        <div style="margin-bottom: 8px;">
+          <button class="primary" id="discover-btn">🔍 Discover Directories</button>
+          <button class="primary" id="build-btn">Build Global Context</button>
+        </div>
+
+        <div id="status"></div>
+        <pre id="output" style="display: none; white-space: pre-wrap; overflow-wrap: break-word; max-width: 100%; max-height: 400px; overflow: auto; padding: 10px; background: #111827; border: 1px solid #1f2937; border-radius: 6px; font-size: 12px; line-height: 1.4;"></pre>
+      </div>
+    </div>
+
+    <div id="tab-step2" class="tab-content" style="display: none;">
+      <div class="card">
+        <h2>2. Migrate Feature</h2>
+        <p>Code generation only. Select a program and entry point, then generate Java from RPG. Also generates <code>ui-schemas/&lt;ScreenId&gt;.json</code> from display files (function keys, columns). Focus: correctness, DB mapping, logic mapping. <strong>Build/compile errors are fixed in tab 4.</strong></p>
+        <div style="margin-bottom: 8px;">
+          <label>Program:</label>
+          <select id="mf-program" style="width: 220px;"></select>
+        </div>
+        <div style="margin-bottom: 8px;">
+          <label>Feature:</label>
+          <select id="mf-node" style="width: 320px;"></select>
+        </div>
+        <div id="mf-opus-status" style="margin-bottom: 8px; font-size: 11px; color: #9ca3af;"></div>
+        <div style="margin-bottom: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="primary" id="mf-refresh-btn">Refresh Feature List</button>
+          <button class="primary" id="mf-run-btn">Migrate Feature</button>
+          <button id="mf-regen-ui-btn" style="background: #374151; border: 1px solid #4b5563; color: #e5e7eb; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;" title="Regenerate ui-schemas from display files (no LLM)">Regenerate UI Schema</button>
+        </div>
+        <div id="mf-status"></div>
+        <pre id="mf-output" style="display: none; white-space: pre-wrap; overflow-wrap: break-word; max-width: 100%; max-height: 400px; overflow: auto; padding: 10px; background: #111827; border: 1px solid #1f2937; border-radius: 6px; font-size: 12px; line-height: 1.4;"></pre>
+      </div>
+    </div>
+
+    <div id="tab-step3" class="tab-content" style="display: none;">
+      <div class="card">
+        <h2>3. Validation</h2>
+        <p>Review generated code and validation results for client review. Run validation after migrating a feature.</p>
+        <div style="margin-bottom: 8px; display: flex; gap: 8px; align-items: center;">
+          <label>Project:</label>
+          <input type="text" id="val-project-dir" style="width: 180px;" value="warranty_demo" readonly>
+          <label style="width:auto;">Program:</label>
+          <select id="val-program" style="width: 120px;"></select>
+          <label style="width:auto;">Feature:</label>
+          <select id="val-node" style="width: 200px;"></select>
+          <button class="primary" id="val-run-btn">Run Validation</button>
+          <button class="primary" id="val-push-btn" style="background: #059669; border-color: #047857; display: none;">Push to Repository</button>
+        </div>
+        <div id="val-status"></div>
+        <div id="val-push-status" style="display: none; margin-top: 8px;"></div>
+        <div id="val-results" style="display: none; margin-top: 12px;">
+          <h4 style="margin: 0 0 8px 0; font-size: 13px;">Validation Results</h4>
+          <div id="val-metrics" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;"></div>
+          <h4 style="margin: 12px 0 8px 0; font-size: 12px; color: #9ca3af;">Validation Details</h4>
+          <div id="val-details" style="margin-bottom: 16px;"></div>
+          <h4 style="margin: 12px 0 8px 0; font-size: 13px;">Java → RPG Traceability</h4>
+          <p style="font-size: 11px; color: #9ca3af; margin: 0 0 8px 0;">Select a Java file, then hover over a line with <code>@origin</code> or <code>@rpg-trace</code> to preview the source RPG block.</p>
+          <div style="display: flex; gap: 12px; align-items: stretch; margin-bottom: 12px;">
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 11px; color: #9ca3af; margin-bottom: 4px;">Java (hover line to view RPG)</div>
+              <select id="val-file-select" style="width: 100%; margin-bottom: 4px; font-size: 11px;"></select>
+              <div id="val-java-preview" style="max-height: 280px; font-size: 11px; overflow: auto; cursor: default; font-family: monospace; white-space: pre-wrap; padding: 8px; background: #020617; border: 1px solid #1f2937; border-radius: 4px;"></div>
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 11px; color: #9ca3af; margin-bottom: 4px;">RPG source (on hover)</div>
+              <div id="val-rpg-preview" style="max-height: 280px; font-size: 12px; overflow: auto; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; font-family: monospace; color: #e2e8f0; min-height: 200px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-step4" class="tab-content" style="display: none;">
+      <div class="card">
+        <h2>4. Build Application</h2>
+        <p>Compile and fix build errors. Runs Maven with an LLM-based autofix loop (up to 4 passes) to resolve compilation errors. Run after migrating features in tab 2. When build succeeds, use <strong>Push to Repository</strong> to push the generated code to <code>scania-java-v2</code> — GitHub Actions will run tests on the pushed code.</p>
+        <div id="build-context" style="margin-bottom: 12px; padding: 10px 12px; background: #111827; border: 1px solid #1f2937; border-radius: 6px; font-size: 11px;">
+          <div style="color: #9ca3af;">Loading build context…</div>
+        </div>
+        <div style="margin-bottom: 8px;">
+          <label>Project Directory:</label>
+          <input type="text" id="build-project-dir" style="width: 260px;" value="warranty_demo" readonly>
+        </div>
+        <div style="margin-bottom: 8px; display: flex; gap: 8px; align-items: center;">
+          <button class="primary" id="build-app-btn">Build Application</button>
+          <button class="primary" id="build-push-code-btn" style="background: #059669; border-color: #047857; display: none;">Push to Repository</button>
+        </div>
+        <div id="build-push-code-status" style="display: none; margin-top: 8px;"></div>
+        <div id="build-status"></div>
+        <pre id="build-output" style="display: none; white-space: pre-wrap; overflow-wrap: break-word; max-width: 100%; max-height: 400px; overflow: auto; padding: 10px; background: #111827; border: 1px solid #1f2937; border-radius: 6px; font-size: 12px; line-height: 1.4;"></pre>
+        <div id="build-success-link" style="display: none; margin-top: 12px;">
+          <a href="#" id="go-to-demo-from-build" style="color: #34d399; font-size: 13px;">✓ Build succeeded → Open Migrated Demo (Tab 5)</a>
+        </div>
+        <div id="hitl-section" style="margin-top: 16px; padding: 16px; background: #0f172a; border: 1px solid #334155; border-radius: 8px;">
+          <h4 style="margin: 0 0 8px 0; font-size: 14px; color: #e2e8f0;">Human-in-the-Loop (HITL)</h4>
+          <p id="hitl-info" style="margin: 0 0 12px 0; font-size: 11px; color: #94a3b8;">When a build fails, the LLM proposes fixes. This panel shows the exact changes (before/after diff) for each file. Review the proposed fixes, then click <strong>Apply All</strong> to accept. You can apply again if the build still fails after the first or second attempt. Click <strong>Reject</strong> to discard.</p>
+          <div id="hitl-panel" style="display: none;">
+            <p id="hitl-summary" style="margin: 0 0 12px 0; font-size: 12px; color: #94a3b8;"></p>
+            <div id="hitl-files" style="margin-bottom: 12px; font-size: 11px; color: #94a3b8;"></div>
+            <div style="display: flex; gap: 8px;">
+              <button id="hitl-apply-btn" class="primary" style="background: #059669; border-color: #047857;">Apply All</button>
+              <button id="hitl-reject-btn" style="background: #374151; border: 1px solid #4b5563; color: #e5e7eb; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">Reject</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-step5" class="tab-content" style="display: none;">
+      <div class="card">
+        <h2>5. Run & Demo — Migrated UI</h2>
+        <p>Start the migrated application and open the <strong>migrated UI</strong> (warranty claim demo). Customize the code in <code>warranty_demo/</code> as needed.</p>
+        <div id="run-context" style="margin-bottom: 12px; padding: 10px 12px; background: #111827; border: 1px solid #1f2937; border-radius: 6px; font-size: 11px;">
+          <div style="color: #9ca3af;">App URL: <code>http://localhost:__APP_PORT__</code></div>
+          <div style="margin-top: 6px; color: #e5e7eb;">Migrated UIs: <a href="http://localhost:__APP_PORT__/demo.html" target="_blank" rel="noopener" style="color: #34d399;">demo.html</a> · <a href="http://localhost:__APP_PORT__/angular/" target="_blank" rel="noopener" style="color: #34d399;">angular</a> · <a href="http://localhost:__APP_PORT__/hs1210d.html" target="_blank" rel="noopener" style="color: #34d399;">hs1210d.html</a> · <a href="http://localhost:__APP_PORT__/" target="_blank" rel="noopener" style="color: #34d399;">index</a></div>
+        </div>
+        <div style="margin-bottom: 8px; display: flex; gap: 8px; align-items: center;">
+          <span style="font-size: 12px; color: #9ca3af;">Database: PostgreSQL (RDS). Set <code>RUN_PROFILE=""</code> for H2 local.</span>
+        </div>
+        <div style="margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="primary" id="run-app-btn">Run Application</button>
+          <button class="primary" id="open-demo-btn" style="background: #059669; border-color: #047857;">Open Demo</button>
+          <button id="seed-demo-btn" style="background: #059669; border: 1px solid #047857; color: white; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;" title="Seed demo invoices/claims so POST /api/claims/create works">Seed Demo Data</button>
+          <button id="check-status-btn" style="background: #374151; border: 1px solid #4b5563; color: #e5e7eb; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">Check Status</button>
+        </div>
+        <div id="run-status" style="margin-bottom: 12px;"></div>
+        <div style="margin-bottom: 8px;">
+          <div style="font-size: 11px; color: #9ca3af; margin-bottom: 6px;">Quick API Test</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button id="test-migrated-btn" style="background: #374151; border: 1px solid #4b5563; color: #e5e7eb; padding: 6px 12px; border-radius: 4px; font-size: 11px; cursor: pointer;">Test /api/demo/migrated-queries</button>
+            <button id="test-search-btn" style="background: #374151; border: 1px solid #4b5563; color: #e5e7eb; padding: 6px 12px; border-radius: 4px; font-size: 11px; cursor: pointer;">Test /api/claims/search</button>
+            <button id="test-seed-btn" style="background: #374151; border: 1px solid #4b5563; color: #e5e7eb; padding: 6px 12px; border-radius: 4px; font-size: 11px; cursor: pointer;">Test /api/seed</button>
+          </div>
+          <pre id="api-test-output" style="margin-top: 8px; font-size: 10px; max-height: 160px; overflow: auto;"></pre>
+        </div>
+        <div style="font-size: 11px; color: #64748b; margin-top: 12px;">
+          <strong>Customize:</strong> Edit code in <code>warranty_demo/src/main/java/</code> — see <a href="#" id="customize-link" style="color: #60a5fa;">CUSTOMIZE.md</a> for guidance.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // API base: same-origin when on http://localhost:8003 or http://127.0.0.1:8003, else explicit URL
+    function getApiBase() {
+      const params = new URLSearchParams(location.search);
+      const override = params.get('server');
+      if (override) return override.replace(/\/$/, '');
+      if (location.protocol === 'http:' && (location.hostname === 'localhost' || location.hostname === '127.0.0.1') && (location.port === '8003' || location.port === ''))
+        return '';
+      return 'http://127.0.0.1:8003';
+    }
+    const API_BASE = getApiBase();
+
+    async function discoverGlobalDirs() {
+      const statusDiv = document.getElementById('status');
+      const discoverBtn = document.getElementById('discover-btn');
+      const originalText = discoverBtn.textContent;
+      discoverBtn.disabled = true;
+      discoverBtn.textContent = 'Discovering...';
+      statusDiv.innerHTML = '';
+
+      try {
+        const res = await fetch(API_BASE + '/api/discover-directories');
+        const data = await res.json();
+
+        // AST dirs
+        const astSelect = document.getElementById('ast-dir');
+        astSelect.innerHTML = '';
+        if (data.astDirs && data.astDirs.length > 0) {
+          data.astDirs.forEach(dir => {
+            const option = document.createElement('option');
+            option.value = dir.path;
+            option.textContent = dir.label ? `${dir.path} — ${dir.label} (${dir.fileCount} files)` : `${dir.path} (${dir.fileCount} files)`;
+            if (dir.path === data.defaultAstDir || (!data.defaultAstDir && dir.path.includes('JSON_20260211'))) {
+              option.selected = true;
+            }
+            astSelect.appendChild(option);
+          });
+        } else {
+          const option = document.createElement('option');
+          option.value = data.defaultAstDir || 'JSON_ast/JSON_20260211';
+          option.textContent = option.value;
+          astSelect.appendChild(option);
+        }
+
+        // RPG suggestion
+        const rpgInput = document.getElementById('rpg-dir');
+        if (data.rpgDirs && data.rpgDirs.length > 0) {
+          rpgInput.value = data.rpgDirs[0];
+        } else if (data.zipFiles && data.zipFiles.length > 0 && data.suggestion) {
+          statusDiv.innerHTML = '<div class="status info">💡 ' + data.suggestion + '</div>';
+        }
+
+        discoverBtn.textContent = '✓ Discovered';
+        setTimeout(() => { discoverBtn.textContent = originalText; }, 2000);
+      } catch (e) {
+        console.error('discoverGlobalDirs error', e);
+        showFetchErrorBanner(e);
+        statusDiv.innerHTML = '<div class="status error">✗ Failed to fetch: ' + e.message + '. Ensure the server is running: <code>python3 ui_global_context_server.py</code>. Open <a href="http://127.0.0.1:8003/" target="_blank" style="color:#60a5fa">http://127.0.0.1:8003/</a> in your browser.</div>';
+        discoverBtn.textContent = originalText;
+      } finally {
+        discoverBtn.disabled = false;
+      }
+    }
+
+    async function buildGlobalContext() {
+      const astDir = document.getElementById('ast-dir')?.value;
+      const rpgDir = document.getElementById('rpg-dir')?.value?.trim();
+      const statusDiv = document.getElementById('status');
+      const outputPre = document.getElementById('output');
+      const buildBtn = document.getElementById('build-btn');
+
+      if (!astDir || !rpgDir) {
+        alert('Please select an AST directory and provide an RPG directory.');
+        return;
+      }
+
+      buildBtn.disabled = true;
+      statusDiv.innerHTML = '<div class="status info">Building global context (DB registry, program context, call graph)...</div>';
+      outputPre.style.display = 'block';
+      outputPre.textContent = 'Running global_context scripts...';
+
+      try {
+        const res = await fetch(API_BASE + '/api/build-global-context', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ astDir, rpgDir })
+        });
+        const result = await res.json();
+        if (result.success) {
+          statusDiv.innerHTML = '<div class="status success">✓ Global context built successfully!</div>';
+          outputPre.textContent = result.output || 'Success';
+        } else {
+          statusDiv.innerHTML = '<div class="status error">✗ Global context build failed</div>';
+          outputPre.textContent = result.error || 'Unknown error';
+        }
+      } catch (e) {
+        statusDiv.innerHTML = '<div class="status error">✗ Error: ' + e.message + '</div>';
+        outputPre.textContent = 'Error: ' + e.message;
+      } finally {
+        buildBtn.disabled = false;
+      }
+    }
+
+    let PROGRAMS_LIST = [];
+    function populateValNodes(programId) {
+      const vn = document.getElementById('val-node');
+      if (!vn) return;
+      vn.innerHTML = '';
+      const prog = PROGRAMS_LIST.find(p => p.programId === programId);
+      if (!prog || !prog.nodes || prog.nodes.length === 0) {
+        vn.appendChild(new Option('No features', ''));
+        return;
+      }
+      prog.nodes.forEach(n => {
+        const label = `${n.nodeId} – ${n.kind || ''} ${n.procedureName || n.name || ''}`.trim();
+        vn.appendChild(new Option(label, n.nodeId));
+      });
+    }
+
+    async function loadProgramsAndNodes() {
+      const programSelect = document.getElementById('mf-program');
+      const nodeSelect = document.getElementById('mf-node');
+      const statusDiv = document.getElementById('mf-status');
+
+      if (!programSelect || !nodeSelect) return;
+
+      try {
+        const res = await fetch(API_BASE + '/api/list-programs');
+        const data = await res.json();
+        const programs = data.programs || [];
+        PROGRAMS_LIST = programs;
+
+        programSelect.innerHTML = '';
+        nodeSelect.innerHTML = '';
+
+        if (programs.length === 0) {
+          statusDiv.innerHTML = '<div class="status info">No programs found. Make sure you ran \"Build Global Context\" first.</div>';
+          return;
+        }
+
+        programs.forEach((p, idx) => {
+          const opt = document.createElement('option');
+          opt.value = p.programId;
+          opt.textContent = p.programId;
+          if (idx === 0) opt.selected = true;
+          programSelect.appendChild(opt);
+        });
+
+        function populateNodesFor(programId) {
+          nodeSelect.innerHTML = '';
+          const prog = programs.find(p => p.programId === programId);
+          if (!prog || !prog.nodes || prog.nodes.length === 0) {
+            const opt = document.createElement('option');
+            opt.value = '';
+            opt.textContent = 'No features available';
+            nodeSelect.appendChild(opt);
+            return;
+          }
+          prog.nodes.forEach(n => {
+            const label = `${n.nodeId} – ${n.kind || ''} ${n.procedureName || n.name || ''}`.trim();
+            const opt = document.createElement('option');
+            opt.value = n.nodeId;
+            opt.textContent = label;
+            nodeSelect.appendChild(opt);
+          });
+        }
+
+        populateNodesFor(programSelect.value);
+        programSelect.addEventListener('change', () => populateNodesFor(programSelect.value));
+
+        // Sync validation tab dropdowns
+        const valProg = document.getElementById('val-program');
+        const valNode = document.getElementById('val-node');
+        if (valProg && valNode) {
+          valProg.innerHTML = programSelect.innerHTML;
+          valProg.value = programSelect.value;
+          populateValNodes(programSelect.value);
+          valProg.addEventListener('change', () => populateValNodes(valProg.value));
+        }
+
+        statusDiv.innerHTML = '<div class="status success">✓ Loaded programs and features.</div>';
+      } catch (e) {
+        console.error('loadProgramsAndNodes error', e);
+        statusDiv.innerHTML = '<div class="status error">✗ Failed to load programs: ' + e.message + '</div>';
+      }
+    }
+
+    async function regenerateUiSchema() {
+      const programSelect = document.getElementById('mf-program');
+      const nodeSelect = document.getElementById('mf-node');
+      const statusDiv = document.getElementById('mf-status');
+      const programId = programSelect?.value;
+      const entryNodeId = nodeSelect?.value;
+      if (!programId || !entryNodeId) {
+        alert('Please select both a program and a feature.');
+        return;
+      }
+      const btn = document.getElementById('mf-regen-ui-btn');
+      btn.disabled = true;
+      statusDiv.innerHTML = '<div class="status info">Regenerating UI schema from display files…</div>';
+      try {
+        const res = await fetch(API_BASE + '/api/regenerate-ui-schema', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ programId, entryNodeId })
+        });
+        const data = await res.json();
+        if (data.success) {
+          statusDiv.innerHTML = '<div class="status success">✓ ' + (data.message || 'UI schema generated.') + '</div>';
+        } else {
+          statusDiv.innerHTML = '<div class="status error">✗ ' + (data.error || 'Failed') + '</div>';
+        }
+      } catch (e) {
+        statusDiv.innerHTML = '<div class="status error">✗ Error: ' + e.message + '</div>';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function checkMigrateModels() {
+      const el = document.getElementById('mf-opus-status');
+      if (!el) return;
+      try {
+        const res = await fetch(API_BASE + '/api/check-models');
+        const data = await res.json();
+        if (data.opus_available) {
+          el.innerHTML = '✓ Claude Opus available (' + (data.opus_model || '') + ') — large context will use Opus, prompt caching, extended timeout.';
+          el.style.color = '#34d399';
+        } else {
+          el.innerHTML = 'Claude Opus not available — using Sonnet. ' + (data.error ? data.error : '');
+          el.style.color = '#9ca3af';
+        }
+      } catch (e) {
+        el.innerHTML = 'Could not check models: ' + e.message;
+        el.style.color = '#f87171';
+      }
+    }
+
+    async function migrateFeature() {
+      const programSelect = document.getElementById('mf-program');
+      const nodeSelect = document.getElementById('mf-node');
+      const statusDiv = document.getElementById('mf-status');
+      const outputPre = document.getElementById('mf-output');
+      const runBtn = document.getElementById('mf-run-btn');
+      const programId = programSelect?.value;
+      const entryNodeId = nodeSelect?.value;
+      if (!programId || !entryNodeId) {
+        alert('Please select both a program and a feature.');
+        return;
+      }
+
+      runBtn.disabled = true;
+      statusDiv.innerHTML = '<div class="status info">Migrating feature (code generation only). Build errors are fixed in tab 5.</div>';
+      outputPre.style.display = 'block';
+      outputPre.textContent = '';
+
+      try {
+        const rpgDir = document.getElementById('rpg-dir')?.value?.trim() || null;
+        const fetchOpts = {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ programId, entryNodeId, rpgDir })
+        };
+        if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) {
+          fetchOpts.signal = AbortSignal.timeout(90 * 60 * 1000);  // 90 min - large nodes (e.g. n404) can take 30-60 min in CLI mode
+        }
+        const res = await fetch(API_BASE + '/api/migrate-feature', fetchOpts);
+        // Server streams NDJSON: {"progress":"..."}, {"log":"..."} (live), then {"result":{...}}
+        let result = null;
+        const reader = res.body?.getReader();
+        const decoder = new TextDecoder();
+        if (reader) {
+          let buf = '';
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buf += decoder.decode(value, { stream: true });
+            const lines = buf.split('\n');
+            buf = lines.pop() || '';
+            for (const line of lines) {
+              if (!line.trim()) continue;
+              try {
+                const obj = JSON.parse(line);
+                if (obj.progress) {
+                  statusDiv.innerHTML = '<div class="status info">' + (obj.progress || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
+                }
+                if (obj.log) {
+                  outputPre.textContent = (outputPre.textContent || '') + obj.log + '\n';
+                  outputPre.scrollTop = outputPre.scrollHeight;
+                }
+                if (obj.result) result = obj.result;
+                else if (obj.success !== undefined || obj.error) result = obj;  // non-streaming error
+              } catch (_) {}
+            }
+          }
+          if (buf.trim()) {
+            try {
+              const obj = JSON.parse(buf);
+              if (obj.log) {
+                outputPre.textContent = (outputPre.textContent || '') + obj.log + '\n';
+                outputPre.scrollTop = outputPre.scrollHeight;
+              }
+              if (obj.result) result = obj.result;
+              else if (obj.success !== undefined || obj.error) result = obj;
+            } catch (_) {}
+          }
+        }
+        if (result === null) result = await res.json();
+        if (result.success) {
+          const buildLink = '<a href="#" id="go-to-build" style="color:#86efac;margin-left:8px;">→ Build Application (tab 4)</a>';
+          const valLink = '<a href="#" id="go-to-validation" style="color:#86efac;margin-left:8px;">→ Validation</a>';
+          const uiSchemaNote = (result.uiSchemaGenerated || []).length > 0 ? ' UI schema generated.' : '';
+          const cliNote = result.cliMode ? ' <span style="color:#60a5fa;">(CLI mode: large context)</span>' : '';
+          statusDiv.innerHTML = '<div class="status success">✓ Feature migrated. Code generated.' + uiSchemaNote + cliNote + ' Run Build Application (tab 4) to compile and fix errors.' + buildLink + ' ' + valLink + '</div>';
+          document.getElementById('go-to-build')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.querySelector('.tab[data-tab="step4"]')?.click();
+          });
+          document.getElementById('go-to-validation')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            const vp = document.getElementById('val-program');
+            const vn = document.getElementById('val-node');
+            if (vp && vn) {
+              vp.value = programId;
+              populateValNodes(programId);
+              vn.value = entryNodeId;
+            }
+            document.querySelector('.tab[data-tab="step3"]')?.click();
+            setTimeout(() => runValidation(), 200);
+          });
+
+          let text = '';
+          if (result.cliMode) {
+            text += 'Context size was large — ran in CLI mode (extended timeout, Opus if available, prompt caching).\n\n';
+          }
+          if (result.summary) {
+            text += result.summary + '\n\n';
+          }
+          if (result.manifestPath) {
+            text += 'Manifest: ' + result.manifestPath + '\n';
+          }
+          const files = result.generatedFiles || [];
+          const uiSchemas = result.uiSchemaGenerated || [];
+          if (files.length > 0) {
+            text += '\nFiles written under application source (e.g. warranty_demo/src/main/java/):\n';
+            files.forEach(f => {
+              text += '  - ' + f + '\n';
+            });
+          }
+          if (uiSchemas.length > 0) {
+            text += '\nUI schema(s) generated (display → backend → UI):\n';
+            uiSchemas.forEach(f => { text += '  - ' + f + '\n'; });
+          }
+          // Build output only if build was run (tab 5 does build; tab 3 is code gen only)
+          if (result.buildOutput) {
+            text += '\nBuild output:\n' + result.buildOutput;
+          } else {
+            text += '\n\nNext: Go to tab 4 (Build Application) to compile and fix any errors.';
+          }
+
+          const existingLog = outputPre.textContent || '';
+          outputPre.textContent = existingLog + (existingLog ? '\n\n--- Migration complete ---\n\n' : '') + (text || (result.output || 'Success'));
+          outputPre.scrollTop = outputPre.scrollHeight;
+        } else {
+          statusDiv.innerHTML = '<div class="status error">✗ Feature migration failed</div>';
+          const existingLog = outputPre.textContent || '';
+          outputPre.textContent = existingLog + (existingLog ? '\n\n--- Error ---\n\n' : '') + (result.error || 'Unknown error');
+          outputPre.scrollTop = outputPre.scrollHeight;
+        }
+      } catch (e) {
+        statusDiv.innerHTML = '<div class="status error">✗ Error: ' + e.message + '</div>';
+        outputPre.textContent = 'Error: ' + e.message;
+      } finally {
+        runBtn.disabled = false;
+      }
+    }
+
+    async function runValidation() {
+      const projectDir = document.getElementById('val-project-dir')?.value?.trim() || 'warranty_demo';
+      const programId = document.getElementById('val-program')?.value;
+      const nodeId = document.getElementById('val-node')?.value;
+      const statusDiv = document.getElementById('val-status');
+      const resultsDiv = document.getElementById('val-results');
+      const btn = document.getElementById('val-run-btn');
+
+      btn.disabled = true;
+      statusDiv.innerHTML = '<div class="status info">Running validation...</div>';
+      resultsDiv.style.display = 'none';
+
+      if (!programId || !nodeId) {
+        statusDiv.innerHTML = '<div class="status error">✗ Select a program and feature that has been migrated.</div>';
+        btn.disabled = false;
+        return;
+      }
+
+      try {
+        const res = await fetch(API_BASE + '/api/validate', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ projectDir, programId, entryNodeId: nodeId })
+        });
+        const text = await res.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (_) {
+          statusDiv.innerHTML = '<div class="status error">✗ Server returned invalid response. ' + (res.status ? 'Status: ' + res.status : '') + '</div>';
+          btn.disabled = false;
+          return;
+        }
+        if (!data.success) {
+          statusDiv.innerHTML = '<div class="status error">✗ ' + (data.error || 'Validation failed') + '</div>';
+          document.getElementById('val-push-btn')?.style.setProperty('display', 'none');
+          return;
+        }
+
+        const v = data.validation || {};
+        const files = data.generatedFiles || [];
+        const traceData = { rpgSnippet: data.rpgSnippet || null, rpgStartLine: data.rpgStartLine || 1, nodeIndex: data.nodeIndex || {} };
+
+        statusDiv.innerHTML = '<div class="status success">✓ Validation complete — Overall: ' + (v.overall_score ?? 0) + '%</div>';
+        resultsDiv.style.display = 'block';
+        const pushBtn = document.getElementById('val-push-btn');
+        const pushStatus = document.getElementById('val-push-status');
+        if (pushBtn && pushStatus) {
+          const passed = (v.status === 'PASSED' || v.status === 'WARNING');
+          pushBtn.style.display = passed ? 'inline-block' : 'none';
+          pushBtn.disabled = false;
+          pushStatus.style.display = 'none';
+        }
+
+        // Metrics grid
+        const metricsEl = document.getElementById('val-metrics');
+        const resMap = v.results || {};
+        const dbMap = resMap.database_mapping || {};
+        const arch = resMap.architecture || {};
+        const modern = resMap.modern_java || {};
+        const struct = resMap.structure || {};
+        const pkg = resMap.packages || {};
+        const logic = resMap.logic_completeness || {};
+
+        metricsEl.innerHTML = `
+          <div style="padding:10px;background:#111827;border-radius:6px;border:1px solid #1f2937;">
+            <div style="font-size:10px;color:#9ca3af;margin-bottom:2px;">Overall Score</div>
+            <div style="font-size:18px;font-weight:600;color:${(v.overall_score||0)>=80?'#86efac':'#f87171'}">${v.overall_score ?? 0}%</div>
+            <div style="font-size:10px;color:#6b7280">${v.status || '-'}</div>
+          </div>
+          <div style="padding:10px;background:#111827;border-radius:6px;border:1px solid #1f2937;">
+            <div style="font-size:10px;color:#9ca3af;margin-bottom:2px;">Database Mapping</div>
+            <div style="font-size:14px;font-weight:600">${dbMap.score ?? 0}%</div>
+            <div style="font-size:10px;color:#6b7280">${dbMap.total_contracts ?? 0} contracts</div>
+          </div>
+          <div style="padding:10px;background:#111827;border-radius:6px;border:1px solid #1f2937;">
+            <div style="font-size:10px;color:#9ca3af;margin-bottom:2px;">Architecture</div>
+            <div style="font-size:14px;font-weight:600">${arch.score ?? 0}%</div>
+            <div style="font-size:10px;color:#6b7280">Layered, DDD</div>
+          </div>
+          <div style="padding:10px;background:#111827;border-radius:6px;border:1px solid #1f2937;">
+            <div style="font-size:10px;color:#9ca3af;margin-bottom:2px;">Modern Java</div>
+            <div style="font-size:14px;font-weight:600">${modern.score ?? 0}%</div>
+            <div style="font-size:10px;color:#6b7280">Records, Streams, Optional</div>
+          </div>
+          <div style="padding:10px;background:#111827;border-radius:6px;border:1px solid #1f2937;">
+            <div style="font-size:10px;color:#9ca3af;margin-bottom:2px;">Structure</div>
+            <div style="font-size:14px;font-weight:600">${struct.score ?? 0}%</div>
+            <div style="font-size:10px;color:#6b7280">${struct.found_layers ? struct.found_layers.join(', ') : '-'}</div>
+          </div>
+          <div style="padding:10px;background:#111827;border-radius:6px;border:1px solid #1f2937;">
+            <div style="font-size:10px;color:#9ca3af;margin-bottom:2px;">Logic Completeness</div>
+            <div style="font-size:14px;font-weight:600">${logic.score ?? '-'}%</div>
+            <div style="font-size:10px;color:#6b7280">Control flow, stubs</div>
+          </div>
+        `;
+
+        // Details (checks) — structured sections with consistent typography
+        const detailsEl = document.getElementById('val-details');
+        const categoryLabels = {
+          structure: 'Structure',
+          packages: 'Packages',
+          database_mapping: 'Database Mapping',
+          architecture: 'Architecture',
+          syntax: 'Syntax',
+          modern_java: 'Modern Java',
+          logic_completeness: 'Logic Completeness'
+        };
+        let detailsHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;">';
+        for (const [k, r] of Object.entries(resMap)) {
+          if (r?.skipped || !r?.checks?.length) continue;
+          const label = categoryLabels[k] || k.replace(/_/g, ' ');
+          const checks = (r.checks || []).slice(0, 12);
+          detailsHtml += '<div style="background:#111827;border:1px solid #1f2937;border-radius:6px;padding:10px 12px;">';
+          detailsHtml += '<div style="font-size:11px;font-weight:600;color:#d1d5db;margin-bottom:6px;">' + label + '</div>';
+          detailsHtml += '<ul style="margin:0;padding-left:18px;font-size:11px;color:#9ca3af;line-height:1.5;">';
+          checks.forEach(c => {
+            detailsHtml += '<li style="margin-bottom:2px;">' + (c.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')) + '</li>';
+          });
+          detailsHtml += '</ul></div>';
+        }
+        detailsHtml += '</div>';
+        detailsEl.innerHTML = detailsHtml || '<div style="font-size:11px;color:#6b7280">No details</div>';
+
+        // Java → RPG traceability: hover over @origin line to see RPG in right panel
+        const fileSelect = document.getElementById('val-file-select');
+        const javaPreview = document.getElementById('val-java-preview');
+        const rpgPreview = document.getElementById('val-rpg-preview');
+        const rpgPlaceholder = '<div style="color:#64748b;font-size:12px;padding:24px;text-align:center;">Hover over a Java line with <code style="background:#1e293b;padding:2px 6px;border-radius:4px;">@origin</code> or <code style="background:#1e293b;padding:2px 6px;border-radius:4px;">@rpg-trace</code> to preview the source RPG block here.</div>';
+        fileSelect.innerHTML = '';
+        files.forEach((f, i) => {
+          const opt = document.createElement('option');
+          opt.value = i;
+          opt.textContent = f.path.split('/').pop() || f.path;
+          fileSelect.appendChild(opt);
+        });
+        function extractRpgLines(startLine, endLine) {
+          const snip = traceData.rpgSnippet;
+          if (!snip || typeof snip !== 'string' || snip.includes('(No RPG')) return null;
+          const lines = snip.split('\n');
+          const start = traceData.rpgStartLine || 1;
+          const fromIdx = Math.max(0, startLine - start);
+          const toIdx = Math.min(lines.length, endLine - start + 1);
+          if (fromIdx >= lines.length || toIdx <= fromIdx) return null;
+          return lines.slice(fromIdx, toIdx).map((l, i) => (startLine + i) + ' | ' + l).join('\n');
+        }
+        function parseOrigin(comment) {
+          const m = comment.match(/@origin\s+\S+\s+L(\d+)(?:-(\d+))?/);
+          if (!m) return null;
+          const start = parseInt(m[1], 10);
+          const end = m[2] ? parseInt(m[2], 10) : start;
+          return { start, end };
+        }
+        function parseRpgTrace(comment) {
+          const m = comment.match(/@rpg-trace:\s*([\w,]+)/);
+          if (!m) return null;
+          return m[1].split(',').map(s => s.trim()).filter(Boolean);
+        }
+        function renderJavaWithClickableLines(content) {
+          const lines = (content || '').split('\n');
+          let html = '';
+          lines.forEach((line, i) => {
+            const lineNum = i + 1;
+            const originMatch = line.match(/\/\/\s*(@origin\s+\S+\s+L\d+(?:-\d+)?\s*\([^)]+\))/);
+            const rpgTraceMatch = line.match(/\/\/\s*@rpg-trace:\s*([\w,]+)/);
+            const origin = originMatch ? parseOrigin(line) : null;
+            const nodeIds = rpgTraceMatch ? parseRpgTrace(line) : null;
+            const cls = (origin || nodeIds) ? 'val-java-line val-java-origin' : 'val-java-line';
+            const title = origin ? 'Hover to view RPG L' + origin.start + '-' + origin.end : (nodeIds ? 'Hover to view RPG for ' + nodeIds.join(', ') : '');
+            const dataOrigin = origin ? origin.start + '-' + origin.end : '';
+            const dataNodeIds = nodeIds ? nodeIds.join(',') : '';
+            html += '<div class="' + cls + '" data-line="' + lineNum + '" data-origin="' + dataOrigin + '" data-node-ids="' + dataNodeIds + '" title="' + (title || '') + '">' + (lineNum).toString().padStart(4) + ' | ' + (line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')) + '</div>';
+          });
+          return html;
+        }
+        function showRpgForNodeIds(nodeIds) {
+          const nodeIndex = traceData.nodeIndex || {};
+          let text = '';
+          for (const nid of nodeIds) {
+            const node = nodeIndex[nid.trim()];
+            const rpg = node?.rpgSource || '';
+            const kind = node?.kind || '';
+            text += (text ? '\n\n--- ' : '') + (kind ? `[${nid}] ${kind}\n` : `[${nid}]\n`) + (rpg || '(no RPG source for this node)');
+          }
+          text = text || '(no node data for ' + nodeIds.join(', ') + ')';
+          rpgPreview.innerHTML = '<div style="font-size:11px;color:#94a3b8;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #334155;">RPG source: ' + nodeIds.join(', ') + '</div><pre style="margin:0;white-space:pre-wrap;word-break:break-all;font-size:11px;">' + (text.replace(/</g,'&lt;').replace(/>/g,'&gt;')) + '</pre>';
+        }
+        function showRpgInPanel(startLine, endLine) {
+          const block = extractRpgLines(startLine, endLine);
+          const text = block || '(RPG lines ' + startLine + '-' + endLine + ' not in snippet)';
+          rpgPreview.innerHTML = '<div style="font-size:11px;color:#94a3b8;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #334155;">RPG source L' + startLine + (endLine !== startLine ? '-' + endLine : '') + '</div><pre style="margin:0;white-space:pre-wrap;word-break:break-all;font-size:11px;">' + (text.replace(/</g,'&lt;').replace(/>/g,'&gt;')) + '</pre>';
+        }
+        function showRpgPlaceholder() {
+          rpgPreview.innerHTML = rpgPlaceholder;
+        }
+        // Event delegation for hover (mouseover bubbles; works when content is re-rendered)
+        if (!javaPreview.dataset.traceabilitySetup) {
+          javaPreview.dataset.traceabilitySetup = '1';
+          javaPreview.addEventListener('mouseover', (e) => {
+            const el = e.target.closest('.val-java-origin');
+            if (!el) return;
+            const nodeIds = el.dataset.nodeIds;
+            if (nodeIds) {
+              showRpgForNodeIds(nodeIds.split(','));
+            } else if (el.dataset.origin) {
+              const [s, e2] = el.dataset.origin.split('-').map(Number);
+              showRpgInPanel(s, e2 || s);
+            }
+          });
+          javaPreview.addEventListener('mouseout', (e) => {
+            // Only clear when leaving the whole traceability area; keep RPG visible when moving to rpg panel
+            const to = e.relatedTarget;
+            if (!to || (!javaPreview.contains(to) && !rpgPreview.contains(to))) {
+              showRpgPlaceholder();
+            }
+          });
+          rpgPreview.addEventListener('mouseout', (e) => {
+            const to = e.relatedTarget;
+            if (!to || (!javaPreview.contains(to) && !rpgPreview.contains(to))) {
+              showRpgPlaceholder();
+            }
+          });
+        }
+        fileSelect.onchange = () => {
+          const idx = parseInt(fileSelect.value, 10);
+          const content = (files[idx]?.content || '').slice(0, 12000) || '(No content)';
+          javaPreview.innerHTML = content === '(No content)' ? content : renderJavaWithClickableLines(content);
+          javaPreview.classList.toggle('val-java-code', content !== '(No content)');
+          showRpgPlaceholder();
+        };
+        if (files.length > 0) {
+          fileSelect.dispatchEvent(new Event('change'));
+          // If validation did not return RPG snippet, try traceability API
+          if ((!traceData.rpgSnippet || !Object.keys(traceData.nodeIndex || {}).length) && programId && nodeId) {
+            fetch(API_BASE + '/api/traceability-data/' + encodeURIComponent(programId) + '/' + encodeURIComponent(nodeId))
+              .then(r => r.json())
+              .then(tb => {
+                if (tb && !tb.error) {
+                  if (tb.rpgSource) {
+                    traceData.rpgSnippet = tb.rpgSource;
+                    traceData.rpgStartLine = tb.rpgStartLine || 1;
+                  }
+                  if (tb.nodeIndex && Object.keys(tb.nodeIndex).length) {
+                    traceData.nodeIndex = tb.nodeIndex;
+                  }
+                }
+              })
+              .catch(() => {});
+          }
+        } else {
+          javaPreview.textContent = 'No migration found for this feature. Migrate it first from the Migrate tab.';
+          rpgPreview.innerHTML = rpgPlaceholder;
+        }
+      } catch (e) {
+        statusDiv.innerHTML = '<div class="status error">✗ ' + e.message + '</div>';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function pushToRepo() {
+      const pushBtn = document.getElementById('val-push-btn');
+      const pushStatus = document.getElementById('val-push-status');
+      const projectDir = document.getElementById('val-project-dir')?.value?.trim() || 'warranty_demo';
+      if (!pushBtn || !pushStatus) return;
+      pushBtn.disabled = true;
+      pushStatus.style.display = 'block';
+      pushStatus.innerHTML = '<div class="status info">Pushing to repository...</div>';
+      try {
+        const res = await fetch(API_BASE + '/api/push-to-repo', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ projectDir })
+        });
+        const data = await res.json();
+        if (data.success) {
+          pushStatus.innerHTML = '<div class="status success">✓ ' + (data.message || 'Pushed successfully') + '<br><span style="font-size:10px;color:#86efac;">Branch: ' + (data.branch || '') + '</span></div>';
+        } else {
+          pushStatus.innerHTML = '<div class="status error">✗ ' + (data.error || 'Push failed') + '</div>';
+        }
+      } catch (e) {
+        pushStatus.innerHTML = '<div class="status error">✗ ' + e.message + '</div>';
+      } finally {
+        pushBtn.disabled = false;
+      }
+    }
+
+    async function loadBuildContext() {
+      const ctxEl = document.getElementById('build-context');
+      if (!ctxEl) return;
+      try {
+        const res = await fetch(API_BASE + '/api/build-context');
+        const data = await res.json();
+        const lm = data.lastMigrated;
+        let html = '<div style="color:#d1d5db;margin-bottom:4px;">✓ Build will compile <strong>' + (data.javaFileCount || 0) + ' Java file(s)</strong> in <code>' + (data.projectDir || 'warranty_demo') + '</code></div>';
+        html += '<div style="color:#9ca3af;font-size:10px;">';
+        if (lm && lm.programId) {
+          let detail = (lm.generatedCount || 0) + ' Java file(s)';
+          if (lm.uiSchemaCount) detail += ', ' + lm.uiSchemaCount + ' UI schema(s)';
+          html += 'Latest migrated: <strong>' + lm.programId + '</strong> / <strong>' + lm.entryNodeId + '</strong> (' + detail + ') — included in this build.';
+        } else {
+          html += 'No migrations yet. Migrate a feature first, then build.';
+        }
+        html += '</div>';
+        ctxEl.innerHTML = html;
+      } catch (e) {
+        ctxEl.innerHTML = '<div style="color:#f87171;">Could not load build context: ' + e.message + '</div>';
+      }
+    }
+
+    let _pendingSuggestedFixes = null;
+    let _pendingSuggestedFixesDetail = null;
+    let _pendingProjectDir = null;
+    let _buildLogHistory = '';
+
+    function renderDiffOrFileList(suggestedFixes, detail) {
+      if (!suggestedFixes || !Object.keys(suggestedFixes).length) return '';
+      const paths = Object.keys(suggestedFixes);
+      if (!detail || !Object.keys(detail).length) {
+        return '<div style="font-size:11px;color:#94a3b8;margin-bottom:8px;">Files to be changed: ' + paths.join(', ') + '</div>';
+      }
+      let html = '<div style="margin-bottom:12px;">';
+      paths.forEach(path => {
+        const d = detail[path];
+        if (!d || (!d.old && !d.new)) {
+          html += '<div style="font-size:11px;color:#94a3b8;margin-bottom:4px;">' + path + '</div>';
+          return;
+        }
+        const oldLines = (d.old || '').split('\n');
+        const newLines = (d.new || '').split('\n');
+        const maxLines = Math.min(30, Math.max(oldLines.length, newLines.length));
+        html += '<details style="margin-bottom:8px;border:1px solid #334155;border-radius:4px;background:#0f172a;">';
+        html += '<summary style="padding:6px 10px;cursor:pointer;font-size:11px;color:#e2e8f0;">' + path + ' (' + oldLines.length + ' → ' + newLines.length + ' lines)</summary>';
+        html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px;max-height:240px;overflow:auto;font-size:10px;">';
+        html += '<div><div style="color:#f87171;margin-bottom:4px;">Before</div><pre style="margin:0;white-space:pre-wrap;word-break:break-all;">' + oldLines.slice(0, maxLines).map((l,i)=>(i+1)+'| '+l).join('\n').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre></div>';
+        html += '<div><div style="color:#34d399;margin-bottom:4px;">After (proposed fix)</div><pre style="margin:0;white-space:pre-wrap;word-break:break-all;">' + newLines.slice(0, maxLines).map((l,i)=>(i+1)+'| '+l).join('\n').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre></div>';
+        html += '</div></details>';
+      });
+      html += '</div>';
+      return html;
+    }
+
+    async function buildApplication() {
+      const statusDiv = document.getElementById('build-status');
+      const outputPre = document.getElementById('build-output');
+      const buildBtn = document.getElementById('build-app-btn');
+      const hitlPanel = document.getElementById('hitl-panel');
+      const projectDirInput = document.getElementById('build-project-dir');
+      const projectDir = projectDirInput?.value?.trim() || 'warranty_demo';
+
+      buildBtn.disabled = true;
+      hitlPanel.style.display = 'none';
+      document.getElementById('build-success-link').style.display = 'none';
+      document.getElementById('build-push-code-btn')?.style.setProperty('display', 'none');
+      _pendingSuggestedFixes = null;
+      _pendingSuggestedFixesDetail = null;
+      _buildLogHistory = '';
+      statusDiv.innerHTML = '<div class="status info">Building application (this may take a few minutes)...</div>';
+      outputPre.style.display = 'block';
+      outputPre.textContent = `Running build in ${projectDir}...`;
+      _buildLogHistory = outputPre.textContent;
+
+      try {
+        const res = await fetch(API_BASE + '/api/build-application', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ projectDir, hitlMode: true })
+        });
+        const result = await res.json();
+        const newLog = (result.output || '') + (result.error ? '\n\nError:\n' + result.error : '');
+        _buildLogHistory = (_buildLogHistory || '') + (newLog ? '\n\n' + newLog : '');
+        outputPre.textContent = _buildLogHistory;
+        outputPre.style.display = 'block';
+
+        if (result.success) {
+          const bc = result.buildContext;
+          let msg = '✓ Application build succeeded.';
+          if (bc && bc.javaFileCount != null) {
+            msg += ' Compiled ' + bc.javaFileCount + ' Java file(s).';
+          }
+          if (result.testSummary) {
+            msg += ' ' + result.testSummary;
+          }
+          if (!result.filesApplied || result.filesApplied.length === 0) {
+            msg += ' Build succeeded on first attempt.';
+          }
+          statusDiv.innerHTML = '<div class="status success">' + msg + '</div>';
+          document.getElementById('build-success-link').style.display = 'block';
+          const pushCodeBtn = document.getElementById('build-push-code-btn');
+          const pushCodeStatus = document.getElementById('build-push-code-status');
+          if (pushCodeBtn && pushCodeStatus) {
+            pushCodeBtn.style.display = 'inline-block';
+            pushCodeBtn.disabled = false;
+            pushCodeStatus.style.display = 'none';
+          }
+          loadBuildContext();
+        } else if (result.needsReview && result.suggestedFixes) {
+          _pendingSuggestedFixes = result.suggestedFixes;
+          _pendingSuggestedFixesDetail = result.suggestedFixesDetail || null;
+          _pendingProjectDir = projectDir;
+          statusDiv.innerHTML = '<div class="status error">✗ Compilation failed. Review suggested fixes below.</div>';
+          const summary = result.errorSummary || 'LLM proposed fixes. Review the Before/After diff below to see exactly what will change and how it addresses the compilation errors.';
+          document.getElementById('hitl-summary').textContent = summary;
+          const filesDiv = document.getElementById('hitl-files');
+          filesDiv.innerHTML = renderDiffOrFileList(result.suggestedFixes, result.suggestedFixesDetail);
+          hitlPanel.style.display = 'block';
+        } else {
+          const errHint = (result.output || result.error) ? ' Check the build output below for details.' : '';
+          statusDiv.innerHTML = '<div class="status error">✗ Application build failed.' + errHint + '</div>';
+          document.getElementById('build-success-link').style.display = 'none';
+          document.getElementById('build-push-code-btn')?.style.setProperty('display', 'none');
+        }
+      } catch (e) {
+        statusDiv.innerHTML = '<div class="status error">✗ Error: ' + e.message + '</div>';
+        outputPre.textContent = 'Error: ' + e.message;
+      } finally {
+        buildBtn.disabled = false;
+      }
+    }
+
+    async function applyApprovedFixes() {
+      if (!_pendingSuggestedFixes || !_pendingProjectDir) return;
+      const statusDiv = document.getElementById('build-status');
+      const outputPre = document.getElementById('build-output');
+      const hitlPanel = document.getElementById('hitl-panel');
+      const applyBtn = document.getElementById('hitl-apply-btn');
+
+      applyBtn.disabled = true;
+      statusDiv.innerHTML = '<div class="status info">Applying fixes and rebuilding...</div>';
+      try {
+        const res = await fetch(API_BASE + '/api/apply-approved-fixes', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ projectDir: _pendingProjectDir, suggestedFixes: _pendingSuggestedFixes })
+        });
+        const result = await res.json();
+        const newLog = (result.output || '') + (result.error ? '\n\nError:\n' + result.error : '');
+        _buildLogHistory = (_buildLogHistory || '') + '\n\n=== Rebuild after applying fixes ===\n\n' + newLog;
+        outputPre.textContent = _buildLogHistory;
+        outputPre.style.display = 'block';
+
+        if (result.success) {
+          hitlPanel.style.display = 'none';
+          _pendingSuggestedFixes = null;
+          _pendingSuggestedFixesDetail = null;
+          _pendingProjectDir = null;
+          statusDiv.innerHTML = '<div class="status success">✓ Fixes applied. Build succeeded. The applied changes resolved the compilation errors.</div>';
+          document.getElementById('build-success-link').style.display = 'block';
+          const pushCodeBtn = document.getElementById('build-push-code-btn');
+          const pushCodeStatus = document.getElementById('build-push-code-status');
+          if (pushCodeBtn && pushCodeStatus) {
+            pushCodeBtn.style.display = 'inline-block';
+            pushCodeBtn.disabled = false;
+            pushCodeStatus.style.display = 'none';
+          }
+          loadBuildContext();
+        } else if (result.needsReview && result.suggestedFixes) {
+          _pendingSuggestedFixes = result.suggestedFixes;
+          _pendingSuggestedFixesDetail = result.suggestedFixesDetail || null;
+          statusDiv.innerHTML = '<div class="status error">✗ Build still failed. Review new suggested fixes below. You can apply again.</div>';
+          document.getElementById('hitl-summary').textContent = result.errorSummary || 'LLM proposed new fixes. Review the Before/After diff and apply again.';
+          const filesDiv = document.getElementById('hitl-files');
+          filesDiv.innerHTML = renderDiffOrFileList(result.suggestedFixes, result.suggestedFixesDetail);
+          hitlPanel.style.display = 'block';
+        } else {
+          hitlPanel.style.display = 'none';
+          _pendingSuggestedFixes = null;
+          _pendingSuggestedFixesDetail = null;
+          _pendingProjectDir = null;
+          statusDiv.innerHTML = '<div class="status error">✗ Build still failed after applying fixes. Check the build output below.</div>';
+        }
+      } catch (e) {
+        statusDiv.innerHTML = '<div class="status error">✗ Error: ' + e.message + '</div>';
+        _buildLogHistory = (_buildLogHistory || '') + '\n\nError: ' + e.message;
+        outputPre.textContent = _buildLogHistory;
+      } finally {
+        applyBtn.disabled = false;
+      }
+    }
+
+    document.getElementById('hitl-apply-btn')?.addEventListener('click', applyApprovedFixes);
+    document.getElementById('hitl-reject-btn')?.addEventListener('click', () => {
+      document.getElementById('hitl-panel').style.display = 'none';
+      _pendingSuggestedFixes = null;
+      _pendingProjectDir = null;
+    });
+
+    async function pushCodeToRepo() {
+      const pushBtn = document.getElementById('build-push-code-btn');
+      const pushStatus = document.getElementById('build-push-code-status');
+      const projectDir = document.getElementById('build-project-dir')?.value?.trim() || 'warranty_demo';
+      if (!pushBtn || !pushStatus) return;
+      pushBtn.disabled = true;
+      pushStatus.style.display = 'block';
+      pushStatus.innerHTML = '<div class="status info">Pushing generated code to scania-java-v2...</div>';
+      try {
+        const res = await fetch(API_BASE + '/api/push-to-repo', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ projectDir })
+        });
+        const data = await res.json();
+        if (data.success) {
+          pushStatus.innerHTML = '<div class="status success">✓ ' + (data.message || 'Pushed successfully') + '<br><span style="font-size:10px;color:#86efac;">Branch: ' + (data.branch || '') + '</span><br><span style="font-size:10px;color:#94a3b8;">GitHub Actions will run tests on the pushed code.</span></div>';
+        } else {
+          pushStatus.innerHTML = '<div class="status error">✗ ' + (data.error || 'Push failed') + '</div>';
+        }
+      } catch (e) {
+        pushStatus.innerHTML = '<div class="status error">✗ ' + e.message + '</div>';
+      }
+      pushBtn.disabled = false;
+    }
+    document.getElementById('build-push-code-btn')?.addEventListener('click', pushCodeToRepo);
+
+    const APP_BASE = 'http://localhost:' + (window.APP_PORT || '8081');
+    const DEMO_URL = APP_BASE + '/demo.html';
+    let _statusPollTimer = null;
+    const STATUS_POLL_INTERVAL = 3000;  // Poll every 3s for faster feedback (H2 local starts in ~30s)
+    const STATUS_POLL_MAX_MS = 300000;  // 5 min max wait
+
+    async function checkAppStatus(silent) {
+      const statusDiv = document.getElementById('run-status');
+      if (!statusDiv) return false;
+      if (!silent) statusDiv.innerHTML = '<div class="status info">Checking…</div>';
+      try {
+        // Use proxy (same-origin) to avoid CORS when UI on 8003, app on 8081
+        const res = await fetch(API_BASE + '/api/proxy/app-status', { method: 'GET' });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.ok) {
+          statusDiv.innerHTML = '<div class="status success">✓ Application is running. Migration demo ready.</div>';
+          return true;
+        }
+        if (!silent) statusDiv.innerHTML = '<div class="status error">✗ Application not running. ' + (data.error || res.status) + '. Click "Run Application" to start. <a href="#" id="show-log-link" style="color:#60a5fa;">Show last error trace</a></div>';
+        if (!silent) setTimeout(() => {
+          document.getElementById('show-log-link')?.addEventListener('click', async (ev) => {
+            ev.preventDefault();
+            const statusDiv = document.getElementById('run-status');
+            if (statusDiv) statusDiv.innerHTML = '<div class="status info">Fetching log…</div>';
+            const logTail = await fetchAndShowLogTail();
+            const escaped = logTail.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            if (statusDiv) statusDiv.innerHTML = '<div class="status error">✗ Application not running.</div>' +
+              '<details open style="margin-top:8px;"><summary style="cursor:pointer;color:#60a5fa;">Error trace</summary>' +
+              '<pre style="margin-top:8px;padding:8px;background:#111827;border:1px solid #1f2937;border-radius:6px;font-size:10px;max-height:300px;overflow:auto;white-space:pre-wrap;">' + escaped + '</pre></details>';
+          });
+        }, 0);
+        return false;
+      } catch (e) {
+        if (!silent) statusDiv.innerHTML = '<div class="status error">✗ Application not running. Click "Run Application" to start. <a href="#" id="show-log-link" style="color:#60a5fa;">Show last error trace</a></div>';
+        if (!silent) setTimeout(() => {
+          document.getElementById('show-log-link')?.addEventListener('click', async (ev) => {
+            ev.preventDefault();
+            const statusDiv = document.getElementById('run-status');
+            if (statusDiv) statusDiv.innerHTML = '<div class="status info">Fetching log…</div>';
+            const logTail = await fetchAndShowLogTail();
+            const escaped = logTail.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            if (statusDiv) statusDiv.innerHTML = '<div class="status error">✗ Application not running.</div>' +
+              '<details open style="margin-top:8px;"><summary style="cursor:pointer;color:#60a5fa;">Error trace</summary>' +
+              '<pre style="margin-top:8px;padding:8px;background:#111827;border:1px solid #1f2937;border-radius:6px;font-size:10px;max-height:300px;overflow:auto;white-space:pre-wrap;">' + escaped + '</pre></details>';
+          });
+        }, 0);
+        return false;
+      }
+    }
+
+    function stopStatusPolling() {
+      if (_statusPollTimer) {
+        clearInterval(_statusPollTimer);
+        _statusPollTimer = null;
+      }
+    }
+
+    async function fetchAndShowLogTail() {
+      try {
+        const res = await fetch(API_BASE + '/api/run-application-log?lines=100');
+        const data = await res.json();
+        const tail = (data.logTail || '').trim();
+        const err = data.error || '';
+        if (tail) return tail;
+        if (err) return 'Could not read log: ' + err;
+        return 'Log file empty or not found.';
+      } catch (e) {
+        return 'Could not fetch log: ' + e.message;
+      }
+    }
+
+    function startStatusPolling(startedAt) {
+      stopStatusPolling();
+      _statusPollTimer = setInterval(async () => {
+        const elapsed = Date.now() - startedAt;
+        if (elapsed > STATUS_POLL_MAX_MS) {
+          stopStatusPolling();
+          const statusDiv = document.getElementById('run-status');
+          if (statusDiv) {
+            statusDiv.innerHTML = '<div class="status info">Fetching error log…</div>';
+            const logTail = await fetchAndShowLogTail();
+            const escaped = logTail.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            statusDiv.innerHTML = '<div class="status error">✗ Application did not start within 5 minutes.</div>' +
+              '<details style="margin-top:8px;"><summary style="cursor:pointer;color:#60a5fa;">Show error trace</summary>' +
+              '<pre style="margin-top:8px;padding:8px;background:#111827;border:1px solid #1f2937;border-radius:6px;font-size:10px;max-height:300px;overflow:auto;white-space:pre-wrap;">' + escaped + '</pre></details>';
+          }
+          return;
+        }
+        const ok = await checkAppStatus(true);
+        if (ok) {
+          stopStatusPolling();
+        }
+      }, STATUS_POLL_INTERVAL);
+    }
+
+    async function runApplication() {
+      const btn = document.getElementById('run-app-btn');
+      const statusDiv = document.getElementById('run-status');
+      btn.disabled = true;
+      statusDiv.innerHTML = '<div class="status info">Starting application (this may take 30–60 seconds)…</div>';
+      try {
+        const res = await fetch(API_BASE + '/api/run-application', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({}) });
+        const text = await res.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (_) {
+          statusDiv.innerHTML = '<div class="status error">✗ Server returned invalid response. Ensure you are using the Global Context server (port 8003) or the main UI server with /api/run-application support.</div>';
+          btn.disabled = false;
+          return;
+        }
+        if (data.started) {
+          statusDiv.innerHTML = '<div class="status info">Application starting… Status will update automatically when ready.</div>';
+          startStatusPolling(Date.now());
+        } else {
+          let errMsg = data.error || 'Failed to start';
+          let html = '<div class="status error">✗ ' + errMsg.replace(/\n/g, '<br>') + '</div>';
+          if (data.logTail && data.logTail.trim()) {
+            const escaped = data.logTail.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            html += '<details open style="margin-top:8px;"><summary style="cursor:pointer;color:#60a5fa;">Error trace</summary>' +
+              '<pre style="margin-top:8px;padding:8px;background:#111827;border:1px solid #1f2937;border-radius:6px;font-size:10px;max-height:300px;overflow:auto;white-space:pre-wrap;">' + escaped + '</pre></details>';
+          }
+          statusDiv.innerHTML = html;
+        }
+      } catch (e) {
+        statusDiv.innerHTML = '<div class="status error">✗ ' + e.message + '</div>';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function openDemo() {
+      window.open(DEMO_URL, '_blank', 'noopener');
+    }
+
+    function apiTestOutput(msg) {
+      const el = document.getElementById('api-test-output');
+      if (el) el.textContent = msg;
+    }
+
+    async function testMigratedQueries() {
+      apiTestOutput('Testing GET ' + APP_BASE + '/api/demo/migrated-queries…');
+      try {
+        const res = await fetch(APP_BASE + '/api/demo/migrated-queries');
+        const data = await res.json();
+        apiTestOutput('✓ Success\n\n' + JSON.stringify(data, null, 2));
+      } catch (e) {
+        apiTestOutput('✗ Error: ' + e.message);
+      }
+    }
+
+    async function testClaimSearch() {
+      apiTestOutput('Testing POST ' + APP_BASE + '/api/claims/search…');
+      try {
+        const res = await fetch(APP_BASE + '/api/claims/search', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            companyCode: '001',
+            statusFilter: null,
+            statusOperator: null,
+            chassisFilter: null,
+            customerFilter: null,
+            sdeClaimFilter: null,
+            claimTypeFilter: null,
+            openClaimsOnly: false,
+            claimAgeDays: 0,
+            searchString: null,
+            sortAscending: true,
+            sortByClaimNumber: true
+          })
+        });
+        const data = await res.json();
+        apiTestOutput('✓ Success\n\n' + JSON.stringify(data, null, 2));
+      } catch (e) {
+        apiTestOutput('✗ Error: ' + e.message);
+      }
+    }
+
+    async function testSeedApi() {
+      apiTestOutput('Testing POST ' + API_BASE + '/api/proxy/seed (→ warranty app)…');
+      try {
+        const res = await fetch(API_BASE + '/api/proxy/seed', { method: 'POST' });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.status === 'ok') {
+          apiTestOutput('✓ Success\n\n' + JSON.stringify(data, null, 2));
+        } else {
+          apiTestOutput('✗ ' + (data.message || data.error || res.status) + '\n\n' + JSON.stringify(data, null, 2));
+        }
+      } catch (e) {
+        apiTestOutput('✗ Error: ' + e.message + ' (Is the warranty app running on port ' + (window.APP_PORT || '8081') + '?)');
+      }
+    }
+
+    async function seedDemoData() {
+      const btn = document.getElementById('seed-demo-btn');
+      const statusDiv = document.getElementById('run-status');
+      if (!btn || !statusDiv) return;
+      btn.disabled = true;
+      statusDiv.innerHTML = '<div class="status info">Seeding demo invoices and claims…</div>';
+      try {
+        const res = await fetch(API_BASE + '/api/proxy/seed', { method: 'POST' });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.status === 'ok') {
+          statusDiv.innerHTML = '<div class="status success">✓ ' + (data.message || 'Demo data seeded. Claim creation should work now.') + '</div>';
+        } else {
+          statusDiv.innerHTML = '<div class="status error">✗ ' + (data.message || data.error || res.status) + '</div>';
+        }
+      } catch (e) {
+        statusDiv.innerHTML = '<div class="status error">✗ ' + e.message + ' — Is the warranty app running? Click "Run Application" first.</div>';
+      }
+      btn.disabled = false;
+    }
+
+    function showFetchErrorBanner(err) {
+      const banner = document.getElementById('fetch-error-banner');
+      if (!banner) return;
+      const origin = document.getElementById('diag-origin');
+      const api = document.getElementById('diag-api');
+      const detail = document.getElementById('diag-detail');
+      if (origin) origin.textContent = location.origin || location.href || 'unknown';
+      if (api) api.textContent = (API_BASE || '(same)') + '/api/...';
+      if (detail && err) {
+        let msg = err.message || String(err);
+        if (err.name) msg = err.name + ': ' + msg;
+        if (err.cause) msg += ' (cause: ' + (err.cause?.message || err.cause) + ')';
+        detail.textContent = msg;
+      }
+      banner.style.display = 'block';
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      let connected = false;
+      // If opened from file://, fetch will fail - must use http://localhost:8003/
+      if (location.protocol === 'file:') {
+        showFetchErrorBanner(new Error('Page opened from file:// - open http://127.0.0.1:8003/ instead'));
+      } else {
+      try {
+        const r = await fetch(API_BASE + '/api/build-context', { signal: AbortSignal.timeout(5000) });
+        connected = r.ok;
+        if (!connected) showFetchErrorBanner(new Error('Server returned ' + r.status));
+      } catch (e) {
+        showFetchErrorBanner(e);
+      }
+      }
+      // Show hint when not on expected origin
+      const hint = document.getElementById('server-hint');
+      if (API_BASE && hint) {
+        hint.innerHTML = '| <a href="http://127.0.0.1:8003/" target="_blank" style="color:#60a5fa">Open http://127.0.0.1:8003/</a> if you see "Failed to fetch"';
+      }
+      // Tabs
+      const tabs = document.querySelectorAll('.tabs .tab');
+      const contents = {
+        step1: document.getElementById('tab-step1'),
+        step2: document.getElementById('tab-step2'),
+        step3: document.getElementById('tab-step3'),
+        step4: document.getElementById('tab-step4'),
+        step5: document.getElementById('tab-step5'),
+      };
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const target = tab.getAttribute('data-tab');
+          tabs.forEach(t => {
+            t.classList.remove('active');
+            t.style.background = '#020617';
+            t.style.color = '#9ca3af';
+          });
+          tab.classList.add('active');
+          tab.style.background = '#111827';
+          tab.style.color = '#e5e7eb';
+          Object.keys(contents).forEach(key => {
+            contents[key].style.display = key === target ? 'block' : 'none';
+          });
+          if (target === 'step2') checkMigrateModels();
+          if (target === 'step4') loadBuildContext();
+          if (target === 'step5') checkAppStatus();
+        });
+      });
+
+      document.getElementById('discover-btn').addEventListener('click', discoverGlobalDirs);
+      document.getElementById('build-btn').addEventListener('click', buildGlobalContext);
+      document.getElementById('mf-refresh-btn').addEventListener('click', loadProgramsAndNodes);
+      document.getElementById('mf-run-btn').addEventListener('click', migrateFeature);
+      document.getElementById('mf-regen-ui-btn').addEventListener('click', regenerateUiSchema);
+      document.getElementById('val-run-btn').addEventListener('click', runValidation);
+      document.getElementById('val-push-btn')?.addEventListener('click', pushToRepo);
+      document.getElementById('build-app-btn').addEventListener('click', buildApplication);
+      document.getElementById('run-app-btn').addEventListener('click', runApplication);
+      document.getElementById('open-demo-btn').addEventListener('click', openDemo);
+      document.getElementById('check-status-btn').addEventListener('click', checkAppStatus);
+      document.getElementById('seed-demo-btn').addEventListener('click', seedDemoData);
+      document.getElementById('test-seed-btn').addEventListener('click', testSeedApi);
+      document.getElementById('go-to-demo-from-build')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const tab5 = document.querySelector('.tab[data-tab="step5"]');
+        const contents = { step1: document.getElementById('tab-step1'), step2: document.getElementById('tab-step2'), step3: document.getElementById('tab-step3'), step4: document.getElementById('tab-step4'), step5: document.getElementById('tab-step5') };
+        document.querySelectorAll('.tab').forEach(t => { t.classList.remove('active'); t.style.background = '#020617'; t.style.color = '#9ca3af'; });
+        if (tab5) { tab5.classList.add('active'); tab5.style.background = '#111827'; tab5.style.color = '#e5e7eb'; }
+        Object.keys(contents).forEach(k => { contents[k].style.display = k === 'step5' ? 'block' : 'none'; });
+        checkAppStatus();
+        openDemo();
+      });
+      document.getElementById('test-migrated-btn').addEventListener('click', testMigratedQueries);
+      document.getElementById('test-search-btn').addEventListener('click', testClaimSearch);
+      document.getElementById('customize-link').addEventListener('click', (e) => {
+        e.preventDefault();
+        window.open('/api/customize-guide', '_blank');
+      });
+
+      if (connected) {
+        discoverGlobalDirs();
+        loadProgramsAndNodes();
+        loadBuildContext();
+      }
+    });
+  </script>
+</body>
+</html>
+

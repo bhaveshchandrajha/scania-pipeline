@@ -1,0 +1,315 @@
+{
+  "astNode": {
+    "id": "n2614",
+    "kind": "Procedure",
+    "name": "loadTextGPT",
+    "sem": "{}",
+    "outgoingEdges": [],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "startLine": 3563,
+      "startColumn": 7,
+      "endLine": 3596,
+      "endColumn": 24
+    }
+  },
+  "narrative": "### Node n2614: Procedure `loadTextGPT`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Raw sem JSON**:\n```json\n{}\n```",
+  "rpgSnippet": "     P loadTextGPT     B\n     D loadTextGPT     PI\n     D   start                        3  0 value\n     D*----------------------------------------------------------------\n       ZLT = 0;\n       exec sql\n          declare ct Cursor for select GPT_TXT\n            from HSGPTF\n            where GPT_KZL = :G71000 and GPT_CNR = :G71050 and\n                  GPT_FNR = :G7306A\n            order by GPT_ZNR;\n       exec sql open ct;\n       exec sql fetch next from ct into :record_t;\n       If SQLCOD = 100;\n          loadtextGps(start);\n          exec sql close ct;\n          If ZLT < start;\n             ZLT = start;\n          EndIf;\n          return;\n       EndIf;\n       DoW SQLCOD = 0;\n          TEXT = R_TXT;\n          ZLT += 1;\n          If ZLT > start;\n             write HS1212ST;\n          EndIf;\n          exec sql fetch next from ct into :record_t;\n       EndDo;\n       exec sql close ct;\n       If ZLT < start;\n          ZLT = start;\n       EndIf;\n     P                 E",
+  "dbContracts": [],
+  "symbolMetadata": {},
+  "callGraph": {
+    "calls": [],
+    "calledBy": [],
+    "tableAccess": {
+      "HS1212D": [
+        {
+          "nodeId": "n2635",
+          "opcode": "WRITE",
+          "line": 3588
+        }
+      ]
+    }
+  },
+  "statementNodes": [
+    {
+      "id": "n2615",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 3566,
+      "endLine": 3566
+    },
+    {
+      "id": "n2616",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3567,
+      "endLine": 3567,
+      "target": "sym.var.ZLT",
+      "symbols": [
+        "sym.var.ZLT"
+      ]
+    },
+    {
+      "id": "n2620",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 3576,
+      "endLine": 3583,
+      "symbols": [
+        "sym.var.start"
+      ]
+    },
+    {
+      "id": "n2629",
+      "kind": "DoW",
+      "opcode": "DOW",
+      "startLine": 3584,
+      "endLine": 3591
+    },
+    {
+      "id": "n2640",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 3593,
+      "endLine": 3595
+    },
+    {
+      "id": "n2621",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3576,
+      "endLine": 3576,
+      "symbols": [
+        "sym.var.SQLCOD"
+      ]
+    },
+    {
+      "id": "n2623",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 3579,
+      "endLine": 3581
+    },
+    {
+      "id": "n2627",
+      "kind": "Return",
+      "opcode": "RETURN",
+      "startLine": 3582,
+      "endLine": 3582
+    },
+    {
+      "id": "n2628",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 3583,
+      "endLine": 3583
+    },
+    {
+      "id": "n2630",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3584,
+      "endLine": 3584,
+      "symbols": [
+        "sym.var.SQLCOD"
+      ]
+    },
+    {
+      "id": "n2631",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3585,
+      "endLine": 3585,
+      "target": "sym.var.TEXT",
+      "symbols": [
+        "sym.var.TEXT",
+        "sym.var.r_txt"
+      ]
+    },
+    {
+      "id": "n2632",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3586,
+      "endLine": 3586,
+      "target": "sym.var.ZLT",
+      "symbols": [
+        "sym.var.ZLT"
+      ]
+    },
+    {
+      "id": "n2633",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 3587,
+      "endLine": 3589
+    },
+    {
+      "id": "n2638",
+      "kind": "EndDo",
+      "opcode": null,
+      "startLine": 3591,
+      "endLine": 3591
+    },
+    {
+      "id": "n2641",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3593,
+      "endLine": 3593,
+      "symbols": [
+        "sym.var.ZLT",
+        "sym.var.start"
+      ]
+    },
+    {
+      "id": "n2642",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3594,
+      "endLine": 3594,
+      "target": "sym.var.ZLT",
+      "symbols": [
+        "sym.var.ZLT",
+        "sym.var.start"
+      ]
+    },
+    {
+      "id": "n2643",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 3595,
+      "endLine": 3595
+    },
+    {
+      "id": "n2624",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3579,
+      "endLine": 3579,
+      "symbols": [
+        "sym.var.ZLT",
+        "sym.var.start"
+      ]
+    },
+    {
+      "id": "n2625",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3580,
+      "endLine": 3580,
+      "target": "sym.var.ZLT",
+      "symbols": [
+        "sym.var.ZLT",
+        "sym.var.start"
+      ]
+    },
+    {
+      "id": "n2626",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 3581,
+      "endLine": 3581
+    },
+    {
+      "id": "n2634",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3587,
+      "endLine": 3587,
+      "symbols": [
+        "sym.var.ZLT",
+        "sym.var.start"
+      ]
+    },
+    {
+      "id": "n2635",
+      "kind": "Write",
+      "opcode": "WRITE",
+      "startLine": 3588,
+      "endLine": 3588,
+      "target": "HS1212D",
+      "symbols": [
+        "sym.var.HS1212ST"
+      ]
+    },
+    {
+      "id": "n2636",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 3589,
+      "endLine": 3589
+    }
+  ],
+  "lineToNodeMap": {
+    "3566": [
+      "n2615"
+    ],
+    "3567": [
+      "n2616"
+    ],
+    "3576-3583": [
+      "n2620"
+    ],
+    "3584-3591": [
+      "n2629"
+    ],
+    "3593-3595": [
+      "n2640"
+    ],
+    "3576": [
+      "n2621"
+    ],
+    "3579-3581": [
+      "n2623"
+    ],
+    "3582": [
+      "n2627"
+    ],
+    "3583": [
+      "n2628"
+    ],
+    "3584": [
+      "n2630"
+    ],
+    "3585": [
+      "n2631"
+    ],
+    "3586": [
+      "n2632"
+    ],
+    "3587-3589": [
+      "n2633"
+    ],
+    "3591": [
+      "n2638"
+    ],
+    "3593": [
+      "n2641"
+    ],
+    "3594": [
+      "n2642"
+    ],
+    "3595": [
+      "n2643"
+    ],
+    "3579": [
+      "n2624"
+    ],
+    "3580": [
+      "n2625"
+    ],
+    "3581": [
+      "n2626"
+    ],
+    "3587": [
+      "n2634"
+    ],
+    "3588": [
+      "n2635"
+    ],
+    "3589": [
+      "n2636"
+    ]
+  }
+}

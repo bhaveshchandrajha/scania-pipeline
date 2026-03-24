@@ -1,0 +1,235 @@
+{
+  "programId": "HS1210",
+  "unitId": "qsys:HSSRC/QRPGLESRC/HS1210",
+  "entryNodeId": "n404",
+  "nodesInSlice": [
+    {
+      "nodeId": "n1919",
+      "kind": "Procedure",
+      "name": "CheckClaim",
+      "procedureName": "CreateFail",
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+        "startLine": 2968,
+        "endLine": 3033
+      }
+    },
+    {
+      "nodeId": "n1983",
+      "kind": "Procedure",
+      "name": "CheckV4",
+      "procedureName": "CheckClaim",
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+        "startLine": 3035,
+        "endLine": 3058
+      }
+    },
+    {
+      "nodeId": "n404",
+      "kind": "Subroutine",
+      "name": null,
+      "procedureName": null,
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+        "startLine": 824,
+        "endLine": 2798
+      }
+    }
+  ],
+  "contextFiles": [
+    "/Users/bhjha/Desktop/Work/scania-java-v2/context_index/HS1210_n1919.json",
+    "/Users/bhjha/Desktop/Work/scania-java-v2/context_index/HS1210_n1983.json",
+    "/Users/bhjha/Desktop/Work/scania-java-v2/context_index/HS1210_n404.json"
+  ],
+  "dbFiles": [
+    {
+      "name": "AUFWKO",
+      "library": "HSSRC"
+    },
+    {
+      "name": "FISTAM",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HS1210D",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKLF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKLF8",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHPPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHTPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHWPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSBTSLF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSBTSPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSEPAF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSFLALF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG70F",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF2",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF7",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71PF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG73LF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG73PF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG79F",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGFIPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSLF2",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSLF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGSCPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSKAMPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "RWAPRL1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "ITLSMF3",
+      "library": "P400IMS"
+    },
+    {
+      "name": "PIPPMST",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F001",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F002",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F003",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F009",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F085",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3L004H",
+      "library": "S400CAS"
+    }
+  ],
+  "generatedFiles": [
+    "com/scania/warranty/domain/HsgpspfId.java",
+    "com/scania/warranty/domain/Hsgpspf.java",
+    "com/scania/warranty/domain/ClaimCheckContext.java",
+    "com/scania/warranty/dto/ClaimCheckResultDto.java",
+    "com/scania/warranty/dto/ClaimCheckRequestDto.java",
+    "com/scania/warranty/repository/HsgpspfRepository.java",
+    "com/scania/warranty/service/ClaimValuesService.java",
+    "com/scania/warranty/service/ClaimCheckService.java",
+    "com/scania/warranty/service/DefaultClaimValuesService.java",
+    "com/scania/warranty/web/ClaimCheckController.java",
+    "com/scania/warranty/domain/CheckV4Result.java",
+    "com/scania/warranty/domain/CheckV4Criteria.java",
+    "com/scania/warranty/repository/InvoiceHeaderRepository.java",
+    "com/scania/warranty/repository/ExtendedPartAgreementRepository.java",
+    "com/scania/warranty/service/CheckV4Service.java",
+    "com/scania/warranty/dto/CheckV4RequestDto.java",
+    "com/scania/warranty/dto/CheckV4ResponseDto.java",
+    "com/scania/warranty/web/CheckV4Controller.java"
+  ],
+  "uiSchemaGenerated": [],
+  "rpgSnippet": "     P CheckClaim      B\n     D CheckClaim      PI              N\n     D*----------------------------------------------------------------\n     D counter         S              1  0 Inz(0)\n     D error           S               N   Inz(*Off)\n     D*****************************************************************\n      /free\n       errorT = *Blanks;\n       If %Trim(G73360) = '3' And G73280 = *Blanks;\n          counter += 1;\n          %Subst(errorT:(counter - 1) * 70 + 1:70) = 'Ursache Kampagne aber ' +\n                 'keine Kampagnen-Nr. eingetragen.';\n          G73360 = *Blanks;\n          Update HSG73LR1;\n       EndIf;\n       If G73360 = *Blanks;\n          counter += 1;\n          %Subst(errorT:(counter - 1) * 70 + 1:70) = 'Schadenscodierung Kund' +\n                 'e ung\ufffdltig.';\n       EndIf;\n       If %Trim(G73360) = '3' And (G73370 <> *Blanks Or G73380 <> *Blanks);\n          counter += 1;\n          %Subst(errorT:(counter - 1) * 70 + 1:70) = 'Schadenscodierung Kund' +\n                 'e ung\ufffdltig.';\n       EndIf;\n       If G73390 = *Blanks;\n          counter += 1;\n          %Subst(errorT:(counter - 1) * 70 + 1:70) = 'Schadenscodierung Werk' +\n                 'statt ung\ufffdltig.';\n       EndIf;\n       If %Trim(G73390) = '97' And (G73400 <> *Blanks Or G73410 <> *Blanks);\n          counter += 1;\n          %Subst(errorT:(counter - 1) * 70 + 1:70) = 'Schadenscodierung Werk' +\n                 'statt ung\ufffdltig.';\n       EndIf;\n       If G73070 = *Blanks;\n          counter += 1;\n          %Subst(errort:(counter - 1) * 70 + 1:70) = 'Es ist keine schadens'+\n                 'verursachende Teilenummer angegeben.';\n       EndIf;\n       SetlL (G73000:G73050:G73060) HSGPSPF;\n       ReadE(N) (G73000:G73050:G73060) HSGPSPF;\n       Dow Not %Eof(HSGPSPF) And Not error;\n          If GPS040 = 'SMA' And (GPS220 = *Blanks Or GPS240 = *Blanks);\n             error = *On;\n          EndIf;\n          ReadE(N) (G73000:G73050:G73060) HSGPSPF;\n       EndDo;\n       If error;\n          counter += 1;\n          %Subst(errorT:counter * 1:60) = 'Es sind Sonderkosten '+\n                 'ohne Codierung vorhanden.';\n       EndIf;\n       If getClaimValues('Requested':G73000:G73050:G73060:G73065) = 0;\n          counter += 1;\n          %Subst(errorT:counter * 1:60) = 'Antrag mit Wert 0 kan'+\n                 'n nicht versendet werden.';\n       EndIf;\n\n       If counter > 0 And errorT <> *Blanks;\n          ExFmt HS1210WE;\n          Return *Off;\n       EndIf;\n       Return *On;\n      /end-free\n     P                 E",
+  "primaryServiceFile": "com/scania/warranty/service/ClaimValuesService.java",
+  "runs": [
+    {
+      "contextFile": "/Users/bhjha/Desktop/Work/scania-java-v2/context_index/HS1210_n1919.json",
+      "returnCode": 0,
+      "stdoutPreview": "// === domain/HsgpspfId.java ===\n\npackage com.scania.warranty.domain;\n\n\n\nimport java.io.Serializable;\n\nimport java.math.BigDecimal;\n\nimport java.util.Objects;\n\n\n\npublic class HsgpspfId implements Serializable {\n\n\n\n    private String gps000;\n\n    private String gps010;\n\n    private String gps020;\n\n    private BigDecimal gps030;\n\n    private BigDecimal gps035;\n\n    private String gps040;\n\n\n\n    public HsgpspfId() {\n\n    }\n\n\n\n    public HsgpspfId(String gps000, String gps010, String gps020, BigDecimal gps030, BigDecimal gps035, String gps040) {\n\n        this.gps000 = gps000;\n\n        this.gps010 = gps010;\n\n        this.gps020 = gps020;\n\n        this.gps030 = gps030;\n\n        this.gps035 = gps035;\n\n        this.gps040 = gps040;\n\n    }\n\n\n\n    public String getGps000() {\n\n        return gps000;\n\n    }\n\n\n\n    public void setGps000(String gps000) {\n\n        this.gps000 = gps000;\n\n    }\n\n\n\n    public String getGps010() {\n\n        return gps010;\n\n    }\n\n\n\n    public void setGps010(String gps010) {\n\n        this.gps010 = gps010;\n\n    }\n\n\n\n    public String getGps020() {\n\n        return gps020;\n\n    }\n\n\n\n    public void setGps020(String gps020) {\n\n        this.gps020 = gps020;\n\n    }\n\n\n\n    public BigDecimal getGps030() {\n\n        return gps030;\n\n    }\n\n\n\n    public void setGps030(BigDecimal gps030) {\n\n        this.gps030 = gps030;\n\n    }\n\n\n\n    public BigDecimal getGps035() {\n\n        return gps035;\n\n    }\n\n\n\n    public void setGps035(BigDecimal gps035) {\n\n        this.gps035 = gps035;\n\n    }\n\n\n\n    public String getGps040() {\n\n        return gps040;\n\n    }\n\n\n\n    public void setGps040(String gps040) {\n\n        this.gps040 = gps040;\n\n    }\n\n\n\n    @Override\n\n    public boolean equals(Object o) {\n\n        if (this == o) return true;\n\n        if (o == null || getClass() != o.getClass()) return false;\n\n        HsgpspfId that = (HsgpspfId) o;\n\n        return Objects.equals(gps000, that.gps000) &&\n\n                Objects.equals(gps010, that.gps010) &&\n\n                Objects.equals(gps020, that.gps020) &&\n\n                Objects.equals(gps030, that.gps030) &&\n\n                Objects.equals(gps035, that.gps035) &&\n\n                Objects.equals(gps040, that.gps040);\n\n    }\n\n\n\n    @Override\n\n    public int hashCode() {\n\n        return Objects.hash(gps000, gps010, gps020, gps030, gps035, gps040);\n\n    }\n\n}\n\n\n\n// ==========================================\n\n// === domain/Hsgpspf.java ===\n\npackage com.scania.warranty.domain;\n\n\n\nimport jakarta.persistence.Column;\n\nimport jakarta.persistence.Entity;\n\nimport jakarta.persistence.Id;\n\nimport jakarta.persistence.IdClass;\n\nimport jakarta.persistence.Table;\n\nimport java.math.BigDecimal;\n\n\n\n@Entity\n\n@Table(name = \"HSGPSPF\")\n\n@IdClass(HsgpspfId.class)\n\npublic class Hsgpspf {\n\n\n\n    @Id\n\n    @Column(name = \"GPS000\", length = 3, nullable = false)\n\n    private String gps000; // @rpg-trace: schema\n\n\n\n    @Id\n\n    @Column(name = \"GPS010\", length = 8, nullable = false)\n\n    private String gps010; // @rpg-trace: schema\n\n\n\n    @Id\n\n    @Column(name = \"GPS020\", length = 2, nullable = false)\n\n    private String gps020; // @rpg-trace: schema\n\n\n\n    @Column(name = \"GPS025\", length = 2, nullable = false)\n\n    private String gps025; // @rpg-trace: schema\n\n\n\n    @Id\n\n    @Column(name = \"GPS030\", precision = 3, scale = 0, nullable = false)\n\n    private BigDecimal gps030; // @rpg-trace: schema\n\n\n\n    @Id\n\n    @Column(name = \"GPS035\", precision = 3, scale = 0, nullable = false)\n\n    private BigDecimal gps035; // @rpg-trace: schema\n\n\n\n    @Id\n\n    @Column(name = \"GPS040\", length = 3, nullable = false)\n\n    private String gps040; // @rpg-trace: schema\n\n\n\n    @Column(name = \"GPS050\", length = 18, nullable = false)\n\n    private String gps050; // @rpg-trace: schema\n\n\n\n    @Column(name = \"GPS060\", precision = 5, scale = 0, nullable = false)\n\n    private BigDecimal gps060; // @rpg-trace: schema\n\n\n\n    @Column(name = \"GPS070\", precision = 11, scale = 2, nullable = false)\n\n    private BigDecimal gps070; // @rpg-trace: schema\n\n\n\n  ",
+      "stderrPreview": "// Using Claude Opus (claude-opus-4-6) for highest accuracy\n\n// Context package size: 19.4 KB\n\n// DB Contracts: 1, Total columns: 30\n\n// Generating Pure Java (Track B) with layered architecture...\n\n// This may take 60-120 seconds for large packages...\n\n// Found 9 existing entity(ies) in project; will instruct LLM to reuse\n\n// Prompt size: 26.5 KB\n\n// Integration mode: writing into existing project warranty_demo\n\n// Starting Pure Java migration (Track B)...\n\n// Sending request to LLM (this may take 5\u201330+ min for large context)...\n\n// LLM still processing... (elapsed 60s)\n\n// LLM response received in 63.7 seconds\n\n// Parsing multi-file output...\n\n// Parser extracted 10 files:\n\n//   - domain/ClaimCheckContext.java\n\n//   - domain/Hsgpspf.java\n\n//   - domain/HsgpspfId.java\n\n//   - dto/ClaimCheckRequestDto.java\n\n//   - dto/ClaimCheckResultDto.java\n\n//   - repository/HsgpspfRepository.java\n\n//   - service/ClaimCheckService.java\n\n//   - service/ClaimValuesService.java\n\n//   - service/DefaultClaimValuesService.java\n\n//   - web/ClaimCheckController.java\n\n// Found 10 Java files to write\n\n// \u2705 Wrote com/scania/warranty/domain/HsgpspfId.java (2350 chars)\n\n// \u2705 Wrote com/scania/warranty/domain/Hsgpspf.java (8445 chars)\n\n// \u2705 Wrote com/scania/warranty/domain/ClaimCheckContext.java (494 chars)\n\n// \u2705 Wrote com/scania/warranty/dto/ClaimCheckResultDto.java (303 chars)\n\n// \u2705 Wrote com/scania/warranty/dto/ClaimCheckRequestDto.java (474 chars)\n\n// \u2705 Wrote com/scania/warranty/repository/HsgpspfRepository.java (914 chars)\n\n// \u2705 Wrote com/scania/warranty/service/ClaimValuesService.java (359 chars)\n\n// \u2705 Wrote com/scania/warranty/service/ClaimCheckService.java (4929 chars)\n\n// \u2705 Wrote com/scania/warranty/service/DefaultClaimValuesService.java (1227 chars)\n\n// \u2705 Wrote com/scania/warranty/web/ClaimCheckController.java (1884 chars)\n\n\n\n// \u2705 Successfully generated 10 Java files\n\n// \ud83d\udcc1 Output directory: /Users/bhjha/Desktop/Work/scania-java-v2/warranty_demo/src/main/java\n\n// \ud83d\udce6 Package structure:\n\n//    com/scania/warranty/domain/ClaimCheckContext.java\n\n//    com/scania/warranty/domain/Hsgpspf.java\n\n//    com/scania/warranty/domain/HsgpspfId.java\n\n//    com/scania/warranty/dto/ClaimCheckRequestDto.java\n\n//    com/scania/warranty/dto/ClaimCheckResultDto.java\n\n//    com/scania/warranty/repository/HsgpspfRepository.java\n\n//    com/scania/warranty/service/ClaimCheckService.java\n\n//    com/scania/warranty/service/ClaimValuesService.java\n\n//    com/scania/warranty/service/DefaultClaimValuesService.java\n\n//    com/scania/warranty/web/ClaimCheckController.java\n\n// \u2705 Migration complete! Files integrated into project: warranty_demo/src\n\n// \u2705 Ambiguous mapping fixer: Fixed 1 ambiguous mapping(s).\n\n\n\n// === Call-graph validation ===\n\n// Entity consolidation: FAIL\n\n// Subroutine coverage:  PASS\n\n//   - Missing entity for table HSG73LF1 (used in tableAccess)\n\n// \u26a0\ufe0f  Validation FAILED (entity consolidation)\n"
+    },
+    {
+      "contextFile": "/Users/bhjha/Desktop/Work/scania-java-v2/context_index/HS1210_n1983.json",
+      "returnCode": 0,
+      "stdoutPreview": "// === domain/CheckV4Result.java ===\n\npackage com.scania.warranty.domain;\n\n\n\npublic record CheckV4Result(boolean v4Found) {\n\n    public static CheckV4Result found() {\n\n        return new CheckV4Result(true);\n\n    }\n\n\n\n    public static CheckV4Result notFound() {\n\n        return new CheckV4Result(false);\n\n    }\n\n}\n\n\n\n// ==========================================\n\n// === domain/CheckV4Criteria.java ===\n\npackage com.scania.warranty.domain;\n\n\n\npublic record CheckV4Criteria(\n\n    String g71000,\n\n    String g71010,\n\n    String g71020,\n\n    String g71030,\n\n    String g71040,\n\n    String g71190,\n\n    String g71200\n\n) {\n\n    public String extractSuffix() {\n\n        if (g71200 != null && g71200.length() >= 10) {\n\n            return g71200.substring(7, 9); // @rpg-trace: n1988\n\n        }\n\n        return \"\";\n\n    }\n\n}\n\n\n\n// ==========================================\n\n// === repository/InvoiceHeaderRepository.java ===\n\npackage com.scania.warranty.repository;\n\n\n\nimport com.scania.warranty.domain.InvoiceHeader;\n\nimport org.springframework.data.jpa.repository.JpaRepository;\n\nimport org.springframework.data.jpa.repository.Query;\n\nimport org.springframework.data.repository.query.Param;\n\nimport org.springframework.stereotype.Repository;\n\n\n\nimport java.util.Optional;\n\n\n\n@Repository\n\npublic interface InvoiceHeaderRepository extends JpaRepository<InvoiceHeader, String> {\n\n\n\n    @Query(\"SELECT h FROM InvoiceHeader h WHERE h.ahk000 = :ahk000 AND h.ahk010 = :ahk010 \" +\n\n           \"AND h.ahk020 = :ahk020 AND h.ahk025 = :ahk025 AND h.ahk030 = :ahk030 \" +\n\n           \"AND h.ahk040 = :ahk040 AND h.ahk190 = :ahk190 AND h.ahk200 = :ahk200\")\n\n    Optional<InvoiceHeader> findByCompositeKey(\n\n        @Param(\"ahk000\") String ahk000,\n\n        @Param(\"ahk010\") String ahk010,\n\n        @Param(\"ahk020\") String ahk020,\n\n        @Param(\"ahk025\") String ahk025,\n\n        @Param(\"ahk030\") String ahk030,\n\n        @Param(\"ahk040\") String ahk040,\n\n        @Param(\"ahk190\") String ahk190,\n\n        @Param(\"ahk200\") String ahk200\n\n    ); // @rpg-trace: n1991\n\n}\n\n\n\n// ==========================================\n\n// === repository/ExtendedPartAgreementRepository.java ===\n\npackage com.scania.warranty.repository;\n\n\n\nimport com.scania.warranty.domain.ExtendedPartAgreement;\n\nimport org.springframework.data.jpa.repository.JpaRepository;\n\nimport org.springframework.data.jpa.repository.Query;\n\nimport org.springframework.data.repository.query.Param;\n\nimport org.springframework.stereotype.Repository;\n\n\n\nimport java.util.List;\n\n\n\n@Repository\n\npublic interface ExtendedPartAgreementRepository extends JpaRepository<ExtendedPartAgreement, String> {\n\n\n\n    @Query(\"SELECT e FROM ExtendedPartAgreement e WHERE e.epa000 = :epa000 AND e.epa040 = :epa040 \" +\n\n           \"AND e.epa050 = :epa050 AND e.epa060 = :epa060 AND e.epaType = :epaType \" +\n\n           \"ORDER BY e.epaDatv ASC\")\n\n    List<ExtendedPartAgreement> findByKeyAndType(\n\n        @Param(\"epa000\") String epa000,\n\n        @Param(\"epa040\") String epa040,\n\n        @Param(\"epa050\") String epa050,\n\n        @Param(\"epa060\") String epa060,\n\n        @Param(\"epaType\") String epaType\n\n    ); // @rpg-trace: n1996\n\n}\n\n\n\n// ==========================================\n\n// === service/CheckV4Service.java ===\n\npackage com.scania.warranty.service;\n\n\n\nimport com.scania.warranty.domain.CheckV4Criteria;\n\nimport com.scania.warranty.domain.CheckV4Result;\n\nimport com.scania.warranty.domain.ExtendedPartAgreement;\n\nimport com.scania.warranty.domain.InvoiceHeader;\n\nimport com.scania.warranty.repository.ExtendedPartAgreementRepository;\n\nimport com.scania.warranty.repository.InvoiceHeaderRepository;\n\nimport org.slf4j.Logger;\n\nimport org.slf4j.LoggerFactory;\n\nimport org.springframework.beans.factory.annotation.Autowired;\n\nimport org.springframework.stereotype.Service;\n\n\n\nimport java.util.List;\n\nimport java.util.Optional;\n\n\n\n@Service\n\npublic class CheckV4Service {\n\n\n\n    private static final Logger log = LoggerFactory.getLogger(CheckV4Service.class);\n\n    private static ",
+      "stderrPreview": "// Using Claude Opus (claude-opus-4-6) for highest accuracy\n\n// Context package size: 4.6 KB\n\n// DB Contracts: 0, Total columns: 0\n\n// Generating Pure Java (Track B) with layered architecture...\n\n// This may take 60-120 seconds for large packages...\n\n// Found 9 existing entity(ies) in project; will instruct LLM to reuse\n\n// Prompt size: 14.3 KB\n\n// Integration mode: writing into existing project warranty_demo\n\n// Starting Pure Java migration (Track B)...\n\n// Sending request to LLM (this may take 5\u201330+ min for large context)...\n\n// LLM response received in 26.8 seconds\n\n// Parsing multi-file output...\n\n// Parser extracted 8 files:\n\n//   - domain/CheckV4Criteria.java\n\n//   - domain/CheckV4Result.java\n\n//   - dto/CheckV4RequestDto.java\n\n//   - dto/CheckV4ResponseDto.java\n\n//   - repository/ExtendedPartAgreementRepository.java\n\n//   - repository/InvoiceHeaderRepository.java\n\n//   - service/CheckV4Service.java\n\n//   - web/CheckV4Controller.java\n\n// Found 8 Java files to write\n\n// \u2705 Wrote com/scania/warranty/domain/CheckV4Result.java (410 chars)\n\n// \u2705 Wrote com/scania/warranty/domain/CheckV4Criteria.java (539 chars)\n\n// \u2705 Wrote com/scania/warranty/repository/InvoiceHeaderRepository.java (1242 chars)\n\n// \u2705 Wrote com/scania/warranty/repository/ExtendedPartAgreementRepository.java (1110 chars)\n\n// \u2705 Wrote com/scania/warranty/service/CheckV4Service.java (3443 chars)\n\n// \u2705 Wrote com/scania/warranty/dto/CheckV4RequestDto.java (327 chars)\n\n// \u2705 Wrote com/scania/warranty/dto/CheckV4ResponseDto.java (216 chars)\n\n// \u2705 Wrote com/scania/warranty/web/CheckV4Controller.java (1512 chars)\n\n\n\n// \u2705 Successfully generated 8 Java files\n\n// \ud83d\udcc1 Output directory: /Users/bhjha/Desktop/Work/scania-java-v2/warranty_demo/src/main/java\n\n// \ud83d\udce6 Package structure:\n\n//    com/scania/warranty/domain/CheckV4Criteria.java\n\n//    com/scania/warranty/domain/CheckV4Result.java\n\n//    com/scania/warranty/dto/CheckV4RequestDto.java\n\n//    com/scania/warranty/dto/CheckV4ResponseDto.java\n\n//    com/scania/warranty/repository/ExtendedPartAgreementRepository.java\n\n//    com/scania/warranty/repository/InvoiceHeaderRepository.java\n\n//    com/scania/warranty/service/CheckV4Service.java\n\n//    com/scania/warranty/web/CheckV4Controller.java\n\n// \u2705 Migration complete! Files integrated into project: warranty_demo/src\n\n\n\n// === Call-graph validation ===\n\n// Entity consolidation: PASS\n\n// Subroutine coverage:  PASS\n\n// \u2705 Validation passed\n"
+    },
+    {
+      "contextFile": "/Users/bhjha/Desktop/Work/scania-java-v2/context_index/HS1210_n404.json",
+      "returnCode": 1,
+      "stdoutPreview": "",
+      "stderrPreview": "// Using Claude Opus (claude-opus-4-6) for highest accuracy\n\n// Context package size: 394.4 KB\n\n// DB Contracts: 6, Total columns: 296\n\n// Generating Pure Java (Track B) with layered architecture...\n\n// This may take 60-120 seconds for large packages...\n\n// Found 9 existing entity(ies) in project; will instruct LLM to reuse\n\n// Prompt size: 247.5 KB\n\n// Integration mode: writing into existing project warranty_demo\n\n// Starting Pure Java migration (Track B)...\n\n// Sending request to LLM (this may take 5\u201330+ min for large context)...\n\n// LLM still processing... (elapsed 60s)\n\n// LLM still processing... (elapsed 1921s)\n\n// Error after 4099.0 seconds: Connection error.\n\nTraceback (most recent call last):\n\n  File \"/Users/bhjha/Library/Python/3.9/lib/python/site-packages/httpx/_transports/default.py\", line 101, in map_httpcore_exceptions\n\n    yield\n\n  File \"/Users/bhjha/Library/Python/3.9/lib/python/site-packages/httpx/_transports/default.py\", line 250, in handle_request\n\n    resp = self._pool.handle_request(req)\n\n  File \"/Users/bhjha/Library/Python/3.9/lib/python/site-packages/httpcore/_sync/connection_pool.py\", line 256, in handle_request\n\n    raise exc from None\n\n  File \"/Users/bhjha/Library/Python/3.9/lib/python/site-packages/httpcore/_sync/connection_pool.py\", line 236, in handle_request\n\n    response = connection.handle_request(\n\n  File \"/Users/bhjha/Library/Python/3.9/lib/python/site-packages/httpcore/_sync/connection.py\", line 103, in handle_request\n\n    return self._connection.handle_request(request)\n\n  File \"/Users/bhjha/Library/Python/3.9/lib/python/site-packages/httpcore/_sync/http11.py\", line 136, in handle_request\n\n    raise exc\n\n  File \"/Users/bhjha/Library/Python/3.9/lib/python/site-packages/httpcore/_sync/http11.py\", line 106, in handle_request\n\n    ) = self._receive_response_headers(**kwargs)\n\n  File \"/Users/bhjha/Library/Python/3.9/lib/python/site-packages/httpcore/_sync/http11.py\", line 177, in _receive_response_headers\n\n    event = self._receive_event(timeout=timeout)\n\n  File \"/Users/bhjha/Library/Python/3.9/lib/python/site-packages/httpcore/_sync/http11.py\", line 217, in _receive_event\n\n    data = self._network_stream.read(\n\n  File \"/Users/bhjha/Library/Python/3.9/lib/python/site-packages/httpcore/_backends/sync.py\", line 128, in read\n\n    return self._sock.recv(max_bytes)\n\n  File \"/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/contextlib.py\", line 135, in __exit__\n\n    self.gen.throw(type, value, traceback)\n\n  File \"/Users/bhjha/Library/Python/3.9/lib/python/site-packages/httpcore/_exceptions.py\", line 14, in map_exceptions\n\n    raise to_exc(exc) from exc\n\nhttpcore.ReadError: [Errno 54] Connection reset by peer\n\n\n\nThe above exception was the direct cause of the following exception:\n\n\n\nTraceback (most recent call last):\n\n  File \"/Users/bhjha/Library/Python/3.9/lib/python/site-packages/anthropic/_base_client.py\", line 1072, in request\n\n    response = self._client.send(\n\n  File \"/Users/bhjha/Library/Python/3.9/lib/python/site-packages/httpx/_client.py\", line 914, in send\n\n    response = self._send_handling_auth(\n\n  File \"/Users/bhjha/Library/Python/3.9/lib/python/site-packages/httpx/_client.py\", line 942, in _send_handling_auth\n\n    response = self._send_handling_redirects(\n\n  File \"/Users/bhjha/Library/Python/3.9/lib/python/site-packages/httpx/_client.py\", line 979, in _send_handling_redirects\n\n    response = self._send_single_request(request)\n\n  File \"/Users/bhjha/Library/Python/3.9/lib/python/site-packages/httpx/_client.py\", line 1014, in _send_single_request\n\n    response = transport.handle_request(request)\n\n  File \"/Users/bhjha/Library/Python/3.9/lib/python/site-packages/httpx/_transports/default.py\", line 250, in handle_request\n\n    resp = self._pool.handle_request(req)\n\n  File \"/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/contextlib.py\", line 135, in __exit__\n\n    self.gen.throw(type, value, tracebac"
+    }
+  ],
+  "summary": "Migrated feature starting at HS1210 n404 with 3 node(s); DB files involved:\n  AUFWKO (HSSRC), FISTAM (HSSRC), HS1210D (HSSRC), HSAHKLF3 (HSSRC), HSAHKLF8 (HSSRC), HSAHKPF (HSSRC), HSAHPPF (HSSRC), HSAHTPF (HSSRC)\n  HSAHWPF (HSSRC), HSBTSLF1 (HSSRC), HSBTSPF (HSSRC), HSEPAF (HSSRC), HSFLALF1 (HSSRC), HSG70F (HSSRC), HSG71LF2 (HSSRC), HSG71LF3 (HSSRC)\n  HSG71LF7 (HSSRC), HSG71PF (HSSRC), HSG73LF1 (HSSRC), HSG73PF (HSSRC), HSG79F (HSSRC), HSGFIPF (HSSRC), HSGPSLF2 (HSSRC), HSGPSLF3 (HSSRC)\n  HSGPSPF (HSSRC), HSGSCPF (HSSRC), HSKAMPF (HSSRC), RWAPRL1 (HSSRC), ITLSMF3 (P400IMS), PIPPMST (S400CAS), S3F001 (S400CAS), S3F002 (S400CAS)\n  S3F003 (S400CAS), S3F009 (S400CAS), S3F085 (S400CAS), S3L004H (S400CAS)."
+}

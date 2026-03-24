@@ -1,0 +1,176 @@
+{
+  "astNode": {
+    "id": "n3455",
+    "kind": "Procedure",
+    "name": "getModules",
+    "sem": "{\"sym.var.result\": {\"refersTo\": \"sym.var.result\"}, \"sym.var.workOrderFull\": {\"refersTo\": \"sym.var.workOrderFull\"}}",
+    "outgoingEdges": [
+      "sym.var.result",
+      "sym.var.workOrderFull"
+    ],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "startLine": 4316,
+      "startColumn": 7,
+      "endLine": 4334,
+      "endColumn": 24
+    }
+  },
+  "narrative": "### Node n3455: Procedure `getModules`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Variables**:\n  - result (type: t.char.130)\n  - workOrderFull (type: t.char.23)\n\n- **Raw sem JSON**:\n```json\n{\n  \"sym.var.result\": {\n    \"refersTo\": \"sym.var.result\"\n  },\n  \"sym.var.workOrderFull\": {\n    \"refersTo\": \"sym.var.workOrderFull\"\n  }\n}\n```",
+  "rpgSnippet": "     P getModules      B\n     D getModules      PI           130A\n     D*---------------------------------------------------------------\n     D result          S            130A\n     D workOrderFull   S             23A\n     D*---------------------------------------------------------------\n       getDates();\n       workOrderFull = G71000 + '-' + G71030 + '-' + %Subst(G71200:6:4) + '-' +\n                       bookDate;\n       exec sql\n          SELECT LISTAGG(FTM_MT_COD, ', ') into :result\n            FROM HSFTMF\n            WHERE ftm_wkowo = :workOrderFull;\n       If SQLCOD = 0;\n          return result;\n       Else;\n          return *Blanks;\n       EndIf;\n     P                 E",
+  "dbContracts": [],
+  "symbolMetadata": {
+    "sym.var.result": {
+      "name": "result",
+      "kind": "variable",
+      "typeId": "t.char.130",
+      "scopeId": "scope.getModules",
+      "shared": true
+    },
+    "sym.var.workOrderFull": {
+      "name": "workOrderFull",
+      "kind": "variable",
+      "typeId": "t.char.23",
+      "scopeId": "scope.getModules",
+      "shared": true
+    }
+  },
+  "callGraph": {
+    "calls": [
+      "n3445"
+    ],
+    "calledBy": [
+      "n498"
+    ],
+    "subroutinesInvoked": [
+      "GETDATES"
+    ],
+    "callsWithDetails": [
+      {
+        "calleeNodeId": "n3445",
+        "calleeName": "GETDATES",
+        "opcode": "CALLP"
+      }
+    ]
+  },
+  "statementNodes": [
+    {
+      "id": "n3456",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 4318,
+      "endLine": 4318
+    },
+    {
+      "id": "n3457",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 4321,
+      "endLine": 4321
+    },
+    {
+      "id": "n3458",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4323,
+      "endLine": 4324,
+      "target": "sym.var.workOrderFull",
+      "symbols": [
+        "sym.var.G71000",
+        "sym.var.G71030",
+        "sym.var.workOrderFull",
+        "sym.var.bookDate"
+      ]
+    },
+    {
+      "id": "n3461",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4329,
+      "endLine": 4333
+    },
+    {
+      "id": "n3459",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4323,
+      "endLine": 4323,
+      "symbols": [
+        "sym.ds.G71200"
+      ]
+    },
+    {
+      "id": "n3462",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4329,
+      "endLine": 4329,
+      "symbols": [
+        "sym.var.SQLCOD"
+      ]
+    },
+    {
+      "id": "n3463",
+      "kind": "Return",
+      "opcode": "RETURN",
+      "startLine": 4330,
+      "endLine": 4330,
+      "symbols": [
+        "sym.var.result"
+      ]
+    },
+    {
+      "id": "n3464",
+      "kind": "Else",
+      "opcode": "ELSE",
+      "startLine": 4331,
+      "endLine": 4331
+    },
+    {
+      "id": "n3465",
+      "kind": "Return",
+      "opcode": "RETURN",
+      "startLine": 4332,
+      "endLine": 4332
+    },
+    {
+      "id": "n3466",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4333,
+      "endLine": 4333
+    }
+  ],
+  "lineToNodeMap": {
+    "4318": [
+      "n3456"
+    ],
+    "4321": [
+      "n3457"
+    ],
+    "4323-4324": [
+      "n3458"
+    ],
+    "4329-4333": [
+      "n3461"
+    ],
+    "4323": [
+      "n3459"
+    ],
+    "4329": [
+      "n3462"
+    ],
+    "4330": [
+      "n3463"
+    ],
+    "4331": [
+      "n3464"
+    ],
+    "4332": [
+      "n3465"
+    ],
+    "4333": [
+      "n3466"
+    ]
+  }
+}

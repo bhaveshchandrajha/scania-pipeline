@@ -1,0 +1,128 @@
+{
+  "astNode": {
+    "id": "n1838",
+    "kind": "Procedure",
+    "name": null,
+    "sem": "{\"sym.var.AUTO\":{\"refersTo\":\"sym.var.AUTO\"},\"sym.var.AKTION\":{\"refersTo\":\"sym.var.AKTION\"},\"sym.var.HSG73PR\":{\"refersTo\":\"sym.var.HSG73PR\"},\"sym.var.G73060\":{\"refersTo\":\"sym.var.G73060\"}}",
+    "outgoingEdges": [
+      "sym.var.HSG73PR",
+      "sym.var.G73060",
+      "sym.var.AKTION",
+      "sym.var.AUTO"
+    ],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1210",
+      "startLine": 2889,
+      "startColumn": 7,
+      "endLine": 2966,
+      "endColumn": 24
+    },
+    "raw": {
+      "id": "n1838",
+      "kind": "Procedure",
+      "sem": {
+        "sym.var.AUTO": {
+          "refersTo": "sym.var.AUTO"
+        },
+        "sym.var.AKTION": {
+          "refersTo": "sym.var.AKTION"
+        },
+        "sym.var.HSG73PR": {
+          "refersTo": "sym.var.HSG73PR"
+        },
+        "sym.var.G73060": {
+          "refersTo": "sym.var.G73060"
+        }
+      },
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+        "startLine": 2889,
+        "startLinePP": 2891,
+        "startCol": 7,
+        "startByte": 135939,
+        "endLine": 2966,
+        "endLinePP": 2968,
+        "endCol": 24,
+        "endByte": 138486
+      },
+      "props": {
+        "procedure_name": "CreateClaim",
+        "opcode": "PROC",
+        "name": "CreateFail"
+      },
+      "children": [
+        "n1839",
+        "n1840",
+        "n1841",
+        "n1842",
+        "n1843",
+        "n1844",
+        "n1845",
+        "n1846",
+        "n1847",
+        "n1848",
+        "n1850",
+        "n1856",
+        "n1864",
+        "n1872",
+        "n1873",
+        "n1874",
+        "n1875",
+        "n1876",
+        "n1880",
+        "n1885",
+        "n1886",
+        "n1893",
+        "n1894",
+        "n1895",
+        "n1896",
+        "n1897",
+        "n1898",
+        "n1899",
+        "n1900",
+        "n1901",
+        "n1902",
+        "n1915",
+        "n1916",
+        "n1917"
+      ]
+    }
+  },
+  "narrative": "### Node n1838: Procedure\n\nProcedure `n1838` expresses business logic derived from its semantic block and referenced symbols/files.\n\n- **Variables**:\n  - AUTO (type: t.char.1)\n  - AKTION (type: t.char.1)\n  - HSG73PR (type: t.record.HSG73PR)\n  - G73060 (type: t.char.2)\n\n- **Outgoing edges**:\n  - sym.var.HSG73PR\n  - sym.var.G73060\n  - sym.var.AKTION\n  - sym.var.AUTO\n\n- **Raw sem JSON**:\n```json\n{\n  \"sym.var.AUTO\" : {\n    \"refersTo\" : \"sym.var.AUTO\"\n  },\n  \"sym.var.AKTION\" : {\n    \"refersTo\" : \"sym.var.AKTION\"\n  },\n  \"sym.var.HSG73PR\" : {\n    \"refersTo\" : \"sym.var.HSG73PR\"\n  },\n  \"sym.var.G73060\" : {\n    \"refersTo\" : \"sym.var.G73060\"\n  }\n}\n```\n",
+  "rpgSnippet": "     P CreateFail      B\n     D CreateFail      PI\n     D   Failure                      2  0 value\n     D   Groups                       4A   value\n     D   PartNo                       7A   value\n     D   Maintenance                  1N   value\n     D   Text                        65A   Dim(4) value\n     D   valueMat                    11  2 value\n     D   valueLab                    11  2 value\n     D   valueSpe                    11  2 value\n     D*----------------------------------------------------------------\n     D*****************************************************************\n      /free\n        Clear HSG73PR;\n        G73000 = G71000;\n        G73010 = G71010;\n        G73020 = G71020;\n        G73030 = G71030;\n        G73040 = G71040;\n        G73050 = G71050;\n        G73060 = %EditC(Failure:'X');\n        If partNo = *Blanks;\n           G73070 = G79_SVT;\n        Else;\n           G73070 = partNo;\n        EndIf;\n        If %Subst(Groups:1:2) = *Blanks;\n           G73080 = '00';\n        Else;\n           G73080 = %Subst(Groups:1:2);\n        EndIf;\n        If %Subst(Groups:3:2) = *Blanks;\n           G73090 = '00';\n        Else;\n           G73090 = %Subst(Groups:3:2);\n        EndIf;\n        G73100 = G79_SC;\n        G73120 = Text(1);\n        G73130 = Text(2);\n        G73140 = G79_DC;\n        If Maintenance;\n           %Subst(G73140:1:1) = 'W';\n        EndIf;\n        If BTS060 = 'SAT' And %Subst(G73140:2:1) = '2';\n           %Subst(G73140:2:1) = '8';\n        EndIf;\n        Chain G73140 S3f085;\n        If %Found(S3f085);\n           G73180 = DMCPWF;\n           G73190 = DLCPWF;\n           G73200 = DSCPWF;\n        EndIf;\n        G73210 = valueMat;\n        G73220 = valueLab;\n        G73230 = valueSpe;\n        G73240 = 1;\n        G73290 = 0;\n        G73320 = Text(3);\n        G73330 = Text(4);\n        G73340 = G73060;\n        //Freigabe-Nr. ermitteln\n        If %SUBST(GetScope(G73140):1:1) = 'R';\n           SetLl (G71000:G71030 + G71040) RWAPRL1;\n           ReadE (G71000:G71030 + G71040) RWAPRL1;\n           DoW Not %Eof(RWAPRL1);\n              If APR_NR <> *Blanks And G71060 = APR_FGNR;\n                 %SUBST(G73330:47:14) = APR_NR;\n              EndIf;\n              ReadE (G71000:G71030 + G71040) RWAPRL1;\n           EndDo;\n        EndIf;\n        Write(E) HSG73PR;\n        Auto = 'J';\n        CallHS1217(G71000:G71010:G71020:G71030:G71040:G71050:G73060:\n                   Aktion:Auto);\n        Return;\n      /end-free\n     P                 E",
+  "dbContracts": [],
+  "symbolMetadata": {
+    "sym.var.AUTO": {
+      "name": "AUTO",
+      "kind": "variable",
+      "description": null,
+      "typeRef": "t.char.1"
+    },
+    "sym.var.AKTION": {
+      "name": "AKTION",
+      "kind": "variable",
+      "description": null,
+      "typeRef": "t.char.1"
+    },
+    "sym.var.HSG73PR": {
+      "name": "HSG73PR",
+      "kind": "variable",
+      "description": null,
+      "typeRef": "t.record.HSG73PR"
+    },
+    "sym.var.G73060": {
+      "name": "G73060",
+      "kind": "variable",
+      "description": null,
+      "typeRef": "t.char.2"
+    }
+  },
+  "displayFiles": [
+    {
+      "symbolId": "sym.dspf.HS1210D",
+      "name": "HS1210D",
+      "fileId": "qsys:HSSRC/QDDSSRC/HS1210D",
+      "path": "/QSYS.LIB/HSSRC.LIB/QDDSSRC.FILE/HS1210D.MBR"
+    }
+  ]
+}

@@ -1,0 +1,307 @@
+{
+  "astNode": {
+    "id": "n3187",
+    "kind": "Procedure",
+    "name": "GetClaimAge",
+    "sem": "{\"sym.var.Age\": {\"refersTo\": \"sym.var.Age\"}}",
+    "outgoingEdges": [
+      "sym.var.Age"
+    ],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "startLine": 4079,
+      "startColumn": 7,
+      "endLine": 4098,
+      "endColumn": 24
+    }
+  },
+  "narrative": "### Node n3187: Procedure `GetClaimAge`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Variables**:\n  - Age (type: t.dec9_0)\n\n- **Raw sem JSON**:\n```json\n{\n  \"sym.var.Age\": {\n    \"refersTo\": \"sym.var.Age\"\n  }\n}\n```",
+  "rpgSnippet": "     P GetClaimAge     B\n     D GetClaimAge     PI\n     D*----------------------------------------------------------------\n     D Age             S              9  0\n     C*****************************************************************\n        Monitor;\n           If G7324A = '1';\n              Age = %Diff(%Date(G71090:*Iso):%Date(G71080:*Iso):*M);\n           Else;\n              Age = %Diff(%Date(G71090:*Iso):%Date(G7325A:*Eur):*M);\n           EndIf;\n        On-Error *All;\n              Age = 100;\n        EndMon;\n        If Age > 99;\n           KLMTH = 99;\n        Else;\n           KLMTH = Age;\n        EndIf;\n     P GetClaimAge     E",
+  "dbContracts": [],
+  "symbolMetadata": {
+    "sym.var.Age": {
+      "name": "Age",
+      "kind": "variable",
+      "typeId": "t.dec9_0",
+      "scopeId": "scope.GetClaimAge",
+      "shared": true
+    }
+  },
+  "callGraph": {
+    "calls": [],
+    "calledBy": [
+      "n2793"
+    ]
+  },
+  "statementNodes": [
+    {
+      "id": "n3188",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 4081,
+      "endLine": 4081
+    },
+    {
+      "id": "n3189",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 4083,
+      "endLine": 4083
+    },
+    {
+      "id": "n3190",
+      "kind": "Monitor",
+      "opcode": "MONITOR",
+      "startLine": 4084,
+      "endLine": 4092
+    },
+    {
+      "id": "n3206",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4093,
+      "endLine": 4097
+    },
+    {
+      "id": "n3191",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4085,
+      "endLine": 4089
+    },
+    {
+      "id": "n3203",
+      "kind": "OnError",
+      "opcode": "ONERROR",
+      "startLine": 4090,
+      "endLine": 4090
+    },
+    {
+      "id": "n3204",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4091,
+      "endLine": 4091,
+      "target": "sym.var.Age",
+      "symbols": [
+        "sym.var.Age"
+      ]
+    },
+    {
+      "id": "n3205",
+      "kind": "EndMon",
+      "opcode": null,
+      "startLine": 4092,
+      "endLine": 4092
+    },
+    {
+      "id": "n3207",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4093,
+      "endLine": 4093,
+      "symbols": [
+        "sym.var.Age"
+      ]
+    },
+    {
+      "id": "n3208",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4094,
+      "endLine": 4094,
+      "target": "sym.var.KLMTH",
+      "symbols": [
+        "sym.var.KLMTH"
+      ]
+    },
+    {
+      "id": "n3209",
+      "kind": "Else",
+      "opcode": "ELSE",
+      "startLine": 4095,
+      "endLine": 4095
+    },
+    {
+      "id": "n3210",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4096,
+      "endLine": 4096,
+      "target": "sym.var.KLMTH",
+      "symbols": [
+        "sym.var.KLMTH",
+        "sym.var.Age"
+      ]
+    },
+    {
+      "id": "n3211",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4097,
+      "endLine": 4097
+    },
+    {
+      "id": "n3192",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4085,
+      "endLine": 4085,
+      "symbols": [
+        "sym.var.G7324A"
+      ]
+    },
+    {
+      "id": "n3193",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4086,
+      "endLine": 4086,
+      "target": "sym.var.Age",
+      "symbols": [
+        "sym.var.Age"
+      ]
+    },
+    {
+      "id": "n3197",
+      "kind": "Else",
+      "opcode": "ELSE",
+      "startLine": 4087,
+      "endLine": 4087
+    },
+    {
+      "id": "n3198",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4088,
+      "endLine": 4088,
+      "target": "sym.var.Age",
+      "symbols": [
+        "sym.var.Age"
+      ]
+    },
+    {
+      "id": "n3202",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4089,
+      "endLine": 4089
+    },
+    {
+      "id": "n3194",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4086,
+      "endLine": 4086
+    },
+    {
+      "id": "n3199",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4088,
+      "endLine": 4088
+    },
+    {
+      "id": "n3195",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4086,
+      "endLine": 4086,
+      "symbols": [
+        "sym.var.G71090"
+      ]
+    },
+    {
+      "id": "n3196",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4086,
+      "endLine": 4086,
+      "symbols": [
+        "sym.var.G71080"
+      ]
+    },
+    {
+      "id": "n3200",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4088,
+      "endLine": 4088,
+      "symbols": [
+        "sym.var.G71090"
+      ]
+    },
+    {
+      "id": "n3201",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4088,
+      "endLine": 4088,
+      "symbols": [
+        "sym.var.G7325A"
+      ]
+    }
+  ],
+  "lineToNodeMap": {
+    "4081": [
+      "n3188"
+    ],
+    "4083": [
+      "n3189"
+    ],
+    "4084-4092": [
+      "n3190"
+    ],
+    "4093-4097": [
+      "n3206"
+    ],
+    "4085-4089": [
+      "n3191"
+    ],
+    "4090": [
+      "n3203"
+    ],
+    "4091": [
+      "n3204"
+    ],
+    "4092": [
+      "n3205"
+    ],
+    "4093": [
+      "n3207"
+    ],
+    "4094": [
+      "n3208"
+    ],
+    "4095": [
+      "n3209"
+    ],
+    "4096": [
+      "n3210"
+    ],
+    "4097": [
+      "n3211"
+    ],
+    "4085": [
+      "n3192"
+    ],
+    "4086": [
+      "n3193",
+      "n3194",
+      "n3195",
+      "n3196"
+    ],
+    "4087": [
+      "n3197"
+    ],
+    "4088": [
+      "n3198",
+      "n3199",
+      "n3200",
+      "n3201"
+    ],
+    "4089": [
+      "n3202"
+    ]
+  }
+}

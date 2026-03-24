@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Origin — RPG → Java Traceability</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg-card: #111827;
+    --bg-sidebar: #0d1117;
+    --bg-code: #0d1117;
+    --border: #1e293b;
+    --text: #e2e8f0;
+    --text-dim: #64748b;
+    --text-bright: #f8fafc;
+    --accent: #818cf8;
+    --blue: #60a5fa;
+    --green: #34d399;
+    --amber: #fbbf24;
+    --orange: #fb923c;
+    --pink: #f472b6;
+    --red: #f87171;
+    --cyan: #22d3ee;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); height:100vh; overflow:hidden; }
+
+  .app { display:grid; grid-template-columns: 1fr 1fr; grid-template-rows: 52px 1fr; height:100vh; }
+
+  /* ─── Header ─── */
+  .header {
+    grid-column: 1 / -1; display:flex; align-items:center; gap:16px;
+    padding: 0 20px; background: var(--bg-card); border-bottom:1px solid var(--border);
+  }
+  .header h1 { font-size:14px; font-weight:600; color:var(--text-bright); letter-spacing:-0.3px; }
+  .header h1 span { color:var(--accent); }
+  .header .file-select { margin-left:16px; }
+  .header .file-select select {
+    background:#1e293b; border:1px solid var(--border); color:var(--text);
+    padding:6px 12px; border-radius:6px; font-size:12px; font-family:monospace;
+    min-width:220px; cursor:pointer;
+  }
+  .header .meta { font-size:10px; color:var(--text-dim); display:flex; gap:14px; margin-left:auto; }
+  .header .meta b { color:var(--text); font-weight:500; }
+
+  /* ─── Panels (side by side) ─── */
+  .java-panel { display:flex; flex-direction:column; overflow:hidden; border-right:1px solid var(--border); min-height:0; background: var(--bg-code); }
+  .rpg-panel-wrap { display:flex; flex-direction:column; overflow:hidden; min-height:0; }
+
+  /* File header */
+  .file-header {
+    padding:14px 24px; background:var(--bg-card); border-bottom:1px solid var(--border);
+    display:flex; align-items:center; gap:12px; flex-shrink:0;
+  }
+  .file-header .file-path {
+    font-family:'JetBrains Mono','Fira Code',monospace; font-size:13px; color:var(--text-bright);
+  }
+  .file-header .origin-badge {
+    font-size:10px; padding:3px 10px; border-radius:12px; font-weight:600;
+  }
+  .badge-db_file { background:#7c3aed22; color:#a78bfa; border:1px solid #7c3aed44; }
+  .badge-db_access { background:#f59e0b22; color:#fbbf24; border:1px solid #f59e0b44; }
+  .badge-business_logic { background:#3b82f622; color:#60a5fa; border:1px solid #3b82f644; }
+  .badge-data_transfer { background:#10b98122; color:#34d399; border:1px solid #10b98144; }
+  .badge-api_layer { background:#ec489922; color:#f472b6; border:1px solid #ec489944; }
+  .file-header .origin-desc {
+    font-size:11px; color:var(--text-dim); flex:1;
+  }
+
+  /* Code area */
+  .code-area {
+    flex:1; overflow:auto; position:relative;
+  }
+  .code-table {
+    width:100%; border-collapse:collapse; font-family:'JetBrains Mono','Fira Code',monospace; font-size:12px; line-height:1.65;
+  }
+  .code-table td { padding:0; vertical-align:top; white-space:pre; }
+
+  /* Origin gutter */
+  .code-table .gutter-origin {
+    width:4px; min-width:4px; padding:0; position:relative;
+  }
+  .gutter-origin .bar {
+    position:absolute; left:0; top:0; bottom:0; width:4px; border-radius:0 2px 2px 0;
+    cursor:pointer; transition:width 0.15s;
+  }
+  .gutter-origin .bar:hover { width:8px; }
+
+  /* Line numbers */
+  .code-table .gutter-num {
+    width:42px; min-width:42px; text-align:right; padding-right:12px;
+    color:var(--text-dim); user-select:none; opacity:0.5;
+  }
+
+  /* Origin label (shows RPG opcode) */
+  .code-table .gutter-label {
+    width:60px; min-width:60px; text-align:left; padding-left:4px;
+    font-size:9px; font-weight:600; letter-spacing:0.5px; color:var(--text-dim);
+    user-select:none;
+  }
+
+  /* Code content */
+  .code-table .code-content {
+    padding-left:8px;
+  }
+
+  /* Origin colours */
+  .origin-chain  { background:#f59e0b; }
+  .origin-read   { background:#f59e0b; }
+  .origin-write  { background:#ef4444; }
+  .origin-update { background:#ef4444; }
+  .origin-setll  { background:#f97316; }
+  .origin-eval   { background:#3b82f6; }
+  .origin-if     { background:#a855f7; }
+  .origin-exsr   { background:#ec4899; }
+  .origin-db_file { background:#8b5cf6; }
+  .origin-field  { background:#6366f1; }
+  .origin-default { background:#475569; }
+
+  .label-chain, .label-read  { color:#f59e0b; }
+  .label-write, .label-update { color:#ef4444; }
+  .label-setll { color:#f97316; }
+  .label-eval  { color:#3b82f6; }
+  .label-if    { color:#a855f7; }
+  .label-exsr  { color:#ec4899; }
+  .label-db_file { color:#8b5cf6; }
+  .label-field { color:#6366f1; }
+  .label-default { color:#475569; }
+
+  /* Highlighted block (whole block) */
+  tr.origin-highlight td { background: #818cf818; }
+  tr.origin-highlight td.code-content { box-shadow: inset 3px 0 0 var(--accent); }
+
+  /* Syntax highlighting */
+  .kw  { color:#c084fc; }
+  .ann { color:#fb923c; }
+  .str { color:#34d399; }
+  .num { color:#fbbf24; }
+  .cm  { color:#4b5563; font-style:italic; }
+  .type { color:#22d3ee; }
+
+  /* Hoverable code rows */
+  .code-table tr.has-origin { cursor: help; }
+  .code-table tr.has-origin:hover td { background: #ffffff06; }
+
+  /* Empty state */
+  .empty-state {
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    height:100%; color:var(--text-dim); gap:8px;
+  }
+  .empty-state .icon { font-size:32px; opacity:0.3; }
+  .empty-state p { font-size:13px; }
+
+  /* Loading */
+  .loading { display:flex; align-items:center; justify-content:center; height:100%; color:var(--text-dim); font-size:13px; }
+
+  /* RPG panel (right side) */
+  .rpg-panel-wrap {
+    background: #0f172a;
+  }
+  .rpg-panel-wrap .rpg-panel {
+    display: flex; flex-direction: column; overflow: hidden; flex: 1; min-height: 0;
+  }
+  .rpg-panel-header {
+    padding: 6px 20px; background: #111827; border-bottom: 1px solid var(--border);
+    font-size: 11px; color: var(--text-dim); flex-shrink: 0;
+  }
+  .rpg-panel-header code { background: #1e293b; padding: 2px 6px; border-radius: 4px; font-size: 10px; }
+  .rpg-panel-header strong { color: var(--accent); }
+  .rpg-scroll { flex: 1; overflow: auto; min-height: 0; }
+  .rpg-table {
+    width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 11px; line-height: 1.5;
+  }
+  .rpg-table td { padding: 0 8px 0 0; vertical-align: top; white-space: pre; }
+  .rpg-table .rg-num { width: 48px; text-align: right; color: var(--text-dim); opacity: 0.5; user-select: none; font-size: 10px; }
+  .rpg-table .rg-code { color: #94a3b8; }
+  .rpg-table tr.rpg-hl td { background: #818cf818; }
+  .rpg-table tr.rpg-hl .rg-code { color: #e2e8f0; font-weight: 500; box-shadow: inset 3px 0 0 var(--accent); }
+  .rpg-table tr.rpg-hl .rg-num { color: var(--accent); opacity: 1; }
+  .rpg-table tr.rpg-hoverable { cursor: help; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Header -->
+  <div class="header">
+    <h1><span>Code Origin</span> — RPG to Java Traceability</h1>
+    <div class="file-select" id="file-select" style="display:none;">
+      <select id="file-dropdown" onchange="onFileChange()"></select>
+    </div>
+    <div class="meta" id="header-meta"></div>
+  </div>
+
+  <!-- Left: Generated Java -->
+  <div class="java-panel" id="java-panel">
+    <div class="empty-state" id="java-empty">
+      <div class="icon">&#8592;</div>
+      <p>Loading...</p>
+    </div>
+  </div>
+
+  <!-- Right: Origin RPG -->
+  <div class="rpg-panel-wrap" id="rpg-panel-wrap">
+    <div class="rpg-panel" id="rpg-panel">
+      <div class="rpg-panel-header" id="rpg-panel-header"></div>
+      <div class="rpg-scroll" id="rpg-scroll"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const params = new URLSearchParams(location.search);
+const programId = params.get('program') || 'HS1210';
+const nodeId = params.get('node') || 'n404';
+
+let DATA = null;
+let activeFile = null;
+let rpgLines = [];
+let rpgStartLine = 1;
+
+const ORIGIN_CLASS = k => 'origin-' + (k||'default').toLowerCase().replace(/_/g,'');
+const LABEL_CLASS = k => 'label-' + (k||'default').toLowerCase().replace(/_/g,'');
+
+async function loadData() {
+  const res = await fetch(`/api/code-origin-data/${programId}/${nodeId}`);
+  DATA = await res.json();
+  if (DATA.error) {
+    document.getElementById('java-empty').innerHTML = `<div class="loading">${DATA.error}</div>`;
+    return;
+  }
+  rpgLines = (DATA.rpgSource || '').split('\n');
+  rpgStartLine = DATA.rpgStartLine || 1;
+  renderHeader();
+  renderFileDropdown();
+  renderRpgPanelHeader();
+  renderRpgPanel();
+  if (DATA.files.length > 0) {
+    const serviceFiles = DATA.files.filter(f => f.layer === 'service');
+    showFile(serviceFiles.length > 0 ? serviceFiles[0] : DATA.files[0]);
+  } else {
+    document.getElementById('java-empty').innerHTML = '<div class="loading">No Java files found</div>';
+  }
+}
+
+function renderHeader() {
+  const s = DATA.summary;
+  document.getElementById('header-meta').innerHTML = `
+    <span>Program <b>${DATA.rpgProgram}</b></span>
+    <span>RPG lines <b>${DATA.rpgLineRange}</b></span>
+    <span>Generated <b>${s.totalFiles}</b> Java files</span>
+    <span><b>${s.totalLines}</b> lines</span>
+  `;
+}
+
+function renderRpgPanelHeader() {
+  const h = document.getElementById('rpg-panel-header');
+  const f = DATA.rpgFileName || DATA.rpgProgram || 'RPG';
+  const n = DATA.rpgNode || '';
+  const r = DATA.rpgLineRange || '';
+  h.innerHTML = `<strong style="color:var(--accent);">Origin RPG</strong> — File: <code>${esc(f)}</code> &nbsp; Node: <code>${esc(n)}</code> &nbsp; Lines: <code>${esc(r)}</code> &nbsp; <span style="opacity:0.7">Hover to highlight block</span>`;
+}
+
+function renderRpgPanel() {
+  const el = document.getElementById('rpg-scroll');
+  if (!rpgLines.length) {
+    el.innerHTML = '<div class="loading" style="padding:20px;">No RPG source available</div>';
+    return;
+  }
+  let html = '<table class="rpg-table"><tbody>';
+  for (let i = 0; i < rpgLines.length; i++) {
+    const ln = rpgStartLine + i;
+    html += `<tr id="rpg-row-${ln}"><td class="rg-num">${ln}</td><td class="rg-code">${highlightRpg(rpgLines[i])}</td></tr>`;
+  }
+  html += '</tbody></table>';
+  el.innerHTML = html;
+  attachRpgHoverHandlers();
+}
+
+function attachRpgHoverHandlers() {
+  document.querySelectorAll('.rpg-table tr').forEach(tr => {
+    tr.classList.remove('rpg-hoverable');
+    tr.onmouseenter = null;
+    tr.onmouseleave = null;
+  });
+  if (!activeFile) return;
+  activeFile.originBlocks.forEach((b, bi) => {
+    const o = b.origin;
+    if (!o || !o.rpgLine) return;
+    const start = o.rpgLine;
+    const end = o.rpgEndLine != null ? o.rpgEndLine : start;
+    for (let ln = start; ln <= end; ln++) {
+      const tr = document.getElementById(`rpg-row-${ln}`);
+      if (!tr) continue;
+      tr.classList.add('rpg-hoverable');
+      tr.onmouseenter = () => highlightJavaBlocks([bi]);
+      tr.onmouseleave = leaveRpgHover;
+    }
+  });
+}
+
+function highlightJavaBlocks(blockIndices) {
+  document.querySelectorAll('tr.origin-highlight').forEach(el => el.classList.remove('origin-highlight'));
+  document.querySelectorAll('.rpg-table tr.rpg-hl').forEach(el => el.classList.remove('rpg-hl'));
+  let firstRow = null;
+  blockIndices.forEach(bi => {
+    document.querySelectorAll(`tr[data-block="${bi}"]`).forEach(el => {
+      el.classList.add('origin-highlight');
+      if (!firstRow) firstRow = el;
+    });
+  });
+  if (firstRow) firstRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  blockIndices.forEach(bi => {
+    const blk = activeFile && activeFile.originBlocks[bi];
+    if (!blk || !blk.origin) return;
+    const o = blk.origin;
+    const start = o.rpgLine;
+    const end = o.rpgEndLine != null ? o.rpgEndLine : start;
+    if (start) {
+      for (let ln = start; ln <= end; ln++) {
+        const tr = document.getElementById(`rpg-row-${ln}`);
+        if (tr) tr.classList.add('rpg-hl');
+      }
+    }
+  });
+}
+
+function leaveRpgHover() {
+  document.querySelectorAll('tr.origin-highlight').forEach(el => el.classList.remove('origin-highlight'));
+  document.querySelectorAll('.rpg-table tr.rpg-hl').forEach(el => el.classList.remove('rpg-hl'));
+}
+
+function highlightRpg(line) {
+  let h = esc(line);
+  h = h.replace(/('(?:[^'])*')/g, '<span class="str">$1</span>');
+  h = h.replace(/\b(CHAIN|READ|WRITE|UPDATE|SETLL|EVAL|IF|ELSE|ENDIF|DOW|ENDDO|EXSR|SELECT|WHEN|ENDSL|BEGSR|ENDSR|RETURN|MONITOR|ON-ERROR|ENDMON|SETON|SETOFF|GOTO|TAG|COMP|MOVE|MOVEL|CALL|PARM|KLIST|KFLD|DSPLY|CLEAR|DOU|LEAVE|ITER|CAS|END|OTHER)\b/g, '<span class="kw">$1</span>');
+  return h;
+}
+
+function renderFileDropdown() {
+  const sel = document.getElementById('file-select');
+  const dd = document.getElementById('file-dropdown');
+  if (!DATA.files.length) { sel.style.display = 'none'; return; }
+  sel.style.display = 'block';
+  dd.innerHTML = DATA.files.map((f, i) =>
+    `<option value="${esc(f.path)}">${esc(f.className)}.java</option>`
+  ).join('');
+}
+
+function onFileChange() {
+  const path = document.getElementById('file-dropdown').value;
+  showFileByPath(path);
+}
+
+function showFileByPath(path) {
+  const f = DATA.files.find(x => x.path === path);
+  if (f) showFile(f);
+}
+
+function showFile(f) {
+  activeFile = f;
+  const dd = document.getElementById('file-dropdown');
+  if (dd) dd.value = f.path;
+
+  const panel = document.getElementById('java-panel');
+  const fo = f.fileOrigin || {};
+  const badgeType = fo.type || 'other';
+  const originLabel = {
+    db_file:'DB Entity', db_access:'DB Access', business_logic:'Business Logic',
+    data_transfer:'Data Transfer', api_layer:'API Layer',
+  }[badgeType] || 'Generated';
+
+  let headerHTML = `<div class="file-header">
+    <span style="font-weight:600;color:var(--accent);margin-right:8px;">Generated Java</span>
+    <span class="file-path">${esc(f.path)}</span>
+    <span class="origin-badge badge-${badgeType}">${originLabel}</span>
+    <span class="origin-desc">${esc(fo.description || '')}</span>
+  </div>`;
+
+  // Build origin map: line → block info
+  const lineOrigin = {};
+  for (const b of f.originBlocks) {
+    for (let i = b.startLine; i <= b.endLine; i++) {
+      lineOrigin[i] = b.origin;
+    }
+  }
+
+  // Merge adjacent same-origin lines into visual blocks
+  const blockStart = {};
+  const blockEnd = {};
+  for (const b of f.originBlocks) {
+    blockStart[b.startLine] = b.origin;
+    blockEnd[b.endLine] = true;
+  }
+
+  const lines = f.content.split('\n');
+  let codeHTML = '<div class="code-area"><table class="code-table"><tbody>';
+  for (let i = 0; i < lines.length; i++) {
+    const origin = lineOrigin[i];
+    const isStart = blockStart[i] !== undefined;
+    const isEnd = blockEnd[i] !== undefined;
+    const kindCls = origin ? ORIGIN_CLASS(origin.kind) : '';
+    const labelCls = origin ? LABEL_CLASS(origin.kind) : '';
+
+    // Origin bar cell
+    const blockIdx = origin ? f.originBlocks.findIndex(b => i >= b.startLine && i <= b.endLine) : -1;
+    let barHTML = '';
+    if (origin) {
+      barHTML = `<div class="bar ${kindCls}" data-block="${blockIdx}"></div>`;
+    }
+
+    // Label (show on first line of block only)
+    let labelHTML = '';
+    if (isStart && origin) {
+      labelHTML = `<span class="${labelCls}">${esc(origin.label || origin.kind)}</span>`;
+    }
+
+    // Entire row shows tooltip on hover (like a button tooltip)
+    const rowHandlers = origin && blockIdx >= 0
+      ? ` onmouseenter="showTooltip(event,${blockIdx})" onmouseleave="hideTooltip()"`
+      : '';
+    codeHTML += `<tr class="${origin ? 'has-origin' : ''}" data-block="${blockIdx}"${rowHandlers}>
+      <td class="gutter-origin">${barHTML}</td>
+      <td class="gutter-num">${i + 1}</td>
+      <td class="gutter-label">${labelHTML}</td>
+      <td class="code-content">${highlightJava(lines[i])}</td>
+    </tr>`;
+  }
+  codeHTML += '</tbody></table></div>';
+
+  const emptyEl = document.getElementById('java-empty');
+  if (emptyEl) emptyEl.style.display = 'none';
+  panel.innerHTML = headerHTML + codeHTML;
+  attachRpgHoverHandlers();
+}
+
+function highlightJava(line) {
+  let h = esc(line);
+  h = h.replace(/("(?:[^"\\]|\\.)*")/g, '<span class="str">$1</span>');
+  h = h.replace(/\b(\d+(?:\.\d+)?[fFdDlL]?)\b/g, '<span class="num">$1</span>');
+  h = h.replace(/(\/\/.*$)/gm, '<span class="cm">$1</span>');
+  h = h.replace(/(@\w+)/g, '<span class="ann">$1</span>');
+  h = h.replace(/\b(package|import|public|private|protected|static|final|class|interface|enum|record|extends|implements|abstract|void|return|if|else|for|while|do|switch|case|default|break|continue|new|try|catch|finally|throw|throws|this|super|instanceof|null|true|false|var)\b/g, '<span class="kw">$1</span>');
+  h = h.replace(/\b(int|long|short|byte|float|double|boolean|char|String|Integer|Long|Short|Byte|Float|Double|Boolean|Character|List|Map|Set|Optional|BigDecimal|Object|Void)\b/g, '<span class="type">$1</span>');
+  return h;
+}
+
+function showTooltip(e, blockIdx) {
+  if (!activeFile || blockIdx < 0) return;
+  const block = activeFile.originBlocks[blockIdx];
+  if (!block) return;
+  const o = block.origin;
+
+  // Highlight Java block
+  document.querySelectorAll(`tr[data-block="${blockIdx}"]`).forEach(el => el.classList.add('origin-highlight'));
+
+  // Highlight entire RPG block in bottom panel
+  document.querySelectorAll('.rpg-table tr.rpg-hl').forEach(el => el.classList.remove('rpg-hl'));
+  const start = o.rpgLine;
+  const end = o.rpgEndLine != null ? o.rpgEndLine : start;
+  if (start) {
+    let firstTr = null;
+    for (let ln = start; ln <= end; ln++) {
+      const tr = document.getElementById(`rpg-row-${ln}`);
+      if (tr) {
+        tr.classList.add('rpg-hl');
+        if (!firstTr) firstTr = tr;
+      }
+    }
+    if (firstTr) firstTr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+}
+
+function hideTooltip() {
+  document.querySelectorAll('tr.origin-highlight').forEach(el => el.classList.remove('origin-highlight'));
+  document.querySelectorAll('.rpg-table tr.rpg-hl').forEach(el => el.classList.remove('rpg-hl'));
+}
+
+function esc(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+loadData();
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "screenId": "Welcome",
+  "type": "welcome",
+  "title": "Warranty Claim Management",
+  "subtitle": "HS1210 Migration",
+  "message": "Select a screen to get started.",
+  "links": [
+    { "label": "Claims List (HS1210D)", "url": "/claims", "description": "Search and manage warranty claims" },
+    { "label": "Create Claim", "url": "/claims/create", "description": "Create a new claim from invoice" },
+    { "label": "Demo", "url": "/demo.html", "description": "Application overview and API status", "external": true },
+    { "label": "Swagger API", "url": "/swagger-ui.html", "description": "Interactive API documentation", "external": true }
+  ]
+}

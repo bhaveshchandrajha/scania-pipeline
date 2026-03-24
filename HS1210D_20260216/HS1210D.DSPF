@@ -1,0 +1,728 @@
+     A*%%TS  SD  20120124  170525  RMUELLER    REL-V6R1M0  5761-WDS
+     A*Z: CRTDSPF RSTDSP(*YES)
+     A*%%EC
+     A                                      DSPSIZ(24 80 *DS3)
+     A                                      REF(*LIBL/HSREF)
+     A                                      PRINT
+     A          R HS1210S1                  SFL
+     A*%%TS  SD  20120124  170525  RMUELLER    REL-V6R1M0  5761-WDS
+     A  93                                  SFLNXTCHG
+     A            SUB000         3A  H
+     A            SUB030         5A  H
+     A            SUB040         1A  H
+     A            SUB02O         8A  H
+     A            SUB160         8A  H
+     A            MARK1          2A  B 10  3
+     A  70                                  DSPATR(RI)
+     A  71                                  DSPATR(ND)
+     A            SUB050         8A  O 10  7
+     A  71                                  DSPATR(ND)
+     A            SUB010         5A  O 10 16
+     A  71                                  DSPATR(ND)
+     A            SUB020        10A  O 10 22
+     A  71                                  DSPATR(ND)
+     A            SUB060         7A  O 10 33
+     A  71                                  DSPATR(ND)
+     A            SUB140         6A  O 10 41
+     A  71                                  DSPATR(ND)
+     A            SUB150        21A  O 10 48
+     A  71                                  DSPATR(ND)
+     A            SUBDMC         2A  O 10 70
+     A  71                                  DSPATR(ND)
+     A            SUB170         2   O 10 74
+     A  71                                  DSPATR(ND)
+     A  41                                  COLOR(RED)
+     A  43                                  COLOR(BLU)
+     A            SUBANZ         2  0O 10 78
+     A  71
+     AON45                                  DSPATR(ND)
+     A                                      EDTWRD('0 ')
+     A N42                                  COLOR(GRN)
+     A  42                                  COLOR(YLW)
+     A            SUBCOL        10A  H
+     A          R HS1210C1                  SFLCTL(HS1210S1)
+     A*%%TS  SD  20111106  163346  RMUELLER    REL-V5R4M0  5722-WDS
+     A                                      SFLSIZ(0011)
+     A                                      SFLPAG(0010)
+     A                                      CF03(03 'Verlassen')
+     A                                      CF09(09 'Listenanfang bei')
+     A                                      CF05(05 'Aktualisieren')
+     A                                      CF11(11 'Ansicht')
+     A                                      CF12(12 'Zurück')
+     A                                      CF06(06 'Erstellen')
+     A                                      CF19(19 'Filter setzen')
+     A                                      CF16(16 'Sortierung')
+     A                                      CF17(17 'Sortierung Auf/Ab')
+     A                                      OVERLAY
+     A                                      SFLCSRRRN(&REC1)
+     A  90                                  SFLDSP
+     A  90                                  SFLDSPCTL
+     A  99                                  SFLDLT
+     A  95                                  SFLEND(*MORE)
+     A  55                                  SFLMSG('Status zurücksetzen nicht z-
+     A                                      ulässig.')
+     A  56                                  SFLMSG('Angegebene Auswahlnummer ni-
+     A                                      cht zulässig.')
+     A  57                                  SFLMSG('#ndern/Löschen mit diesem S-
+     A                                      tatus nicht zulässig.')
+     A            REC1           5S 0H
+     A            PAG1           4S 0H      SFLRCDNBR(CURSOR)
+     A                                  1  2'HS1210C1'
+     A                                  1 12'SDPS Verwaltung Garantieanträge'
+     A                                      COLOR(WHT)
+     A            FILTERA       14A  O  1 44COLOR(RED)
+     A                                  1 59USER
+     A                                      COLOR(BLU)
+     A                                  1 70SYSNAME
+     A                                      COLOR(BLU)
+     A                                  2 12'Sortierung'
+     A                                      COLOR(WHT)
+     A            F16TXT        13A  O  2 24COLOR(WHT)
+     A            F17TXT         3A  O  2 38COLOR(WHT)
+     A                                  2 43'Anzahl Tage'
+     A                                      COLOR(WHT)
+     A            FILTAG         3Y 0O  2 55COLOR(WHT)
+     A                                      EDTWRD(' 0 ')
+     A            XXDAT          9Y 0O  2 69COLOR(BLU)
+     A                                      EDTWRD('0  .  .    ')
+     A                                  3 12'Suchen nach'
+     A                                      COLOR(WHT)
+     A            SUCHEN        17A  B  3 24COLOR(WHT)
+     A            FILTER        20A  O  3 43COLOR(WHT)
+     A            FILART         1A  O  3 64COLOR(RED)
+     A                                  3 70TIME
+     A                                      COLOR(BLU)
+     A                                  4  2'Auswahl eingeben und Eingabetaste -
+     A                                      drücken.'
+     A                                      COLOR(BLU)
+     A                                  5  3'2=#ndern'
+     A                                      COLOR(BLU)
+     A                                  5 13'4=Löschen'
+     A                                      COLOR(BLU)
+     A                                  5 24'5=Anzeigen'
+     A                                      COLOR(BLU)
+     A                                  5 36'6=Servicekarte'
+     A                                      COLOR(BLU)
+     A                                  5 52'8=Garantie-Info'
+     A                                      COLOR(BLU)
+     A                                  6  3'10=Versenden/Verbuchen'
+     A                                      COLOR(BLU)
+     A                                  8  2'Aus-'
+     A                                      COLOR(WHT)
+     A                                  8  7'Claim'
+     A                                      COLOR(WHT)
+     A                                  8 17'Rechnungs-'
+     A                                      COLOR(WHT)
+     A                                  8 33'Chassis'
+     A                                      COLOR(WHT)
+     A                                  8 41'K U N D E'
+     A                                      COLOR(WHT)
+     A                                  8 70'Dm'
+     A                                      COLOR(WHT)
+     A                                  8 73'Sta-'
+     A                                      COLOR(WHT)
+     A  45                              8 78'Fe'
+     A                                      COLOR(WHT)
+     A                                  9  2'wahl'
+     A                                      COLOR(WHT)
+     A                                  9  7'Nr.'
+     A                                      COLOR(WHT)
+     A                                  9 17'Nr.'
+     A                                      COLOR(WHT)
+     A                                  9 23'Datum'
+     A                                      COLOR(WHT)
+     A                                  9 33'Nr.'
+     A                                      COLOR(WHT)
+     A                                  9 41'Nr.'
+     A                                      COLOR(WHT)
+     A                                  9 48'Name'
+     A                                      COLOR(WHT)
+     A                                  9 70'Cd'
+     A                                      COLOR(WHT)
+     A                                  9 73'tus'
+     A                                      COLOR(WHT)
+     A  45                              9 78'An'
+     A                                      COLOR(WHT)
+     A          R HS1210S2                  SFL
+     A*%%TS  SD  20111030  143028  RMUELLER    REL-V5R4M0  5722-WDS
+     A  93                                  SFLNXTCHG
+     A            SUB010         5A  H
+     A            SUB02O         8A  H
+     A            SUB030         5A  H
+     A            SUB040         1A  H
+     A            MARK2          2A  B 10  3
+     A  70                                  DSPATR(RI)
+     A  71                                  DSPATR(ND)
+     A            SUB050         8A  O 10  7
+     A  71                                  DSPATR(ND)
+     A            SUB060         7A  O 10 16
+     A  71                                  DSPATR(ND)
+     A            SUB070        10A  O 10 24
+     A  71                                  DSPATR(ND)
+     A            SUB090        10A  O 10 35
+     A  71                                  DSPATR(ND)
+     A            SUB100         3A  O 10 46
+     A  71                                  DSPATR(ND)
+     A            SUB170         2A  O 10 50
+     A  71                                  DSPATR(ND)
+     A            SUBSTA        18A  O 10 53
+     A  71                                  DSPATR(ND)
+     A  41                                  COLOR(RED)
+     A            SUB160         8   O 10 72
+     A          R HS1210C2                  SFLCTL(HS1210S2)
+     A*%%TS  SD  20111030  143028  RMUELLER    REL-V5R4M0  5722-WDS
+     A                                      SFLSIZ(0011)
+     A                                      SFLPAG(0010)
+     A                                      CF03(03 'Verlassen')
+     A                                      CF09(09 'Listenanfang bei')
+     A                                      CF05(05 'Aktualisieren')
+     A                                      CF12(12 'Zurück')
+     A                                      CF06(06 'Erstellen')
+     A                                      CF19(19 'Filter setzen')
+     A                                      CF16(16 'Sortierung')
+     A                                      CF11(11 'Ansicht')
+     A                                      OVERLAY
+     A                                      SFLCSRRRN(&REC2)
+     A  90                                  SFLDSP
+     A  90                                  SFLDSPCTL
+     A  99                                  SFLDLT
+     A  95                                  SFLEND(*MORE)
+     A  55                                  SFLMSG('Status zurücksetzen nicht z-
+     A                                      ulässig.')
+     A  56                                  SFLMSG('Angegebene Auswahlnummer ni-
+     A                                      cht zulässig.')
+     A  57                                  SFLMSG('#ndern/Löschen mit diesem S-
+     A                                      tatus nicht zulässig.')
+     A            REC2           5S 0H
+     A            PAG2           4S 0H      SFLRCDNBR(CURSOR)
+     A                                  1  2'HS1210C2'
+     A                                  1 12'SDPS Verwaltung Garantieanträge'
+     A                                      COLOR(WHT)
+     A            FILTERA       14A  O  1 44COLOR(RED)
+     A                                  1 59USER
+     A                                      COLOR(BLU)
+     A                                  1 70SYSNAME
+     A                                      COLOR(BLU)
+     A                                  2 12'Sortierung'
+     A                                      COLOR(WHT)
+     A            F16TXT        13A  O  2 24COLOR(WHT)
+     A            F17TXT         3A  O  2 38COLOR(WHT)
+     A                                  2 43'Anzahl Tage'
+     A                                      COLOR(WHT)
+     A            FILTAG         3Y 0O  2 55COLOR(WHT)
+     A                                      EDTWRD(' 0 ')
+     A            XXDAT          9Y 0O  2 69COLOR(BLU)
+     A                                      EDTWRD('0  .  .    ')
+     A                                  3 12'Suchen nach'
+     A                                      COLOR(WHT)
+     A            SUCHEN        17A  B  3 24COLOR(WHT)
+     A            FILTER        20A  O  3 43COLOR(WHT)
+     A            FILART         1A  O  3 64COLOR(RED)
+     A                                  3 70TIME
+     A                                      COLOR(BLU)
+     A                                  4  2'Auswahl eingeben und Eingabetaste -
+     A                                      drücken.'
+     A                                      COLOR(BLU)
+     A                                  5  3'2=#ndern'
+     A                                      COLOR(BLU)
+     A                                  5 12'4=Löschen'
+     A                                      COLOR(BLU)
+     A                                  5 22'5=Anzeigen'
+     A                                      COLOR(BLU)
+     A                                  5 33'6=Servicekarte'
+     A                                      COLOR(BLU)
+     A                                  5 48'8=Garantie-Info'
+     A                                      COLOR(BLU)
+     A                                  6  3'10=Versenden/Verbuchen'
+     A                                      COLOR(BLU)
+     A                                  8  2'Aus-'
+     A                                      COLOR(WHT)
+     A                                  8  7'Claim'
+     A                                      COLOR(WHT)
+     A                                  8 16'Chassis'
+     A                                      COLOR(WHT)
+     A                                  8 24'Amtliches'
+     A                                      COLOR(WHT)
+     A                                  8 35'Reparatur-'
+     A                                      COLOR(WHT)
+     A                                  9  2'wahl'
+     A                                      COLOR(WHT)
+     A                                  9  7'Nr.'
+     A                                      COLOR(WHT)
+     A                                  9 16'Nr.'
+     A                                      COLOR(WHT)
+     A                                  9 24'Kennzeich.'
+     A                                      COLOR(WHT)
+     A                                  9 35'Datum'
+     A                                      COLOR(WHT)
+     A                                  9 46'KM'
+     A                                      COLOR(WHT)
+     A                                  9 50'Status'
+     A                                      COLOR(WHT)
+     A          R HS121002
+     A*%%TS  SD  20020902  103650  MUELLERRAL  REL-V5R1M0  5722-WDS
+     A                                      OVERLAY
+     A                                 22  2'F3=Verlassen'
+     A                                      COLOR(BLU)
+     A                                 22 51'F9=Positionieren'
+     A                                      COLOR(BLU)
+     A                                 22 17'F5=Aktualisieren'
+     A                                      COLOR(BLU)
+     A                                 22 70'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                 22 36'F6=Erstellen'
+     A                                      COLOR(BLU)
+     A            F19           17A  O 23 64COLOR(BLU)
+     A            F16           28A  O 23 17COLOR(BLU)
+     A            F11           13A  O 23  2COLOR(BLU)
+     A            F17           15   O 23 47COLOR(BLU)
+     A          R HS1210W1
+     A*%%TS  SD  20110518  131311  RMUELLER    REL-V5R4M0  5722-WDS
+     A                                      WINDOW(2 2 10 75)
+     A                                      CF06(06 'Vorheriges zurückholen')
+     A                                      CF12(12 'Zurück')
+     A                                      CF16(16 'Neuer Listenanfang')
+     A                                  1 11'Claim bearbeiten/Liste positionier-
+     A                                      en'
+     A                                      COLOR(WHT)
+     A                                  5  2'Listenanfang bei . . . .'
+     A            LISTA          8A  B  5 29
+     A  56                                  ERRMSG('Keine vorherige Position ge-
+     A                                      funden.')
+     A                                      CHECK(RZ)
+     A                                      COLOR(WHT)
+     A                                  5 39'Anfangszeichen'
+     A                                  9  2'F6=Vorheriges zurückholen'
+     A                                      COLOR(BLU)
+     A                                  9 30'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  9 46'F16=Neuer Listenanfang'
+     A                                      COLOR(BLU)
+     A                                  1  2'HS1210W1'
+     A  61N62                           3  2'Claim-Nr. . . . . . . .'
+     A N61 62                           3  2'Rechnungs-Nr. . . . . .'
+     A            LISTB          8A  B  3 29
+     A  56                                  ERRMSG('Keine vorherige Position ge-
+     A                                      funden.')
+     A                                      CHECK(RZ)
+     A                                      COLOR(WHT)
+     A          R HS1210W2
+     A*%%TS  SD  20110518  131311  RMUELLER    REL-V5R4M0  5722-WDS
+     A                                      WINDOW(8 2 7 75)
+     A                                      CF12(12 'Zurück')
+     A                                      CF04(04 'Bedienerführung')
+     A                                  6  2'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  1  2'HS1210W2'
+     A                                  1 11'Status zurücksetzen'
+     A                                      COLOR(WHT)
+     A            SUB050         8A  O  3 48
+     A                                  3  2'Eingabetaste drücken um den Status-
+     A                                       des Claims'
+     A                                  3 57'zurückzusetzen.'
+     A          R HS1210S4                  SFL
+     A*%%TS  SD  20110518  131311  RMUELLER    REL-V5R4M0  5722-WDS
+     A            MARK4          2A  O  8  3
+     A            SUB010         5A  O  8  7
+     A            SUB020        10A  O  8 13
+     A            SUB060         7A  O  8 33
+     A            SUB140         6A  O  8 41
+     A            SUB150        21A  O  8 48
+     A            SUB170         2A  O  8 77
+     A            SUB050         8A  O  8 24
+     A            SUBDMC         2A  O  8 72
+     A          R HS1210C4                  SFLCTL(HS1210S4)
+     A*%%TS  SD  20110518  131311  RMUELLER    REL-V5R4M0  5722-WDS
+     A                                      SFLSIZ(0013)
+     A                                      SFLPAG(0012)
+     A                                      CF12(12 'Zurück')
+     A                                      OVERLAY
+     A  90                                  SFLDSP
+     A  90                                  SFLDSPCTL
+     A  99                                  SFLDLT
+     A  95                                  SFLEND(*MORE)
+     A                                  1 70SYSNAME
+     A                                      COLOR(BLU)
+     A                                  1 59USER
+     A                                      COLOR(BLU)
+     A            XXDAT          9Y 0O  2 69COLOR(BLU)
+     A                                      EDTWRD('0  .  .    ')
+     A                                  3 70TIME
+     A                                      COLOR(BLU)
+     A                                  1  2'HS1210C4'
+     A                                  1 11'SDPS Verwaltung Garantieanträge'
+     A                                      COLOR(WHT)
+     A                                  1 32'Löschen bestätigen'
+     A                                      COLOR(WHT)
+     A                                  3  2'Eingabetaste drücken, um Auswahl 4-
+     A                                      =Löschen zu bestätigen.'
+     A                                      COLOR(BLU)
+     A                                  4  2'Mit F12 zur vorherigen Anzeige zur-
+     A                                      ückkehren, um die Auswahl zu ändern-
+     A                                      .'
+     A                                      COLOR(BLU)
+     A                                  6  2'Aus-'
+     A                                      COLOR(WHT)
+     A                                  7  2'wahl'
+     A                                      COLOR(WHT)
+     A                                  7  7'Nr.'
+     A                                      COLOR(WHT)
+     A                                  6 33'Chassis'
+     A                                      COLOR(WHT)
+     A                                  7 24'Nr.'
+     A                                      COLOR(WHT)
+     A                                  6 41'K U N D E'
+     A                                      COLOR(WHT)
+     A                                  7 41'Nr.'
+     A                                      COLOR(WHT)
+     A                                  7 48'Name'
+     A                                      COLOR(WHT)
+     A                                  6  7'Rechnungs-'
+     A                                      COLOR(WHT)
+     A                                  7 13'Datum'
+     A                                      COLOR(WHT)
+     A                                  2 11'L § S C H E N'
+     A                                      COLOR(WHT)
+     A                                  7 33'Nr.'
+     A                                      COLOR(WHT)
+     A                                  6 24'Claim'
+     A                                      COLOR(WHT)
+     A                                  6 76'Sta-'
+     A                                      COLOR(WHT)
+     A                                  7 76'tus'
+     A                                      COLOR(WHT)
+     A                                  6 71'Dem-'
+     A                                      COLOR(WHT)
+     A                                  7 71'Code'
+     A                                      COLOR(WHT)
+     A          R HS121004
+     A*%%TS  SD  19980416  133913  MUELLERRAL  REL-V3R7M0  5716-PW1
+     A                                      OVERLAY
+     A                                 22  2'F12=Zurück'
+     A                                      COLOR(BLU)
+     A          R HS1210W4
+     A*%%TS  SD  20020703  101514  MUELLERRAL  REL-V5R1M0  5722-WDS
+     A                                      WINDOW(8 2 7 75)
+     A                                      CF12(12 'Zurück')
+     A                                      CF04(04 'Bedienerführung')
+     A                                  6  2'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  1  2'HS1210W4'
+     A                                  1 11'Bedienerführung'
+     A                                      COLOR(WHT)
+     A                                  3  2'Es sind keine offenen Rechnungen v-
+     A                                      orhanden.'
+     A          R HS1210W6
+     A*%%TS  SD  20100317  141811  MUELLERRAL  REL-V5R4M0  5722-WDS
+     A                                      WINDOW(2 2 18 75)
+     A                                      CF04(04 'Bedienerführung')
+     A                                      CF11(11 'Betrieb wechseln')
+     A                                      CF12(12 'Zurück')
+     A                                      CF20(20 'Alle offenen Rechnungen au-
+     A                                      swählen')
+     A                                      CF15(15 'Freigabe beantragen')
+     A                                      RTNCSRLOC(&REC6 &FLD6 &POS6)
+     A            POS6           4S 0H
+     A            FLD6          10A  H
+     A            REC6          10A  H
+     A                                  1  2'HS1210W6'
+     A                                  1 11'Erstellen'
+     A                                      COLOR(WHT)
+     A                                  3  2'Rechnungs-Nr./Splitt:'
+     A            NEU1           5A  B  3 24COLOR(WHT)
+     A  58                                  ERRMSG('Rechnung nicht gefunden ode-
+     A                                      r storniert!')
+     A  60                                  ERRMSG('Rechnung bereits als Garant-
+     A                                      ie-Antrag erfasst!')
+     A                                  3 30'/'
+     A            SPLITT         2A  B  3 32COLOR(WHT)
+     A                                  3 49'Anzahl Tage für Anzeige'
+     A            TAGE           3Y 0B  3 73COLOR(WHT)
+     A                                      EDTWRD(' 0 ')
+     A  68                                  ERRMSG('Anzahl Tage überschreitet E-
+     A                                      inreichungsfrist.')
+     A                                  5  2'Rechnungs-Datum.....:'
+     A            NEU2X          8Y 0B  5 24COLOR(WHT)
+     A                                      EDTWRD('  .  .    ')
+     A                                      EDTMSK('  &  &    ')
+     A  67                                  ERRMSG('Datum ungültig oder Einreic-
+     A                                      hungsfrist überschritten.')
+     A                                  6 24'TT.MM.JJJJ'
+     A                                  7  2'Auftrags-Nr. .......:'
+     A            NEU3           5A  B  7 24COLOR(WHT)
+     A                                 11  2'Bereich.............:'
+     A            NEUWT          1A  B 11 24COLOR(WHT)
+     A                                 13  2'Betrieb.............:'
+     A            PKZ            3A  O 13 24
+     A                                 13 28'[F11]'
+     A                                      COLOR(BLU)
+     A            BETRIEB       30A  O 13 34
+     A                                 15  2'F4=Rechnung auswählen'
+     A                                      COLOR(BLU)
+     A                                 15 49'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                 15 26'F11=Betrieb wechseln'
+     A                                      COLOR(BLU)
+     A                                 17  2'F20=Alle offenen Rechnungen auswäh-
+     A                                      len'
+     A                                      COLOR(BLU)
+     A                                  9  2'Fabrikat............:'
+     A            NEU4           1A  B  9 24COLOR(WHT)
+     A                                  4 49'Grundlage ist das Fertig-'
+     A                                      COLOR(BLU)
+     A                                  5 49'stellungsdatum des Auftrags'
+     A                                      COLOR(BLU)
+     A                                 16  2'F15=Verlängerung Einreichungsfrist-
+     A                                       beantragen'
+     A                                      COLOR(BLU)
+     A                                 11 26'1=Werkstatt, 2=Theke'
+     A                                      COLOR(BLU)
+     A                                  9 26'1=Lkw, 3=Bus, 6=Motor'
+     A                                      COLOR(BLU)
+     A          R HS1210W61
+     A*%%TS  SD  20090507  150028  MUELLERRAL  REL-V5R4M0  5722-WDS
+     A                                      WINDOW(6 2 6 75)
+     A                                      CF04(04 'Bedienerführung')
+     A                                      CF11(11 'Betrieb wechseln')
+     A                                      CF12(12 'Zurück')
+     A                                      CF20(20 'Alle offenen Rechnungen au-
+     A                                      swählen')
+     A                                      RTNCSRLOC(&REC6 &FLD6 &POS6)
+     A            POS6           4S 0H
+     A            FLD6          10A  H
+     A            REC6          10A  H
+     A                                  5  2'Weiter mit Datenfreigabe'
+     A                                      COLOR(BLU)
+     A                                  5 29'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  3  2'In SCAS ist kein Garantie-Start-Da-
+     A                                      tum hinterlegt.'
+     A          R HS1210W62
+     A*%%TS  SD  20090507  150028  MUELLERRAL  REL-V5R4M0  5722-WDS
+     A                                      WINDOW(8 2 7 75)
+     A                                      CF12(12 'Zurück')
+     A                                      CF04(04 'Bedienerführung')
+     A                                  6  2'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  1  2'HS1210W6'
+     A                                  1 11'Verlängeung der Einreichungsfrist -
+     A                                      beantragen'
+     A                                      COLOR(WHT)
+     A                                  3  2'Für die Rechnung'
+     A            NEU1           5   O  3 19
+     A                                  3 25'wurde eine Verlängerung der Einrei-
+     A                                      chungsfrist'
+     A                                  4  2'beantragt.'
+     A          R HS1210W7
+     A*%%TS  SD  20020703  103910  MUELLERRAL  REL-V5R1M0  5722-WDS
+     A                                      WINDOW(8 2 7 75)
+     A                                      CF12(12 'Zurück')
+     A                                      CF04(04 'Bedienerführung')
+     A                                  6  2'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  1  2'HS1210W7'
+     A                                  1 11'Offene Rechnungen übernehmen'
+     A                                      COLOR(WHT)
+     A                                  3  2'Es wurden'
+     A            ANZAHL         5Y 0O  3 12EDTWRD('   0 ')
+     A                                  3 18'neue Garantieanträge erstellt.'
+     A          R HS1210W9
+     A*%%TS  SD  20101213  171800  RMUELLER    REL-V5R4M0  5722-WDS
+     A                                      WINDOW(3 5 17 68)
+     A                                      CF04(04 'Bedienerführung')
+     A                                      CF11(11 'Betrieb wechseln')
+     A                                      CF12(12 'Zurück')
+     A                                 16 45'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  1  2'HS1210W9'
+     A                                  1 11'Filter setzen'
+     A                                      COLOR(WHT)
+     A                                  3  2'Anzeige beschränken auf'
+     A                                  5  2'Status..............'
+     A            STATUS         2A  B  5 25COLOR(WHT)
+     A                                 16  2'F4=Auswahl Status'
+     A                                      COLOR(BLU)
+     A                                  9  2'Fahrgestell.........'
+     A            FILTFG         7A  B  9 23COLOR(WHT)
+     A                                 10  2'Kunden-Nr...........'
+     A            FILTKD         6A  B 10 23COLOR(WHT)
+     A                                 12  2'Betrieb.............'
+     A            FILPKZ         3A  B 12 23COLOR(WHT)
+     A                                 16 22'F11=Betrieb wechseln'
+     A                                      COLOR(BLU)
+     A                                  5 28'[F4]'
+     A                                      COLOR(BLU)
+     A                                 12 27'[F11]'
+     A                                      COLOR(BLU)
+     A            STATXT        30A  O  5 33
+     A            BETRIEB       30A  O 12 33
+     A            ZEICHEN        1A  B  5 23COLOR(WHT)
+     A                                      VALUES('=' '>' '<' '*')
+     A                                  6 23'=/</>'
+     A                                      COLOR(BLU)
+     A                                  6 33'gleich/kleiner/größer'
+     A                                      COLOR(BLU)
+     A                                 11  2'Claim-Nr. Scas......'
+     A            FILSDE         8A  B 11 23COLOR(WHT)
+     A                                      CHECK(RZ)
+     A                                  8  2'Nur Minimum.........'
+     A            FILMIN         1A  B  8 23COLOR(WHT)
+     A                                  8 25'J=Ja, N=Nein'
+     A                                      COLOR(BLU)
+     A                                 13  2'Antrags Alter.......'
+     A            FILTAG         3Y 0B 13 23COLOR(WHT)
+     A                                      EDTWRD(' 0 ')
+     A                                 13 27'Tage'
+     A                                      COLOR(BLU)
+     A                                 13 32'(0=keine Beschränkung)'
+     A                                      COLOR(BLU)
+     A                                 14  2'Antrags Art.........'
+     A            FILART         1A  B 14 23COLOR(WHT)
+     A                                 14 25'leer=Alle, G=Garantie, R=R&W, A=AR-
+     A                                      , K=Kulanz'
+     A                                      COLOR(BLU)
+     A                                  7  2'Nicht gesendete.....'
+     A            FILOFF         1A  B  7 23COLOR(WHT)
+     A                                  7 25'J=Ja, N=Nein'
+     A                                      COLOR(BLU)
+     A          R HS1210SA                  SFL
+     A*%%TS  SD  20070509  101154  MUELLERRAL  REL-V5R3M0  5722-WDS
+     A            MARKA          1A  B  8  2COLOR(WHT)
+     A            STATA          2A  O  8  4
+     A            DATA          67A  O  8  7
+     A          R HS1210CA                  SFLCTL(HS1210SA)
+     A*%%TS  SD  20050919  161514  MUELLERRAL  REL-V5R3M0  5722-WDS
+     A                                      CF12(12 'Zurück')
+     A                                      BLINK
+     A                                      OVERLAY
+     A  90                                  SFLDSP
+     A  90                                  SFLDSPCTL
+     A  99                                  SFLCLR
+     A  95                                  SFLEND(*MORE)
+     A                                      SFLSIZ(0009)
+     A                                      SFLPAG(0008)
+     A                                      WINDOW(2 2 18 75 *NOMSGLIN)
+     A                                  1  1'HS1210CA'
+     A                                  1 10'Bedienerführung'
+     A                                      COLOR(WHT)
+     A            DATTXT        20A  O  2 10COLOR(WHT)
+     A            DATTOP        50A  O  7  7COLOR(WHT)
+     A                                  7  1'Wahl'
+     A                                      COLOR(WHT)
+     A                                  4  1'Auswahl eingeben und Eingabetaste -
+     A                                      drücken.'
+     A                                      COLOR(BLU)
+     A                                  5  2'1=Auswählen'
+     A                                      COLOR(BLU)
+     A            OPTION        20A  O  5 14COLOR(BLU)
+     A          R HS1210W0
+     A*%%TS  SD  20110721  155414  RMUELLER    REL-V5R4M0  5722-WDS
+     A                                      CF12(12 'Zurück')
+     A                                      CF04(04 'Bedienerführung')
+     A                                      WINDOW(8 11 7 56)
+     A                                  6  1'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  1  1'HS1210W0'
+     A                                  1 10'Claim freigeben'
+     A                                      COLOR(WHT)
+     A            SUB050         8A  O  3 35
+     A                                  3  1'Eingabetaste drücken um den Claim'
+     A                                  3 44'zu versenden.'
+     A                                  4  1'-----------------------------------
+     A                                      ----------------------'
+     A                                      COLOR(WHT)
+     A          R HS1210WF
+     A*%%TS  SD  20000309  185416  HS_PGMRRM   REL-V4R4M0  5769-PW1
+     A                                      WINDOW(8 2 7 75)
+     A                                      CF12(12 'Zurück')
+     A                                      CF04(04 'Bedienerführung')
+     A                                  6  2'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  1  2'HS1210WF'
+     A                                  1 11'F E H L E R'
+     A                                      COLOR(WHT)
+     A                                  3  2'Keine freie Claim-Nr. vorhanden!!!-
+     A                                       - EDV Benachrichtigen.'
+     A                                      COLOR(RED)
+     A          R HS1210WG
+     A*%%TS  SD  20020806  135830  MUELLERRAL  REL-V5R1M0  5722-WDS
+     A                                      WINDOW(8 2 7 75)
+     A                                      CF12(12 'Zurück')
+     A                                      CF04(04 'Bedienerführung')
+     A                                  6  2'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  1  2'HS1210WG'
+     A                                  1 11'Alle offenen Rechnungen auswählen'
+     A                                      COLOR(WHT)
+     A                                  3  2'Eingabetaste drücken um Claims für-
+     A                                       alle offenen Garantierechnungen zu'
+     A                                  4  2'erstellen.'
+     A          R HS1210WM
+     A*%%TS  SD  20110518  131311  RMUELLER    REL-V5R4M0  5722-WDS
+     A                                      WINDOW(8 2 7 75)
+     A                                      CF12(12 'Zurück')
+     A                                      CF04(04 'Bedienerführung')
+     A                                  6  2'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  1  2'HS1210WM'
+     A                                  1 11'Claim ausbuchen'
+     A                                      COLOR(WHT)
+     A            SUB050         8A  O  3 36
+     A                                  3  2'Eingabetaste drücken um den Claim'
+     A                                  3 45'auszubuchen.'
+     A          R HS1210WS
+     A*%%TS  SD  20010516  110859  HS_PGMRPW   REL-V4R4M0  5769-PW1
+     A                                      WINDOW(5 12 9 55)
+     A                                      CF12(12 'Zurück')
+     A                                      BLINK
+     A                                  1  1'HS1210WS'
+     A                                  1 10'Servicekarte'
+     A                                      COLOR(WHT)
+     A                                  1 23'für'
+     A                                      COLOR(WHT)
+     A            FAR150        17A  O  1 27COLOR(WHT)
+     A                                  3  1'Auswahl eingeben und Datenfreigabe-
+     A                                       drücken.'
+     A                                      COLOR(BLU)
+     A                                  5  1'(A)nzeigen oder (D)rucken oder (Z)-
+     A                                      usammenf. drucken?'
+     A                                  6  1'(C)laims anzeigen?'
+     A            ANZDRU         1A  B  6 20COLOR(WHT)
+     A                                      VALUES('A' 'D' 'Z' 'C')
+     A                                  6 22'(A/C/D/Z)'
+     A                                  8  1'F12=Zurück'
+     A                                      COLOR(BLU)
+     A          R HS1210WE
+     A*%%TS  SD  20110721  162307  RMUELLER    REL-V5R4M0  5722-WDS
+     A                                      CF12(12 'Zurück')
+     A                                      CF04(04 'Bedienerführung')
+     A                                      WINDOW(4 2 11 74)
+     A                                  9  2'F12=Zurück'
+     A                                      COLOR(BLU)
+     A                                  1  2'HS1210WE'
+     A                                  1 11'Lokale Prüfung Claim'
+     A                                      COLOR(WHT)
+     A            G73050         8A  O  1 32
+     A            G73060         2A  O  1 41
+     A                                  3  2'Bitte Fehler korrigieren und erneu-
+     A                                      t senden.'
+     A                                      COLOR(BLU)
+     A            ERRORT       210A  B  5  3CHGINPDFT
+     A                                      DSPATR(PR)
+     A                                      CNTFLD(070)
+     A                                      COLOR(RED)
+     A          R HS1210WW
+     A*%%TS  SD  20110908  114726  RMUELLER    REL-V5R4M0  5722-WDS
+     A                                      CF12(12 'Zurück')
+     A                                      CF04(04 'Bedienerführung')
+     A                                      WINDOW(8 8 7 62)
+     A                                  6  1'F12=Aktualisierung überspringen'
+     A                                      COLOR(BLU)
+     A                                  1  1'HS1210WW'
+     A                                  1 10'Claim Status aktualisieren'
+     A                                      COLOR(WHT)
+     A                                  4  1'-----------------------------------
+     A                                      ----------------------------'
+     A                                      COLOR(WHT)
+     A                                  3  1'Eingabetaste drücken um Alle Garan-
+     A                                      tie Claims zu aktualisieren.'

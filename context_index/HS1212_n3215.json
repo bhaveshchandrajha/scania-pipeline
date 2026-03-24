@@ -1,0 +1,1800 @@
+{
+  "astNode": {
+    "id": "n3215",
+    "kind": "Procedure",
+    "name": "GetDescription",
+    "sem": "{}",
+    "outgoingEdges": [],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "startLine": 4102,
+      "startColumn": 7,
+      "endLine": 4220,
+      "endColumn": 24
+    }
+  },
+  "narrative": "### Node n3215: Procedure `GetDescription`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Raw sem JSON**:\n```json\n{}\n```",
+  "rpgSnippet": "     P GetDescription  B\n     D GetDescription  PI\n     C*****************************************************************\n       HGRP = *Blanks;\n       TEIL = *Blanks;\n       SCOD = *Blanks;\n       //TEILE-NR.\n       If G7307A <> *Blanks;\n          Chain G7307A ITLSMF3;\n          If Not %Found(ITLSMF3) Or AFCODE <> 'L' OR SDCPRT = 'Y';\n             If G7307A <> *Blanks;\n                TEIL = 'Fremdteil';\n             EndIf;\n          Else;\n             If %Found(ITLSMF3);\n                TEIL = SDESC;\n             EndIf;\n          EndIf;\n       EndIf;\n       //Hauptgruppe\n       If G7308A <> *Blanks;\n          Chain (%Dec(G7308A:2:0):'  ') S3F018;\n          If %Found(S3F018);\n             HGRP = DESCYY;\n          EndIf;\n       EndIf;\n       //Steuercode\n       If G7314A = *Blanks;\n          G7318A = 100;\n          G7319A = 100;\n          G7320A = 100;\n       Else;\n          Chain G7314A S3F085;\n          If %Found(S3F085);\n             If DFTAWF = 0;\n                G7318A = DMCPWF;\n                G7319A = DLCPWF;\n                G7320A = DSCPWF;\n             Else;\n                *In84 = *Off;\n                KLMAT = DFTAWF;\n                SetLl KEY084 S3F084;\n                Read S3F084;\n                If Not %Eof(S3F084) And DFTAWE <> KLMAT;\n                   *In84 = *On;\n                EndIf;\n                If *In84;\n                   G7318A = 0;\n                   G7319A = 0;\n                   G7320A = 0;\n                Else;\n                   G7318A =  DMCPWE;\n                   G7319A =  DLCPWE;\n                   G7320A =  DSCPWE;\n                EndIf;\n             EndIf;\n          EndIf;\n       EndIf;\n       //EPS\n       If A_EPS <> *Blanks;\n          D_EPS = getEpsTitle(A_EPS);\n          EpsType = getEpsType(A_EPS:G71060);\n          Select;\n          When EpsType = '1';\n             G7318A = getEpsComp(A_EPS:G71060);\n             G7319A = G7318A;\n             G7320A = G7318A;\n          When EpsType = '2';\n             G7318A = getEpsComp(A_EPS:G71060);\n             G7319A = 0;\n             G7320A = 0;\n          When EpsType = '3';\n             G7318A = 0;\n             G7319A = getEpsComp(A_EPS:G71060);\n             G7320A = G7319A;\n          When D_Eps = *Blanks;\n             SetLl (PKZ:G71010:G71020:STORNO:G71030:G_BEREICH:G_WETE:'Q4')\n                   HSAHTPF;\n             ReadE (PKZ:G71010:G71020:STORNO:G71030:G_BEREICH:G_WETE:'Q4')\n                   HSAHTPF;\n             Dow Not %Eof(HSAHTPF);\n                If AHT470 <> *Blanks;\n                   G7318A = 100 - AHT480;\n                 EndIf;\n                ReadE (PKZ:G71010:G71020:STORNO:G71030:G_BEREICH:G_WETE:'Q4')\n                      HSAHTPF;\n             EndDo;\n             SetLl (PKZ:G71010:G71020:STORNO:G71030:G_BEREICH:G_WETE:'Q4')\n                   HSAHWPF;\n             ReadE (PKZ:G71010:G71020:STORNO:G71030:G_BEREICH:G_WETE:'Q4')\n                   HSAHWPF;\n             Dow Not %Eof(HSAHWPF);\n                If AHW330 <> *Blanks;\n                   G7319A = 100 - AHW340;\n                EndIf;\n                ReadE (PKZ:G71010:G71020:STORNO:G71030:G_BEREICH:G_WETE:'Q4')\n                      HSAHWPF;\n             EndDo;\n             G7320A = 100;\n          Other;\n             G7318A = getEpsComp(A_EPS:G71060);\n             G7319A = G7318A;\n             G7320A = G7318A;\n          EndSl;\n       EndIf;\n       If G7310A <> *Blanks;\n          Chain (%Dec(G7310A:2:0)) S3F019;\n          If %Found(S3F019);\n             SCOD = DESCYZ;\n          EndIf;\n       EndIf;\n       D_EPS = getEpsTitle(A_EPS);\n       D_C1 = getCwpMsg('':C1:A_C1);\n       D_C2 = getCwpMsg('':C2:A_C2);\n       D_C3 = getCwpMsg('':C3:A_C3);\n       D_C4 = getCwpMsg('':C4:A_C4);\n       D_C5 = getCwpMsg('':C5:A_C5);\n       D_C6 = getCwpMsg('':C6:A_C6);\n     P getDescription  E",
+  "dbContracts": [],
+  "symbolMetadata": {},
+  "callGraph": {
+    "calls": [],
+    "calledBy": [
+      "n498",
+      "n498"
+    ],
+    "tableAccess": {
+      "ITLSMF3": [
+        {
+          "nodeId": "n3223",
+          "opcode": "CHAIN",
+          "line": 4110
+        }
+      ],
+      "S3F018": [
+        {
+          "nodeId": "n3242",
+          "opcode": "CHAIN",
+          "line": 4123
+        }
+      ],
+      "S3F085": [
+        {
+          "nodeId": "n3257",
+          "opcode": "CHAIN",
+          "line": 4134
+        }
+      ],
+      "S3F019": [
+        {
+          "nodeId": "n3339",
+          "opcode": "CHAIN",
+          "line": 4208
+        }
+      ],
+      "HSAHTPF": [
+        {
+          "nodeId": "n3312",
+          "opcode": "SETLL",
+          "line": 4178
+        }
+      ],
+      "HSAHWPF": [
+        {
+          "nodeId": "n3321",
+          "opcode": "SETLL",
+          "line": 4189
+        }
+      ],
+      "S3F084": [
+        {
+          "nodeId": "n3269",
+          "opcode": "SETLL",
+          "line": 4143
+        },
+        {
+          "nodeId": "n3270",
+          "opcode": "READ",
+          "line": 4144
+        }
+      ]
+    }
+  },
+  "statementNodes": [
+    {
+      "id": "n3216",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 4104,
+      "endLine": 4104
+    },
+    {
+      "id": "n3217",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4105,
+      "endLine": 4105,
+      "target": "sym.var.HGRP",
+      "symbols": [
+        "sym.var.HGRP"
+      ]
+    },
+    {
+      "id": "n3218",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4106,
+      "endLine": 4106,
+      "target": "sym.var.TEIL",
+      "symbols": [
+        "sym.var.TEIL"
+      ]
+    },
+    {
+      "id": "n3219",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4107,
+      "endLine": 4107,
+      "target": "sym.var.SCOD",
+      "symbols": [
+        "sym.var.SCOD"
+      ]
+    },
+    {
+      "id": "n3220",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 4108,
+      "endLine": 4108
+    },
+    {
+      "id": "n3221",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4109,
+      "endLine": 4120
+    },
+    {
+      "id": "n3239",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 4121,
+      "endLine": 4121
+    },
+    {
+      "id": "n3240",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4122,
+      "endLine": 4127
+    },
+    {
+      "id": "n3250",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 4128,
+      "endLine": 4128
+    },
+    {
+      "id": "n3251",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4129,
+      "endLine": 4159
+    },
+    {
+      "id": "n3289",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 4160,
+      "endLine": 4160
+    },
+    {
+      "id": "n3290",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4161,
+      "endLine": 4206
+    },
+    {
+      "id": "n3337",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4207,
+      "endLine": 4212
+    },
+    {
+      "id": "n3347",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4213,
+      "endLine": 4213,
+      "target": "sym.var.D_EPS",
+      "symbols": [
+        "sym.var.A_EPS",
+        "sym.var.D_EPS"
+      ]
+    },
+    {
+      "id": "n3348",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4214,
+      "endLine": 4214,
+      "target": "sym.var.D_C1",
+      "symbols": [
+        "sym.var.C1",
+        "sym.var.A_C1",
+        "sym.var.D_C1"
+      ]
+    },
+    {
+      "id": "n3349",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4215,
+      "endLine": 4215,
+      "target": "sym.var.D_C2",
+      "symbols": [
+        "sym.var.C2",
+        "sym.var.A_C2",
+        "sym.var.D_C2"
+      ]
+    },
+    {
+      "id": "n3350",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4216,
+      "endLine": 4216,
+      "target": "sym.var.D_C3",
+      "symbols": [
+        "sym.var.C3",
+        "sym.var.A_C3",
+        "sym.var.D_C3"
+      ]
+    },
+    {
+      "id": "n3351",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4217,
+      "endLine": 4217,
+      "target": "sym.var.D_C4",
+      "symbols": [
+        "sym.var.C4",
+        "sym.var.A_C4",
+        "sym.var.D_C4"
+      ]
+    },
+    {
+      "id": "n3352",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4218,
+      "endLine": 4218,
+      "target": "sym.var.D_C5",
+      "symbols": [
+        "sym.var.C5",
+        "sym.var.A_C5",
+        "sym.var.D_C5"
+      ]
+    },
+    {
+      "id": "n3353",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4219,
+      "endLine": 4219,
+      "target": "sym.var.D_C6",
+      "symbols": [
+        "sym.var.C6",
+        "sym.var.A_C6",
+        "sym.var.D_C6"
+      ]
+    },
+    {
+      "id": "n3222",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4109,
+      "endLine": 4109,
+      "symbols": [
+        "sym.var.G7307A"
+      ]
+    },
+    {
+      "id": "n3223",
+      "kind": "Chain",
+      "opcode": "CHAIN",
+      "startLine": 4110,
+      "endLine": 4110,
+      "target": "ITLSMF3",
+      "symbols": [
+        "sym.file.ITLSMF3",
+        "sym.var.G7307A"
+      ]
+    },
+    {
+      "id": "n3224",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4111,
+      "endLine": 4119
+    },
+    {
+      "id": "n3238",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4120,
+      "endLine": 4120
+    },
+    {
+      "id": "n3241",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4122,
+      "endLine": 4122,
+      "symbols": [
+        "sym.var.G7308A"
+      ]
+    },
+    {
+      "id": "n3242",
+      "kind": "Chain",
+      "opcode": "CHAIN",
+      "startLine": 4123,
+      "endLine": 4123,
+      "target": "S3F018",
+      "symbols": [
+        "sym.file.S3F018",
+        "sym.var.4150"
+      ]
+    },
+    {
+      "id": "n3244",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4124,
+      "endLine": 4126
+    },
+    {
+      "id": "n3249",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4127,
+      "endLine": 4127
+    },
+    {
+      "id": "n3252",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4129,
+      "endLine": 4129,
+      "symbols": [
+        "sym.var.G7314A"
+      ]
+    },
+    {
+      "id": "n3253",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4130,
+      "endLine": 4130,
+      "target": "sym.var.G7318A",
+      "symbols": [
+        "sym.var.G7318A"
+      ]
+    },
+    {
+      "id": "n3254",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4131,
+      "endLine": 4131,
+      "target": "sym.var.G7319A",
+      "symbols": [
+        "sym.var.G7319A"
+      ]
+    },
+    {
+      "id": "n3255",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4132,
+      "endLine": 4132,
+      "target": "sym.var.G7320A",
+      "symbols": [
+        "sym.var.G7320A"
+      ]
+    },
+    {
+      "id": "n3256",
+      "kind": "Else",
+      "opcode": "ELSE",
+      "startLine": 4133,
+      "endLine": 4133
+    },
+    {
+      "id": "n3257",
+      "kind": "Chain",
+      "opcode": "CHAIN",
+      "startLine": 4134,
+      "endLine": 4134,
+      "target": "S3F085",
+      "symbols": [
+        "sym.file.S3F085",
+        "sym.var.G7314A"
+      ]
+    },
+    {
+      "id": "n3258",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4135,
+      "endLine": 4158
+    },
+    {
+      "id": "n3288",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4159,
+      "endLine": 4159
+    },
+    {
+      "id": "n3291",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4161,
+      "endLine": 4161,
+      "symbols": [
+        "sym.var.A_EPS"
+      ]
+    },
+    {
+      "id": "n3292",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4162,
+      "endLine": 4162,
+      "target": "sym.var.D_EPS",
+      "symbols": [
+        "sym.var.A_EPS",
+        "sym.var.D_EPS"
+      ]
+    },
+    {
+      "id": "n3293",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4163,
+      "endLine": 4163,
+      "target": "sym.var.EpsType",
+      "symbols": [
+        "sym.var.EpsType",
+        "sym.var.G71060",
+        "sym.var.A_EPS"
+      ]
+    },
+    {
+      "id": "n3294",
+      "kind": "Select",
+      "opcode": "SELECT",
+      "startLine": 4164,
+      "endLine": 4205,
+      "symbols": [
+        "sym.file.HSAHTPF",
+        "sym.file.HSAHWPF",
+        "sym.var.PKZ",
+        "sym.var.Storno",
+        "sym.var.G71010",
+        "sym.var.G71020",
+        "sym.var.G71030",
+        "sym.var.G_BEREICH"
+      ]
+    },
+    {
+      "id": "n3336",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4206,
+      "endLine": 4206
+    },
+    {
+      "id": "n3338",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4207,
+      "endLine": 4207,
+      "symbols": [
+        "sym.var.G7310A"
+      ]
+    },
+    {
+      "id": "n3339",
+      "kind": "Chain",
+      "opcode": "CHAIN",
+      "startLine": 4208,
+      "endLine": 4208,
+      "target": "S3F019",
+      "symbols": [
+        "sym.file.S3F019"
+      ]
+    },
+    {
+      "id": "n3341",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4209,
+      "endLine": 4211
+    },
+    {
+      "id": "n3346",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4212,
+      "endLine": 4212
+    },
+    {
+      "id": "n3225",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4111,
+      "endLine": 4111,
+      "symbols": [
+        "sym.var.AFCODE",
+        "sym.var.SDCPRT"
+      ]
+    },
+    {
+      "id": "n3227",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4112,
+      "endLine": 4114
+    },
+    {
+      "id": "n3231",
+      "kind": "Else",
+      "opcode": "ELSE",
+      "startLine": 4115,
+      "endLine": 4115
+    },
+    {
+      "id": "n3232",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4116,
+      "endLine": 4118
+    },
+    {
+      "id": "n3237",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4119,
+      "endLine": 4119
+    },
+    {
+      "id": "n3243",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4123,
+      "endLine": 4123,
+      "symbols": [
+        "sym.var.G7308A"
+      ]
+    },
+    {
+      "id": "n3245",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4124,
+      "endLine": 4124
+    },
+    {
+      "id": "n3247",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4125,
+      "endLine": 4125,
+      "target": "sym.var.HGRP",
+      "symbols": [
+        "sym.var.DESCYY",
+        "sym.var.HGRP"
+      ]
+    },
+    {
+      "id": "n3248",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4126,
+      "endLine": 4126
+    },
+    {
+      "id": "n3259",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4135,
+      "endLine": 4135
+    },
+    {
+      "id": "n3261",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4136,
+      "endLine": 4157
+    },
+    {
+      "id": "n3287",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4158,
+      "endLine": 4158
+    },
+    {
+      "id": "n3295",
+      "kind": "When",
+      "opcode": "WHEN",
+      "startLine": 4165,
+      "endLine": 4165
+    },
+    {
+      "id": "n3297",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4166,
+      "endLine": 4166,
+      "target": "sym.var.G7318A",
+      "symbols": [
+        "sym.var.G71060",
+        "sym.var.A_EPS",
+        "sym.var.G7318A"
+      ]
+    },
+    {
+      "id": "n3298",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4167,
+      "endLine": 4167,
+      "target": "sym.var.G7319A",
+      "symbols": [
+        "sym.var.G7318A",
+        "sym.var.G7319A"
+      ]
+    },
+    {
+      "id": "n3299",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4168,
+      "endLine": 4168,
+      "target": "sym.var.G7320A",
+      "symbols": [
+        "sym.var.G7318A",
+        "sym.var.G7320A"
+      ]
+    },
+    {
+      "id": "n3300",
+      "kind": "When",
+      "opcode": "WHEN",
+      "startLine": 4169,
+      "endLine": 4169
+    },
+    {
+      "id": "n3302",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4170,
+      "endLine": 4170,
+      "target": "sym.var.G7318A",
+      "symbols": [
+        "sym.var.G71060",
+        "sym.var.A_EPS",
+        "sym.var.G7318A"
+      ]
+    },
+    {
+      "id": "n3303",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4171,
+      "endLine": 4171,
+      "target": "sym.var.G7319A",
+      "symbols": [
+        "sym.var.G7319A"
+      ]
+    },
+    {
+      "id": "n3304",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4172,
+      "endLine": 4172,
+      "target": "sym.var.G7320A",
+      "symbols": [
+        "sym.var.G7320A"
+      ]
+    },
+    {
+      "id": "n3305",
+      "kind": "When",
+      "opcode": "WHEN",
+      "startLine": 4173,
+      "endLine": 4173
+    },
+    {
+      "id": "n3307",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4174,
+      "endLine": 4174,
+      "target": "sym.var.G7318A",
+      "symbols": [
+        "sym.var.G7318A"
+      ]
+    },
+    {
+      "id": "n3308",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4175,
+      "endLine": 4175,
+      "target": "sym.var.G7319A",
+      "symbols": [
+        "sym.var.G71060",
+        "sym.var.A_EPS",
+        "sym.var.G7319A"
+      ]
+    },
+    {
+      "id": "n3309",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4176,
+      "endLine": 4176,
+      "target": "sym.var.G7320A",
+      "symbols": [
+        "sym.var.G7319A",
+        "sym.var.G7320A"
+      ]
+    },
+    {
+      "id": "n3310",
+      "kind": "When",
+      "opcode": "WHEN",
+      "startLine": 4177,
+      "endLine": 4177
+    },
+    {
+      "id": "n3312",
+      "kind": "SetLL",
+      "opcode": "SETLL",
+      "startLine": 4178,
+      "endLine": 4179,
+      "target": "HSAHTPF",
+      "symbols": [
+        "sym.file.HSAHTPF",
+        "sym.var.PKZ",
+        "sym.var.Storno",
+        "sym.var.G71010",
+        "sym.var.G71020",
+        "sym.var.G71030",
+        "sym.var.G_BEREICH",
+        "sym.var.G_WETE"
+      ]
+    },
+    {
+      "id": "n3313",
+      "kind": "DoW",
+      "opcode": "DOW",
+      "startLine": 4182,
+      "endLine": 4188,
+      "symbols": [
+        "sym.file.HSAHTPF",
+        "sym.var.PKZ",
+        "sym.var.Storno",
+        "sym.var.G71010",
+        "sym.var.G71020",
+        "sym.var.G71030",
+        "sym.var.G_BEREICH",
+        "sym.var.G_WETE"
+      ]
+    },
+    {
+      "id": "n3321",
+      "kind": "SetLL",
+      "opcode": "SETLL",
+      "startLine": 4189,
+      "endLine": 4190,
+      "target": "HSAHWPF",
+      "symbols": [
+        "sym.file.HSAHWPF",
+        "sym.var.PKZ",
+        "sym.var.Storno",
+        "sym.var.G71010",
+        "sym.var.G71020",
+        "sym.var.G71030",
+        "sym.var.G_BEREICH",
+        "sym.var.G_WETE"
+      ]
+    },
+    {
+      "id": "n3322",
+      "kind": "DoW",
+      "opcode": "DOW",
+      "startLine": 4193,
+      "endLine": 4199,
+      "symbols": [
+        "sym.file.HSAHWPF",
+        "sym.var.PKZ",
+        "sym.var.Storno",
+        "sym.var.G71010",
+        "sym.var.G71020",
+        "sym.var.G71030",
+        "sym.var.G_BEREICH",
+        "sym.var.G_WETE"
+      ]
+    },
+    {
+      "id": "n3330",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4200,
+      "endLine": 4200,
+      "target": "sym.var.G7320A",
+      "symbols": [
+        "sym.var.G7320A"
+      ]
+    },
+    {
+      "id": "n3331",
+      "kind": "Other",
+      "opcode": "OTHER",
+      "startLine": 4201,
+      "endLine": 4201
+    },
+    {
+      "id": "n3332",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4202,
+      "endLine": 4202,
+      "target": "sym.var.G7318A",
+      "symbols": [
+        "sym.var.G71060",
+        "sym.var.A_EPS",
+        "sym.var.G7318A"
+      ]
+    },
+    {
+      "id": "n3333",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4203,
+      "endLine": 4203,
+      "target": "sym.var.G7319A",
+      "symbols": [
+        "sym.var.G7318A",
+        "sym.var.G7319A"
+      ]
+    },
+    {
+      "id": "n3334",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4204,
+      "endLine": 4204,
+      "target": "sym.var.G7320A",
+      "symbols": [
+        "sym.var.G7318A",
+        "sym.var.G7320A"
+      ]
+    },
+    {
+      "id": "n3335",
+      "kind": "EndSelect",
+      "opcode": null,
+      "startLine": 4205,
+      "endLine": 4205
+    },
+    {
+      "id": "n3340",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4208,
+      "endLine": 4208,
+      "symbols": [
+        "sym.var.G7310A"
+      ]
+    },
+    {
+      "id": "n3342",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4209,
+      "endLine": 4209
+    },
+    {
+      "id": "n3344",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4210,
+      "endLine": 4210,
+      "target": "sym.var.SCOD",
+      "symbols": [
+        "sym.var.DESCYZ",
+        "sym.var.SCOD"
+      ]
+    },
+    {
+      "id": "n3345",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4211,
+      "endLine": 4211
+    },
+    {
+      "id": "n3226",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4111,
+      "endLine": 4111
+    },
+    {
+      "id": "n3228",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4112,
+      "endLine": 4112,
+      "symbols": [
+        "sym.var.G7307A"
+      ]
+    },
+    {
+      "id": "n3229",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4113,
+      "endLine": 4113,
+      "target": "sym.var.TEIL",
+      "symbols": [
+        "sym.var.TEIL"
+      ]
+    },
+    {
+      "id": "n3230",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4114,
+      "endLine": 4114
+    },
+    {
+      "id": "n3233",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4116,
+      "endLine": 4116
+    },
+    {
+      "id": "n3235",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4117,
+      "endLine": 4117,
+      "target": "sym.var.TEIL",
+      "symbols": [
+        "sym.var.TEIL",
+        "sym.var.SDESC"
+      ]
+    },
+    {
+      "id": "n3236",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4118,
+      "endLine": 4118
+    },
+    {
+      "id": "n3246",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4124,
+      "endLine": 4124
+    },
+    {
+      "id": "n3260",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4135,
+      "endLine": 4135
+    },
+    {
+      "id": "n3262",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4136,
+      "endLine": 4136,
+      "symbols": [
+        "sym.var.DFTAWF"
+      ]
+    },
+    {
+      "id": "n3263",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4137,
+      "endLine": 4137,
+      "target": "sym.var.G7318A",
+      "symbols": [
+        "sym.var.G7318A",
+        "sym.var.DMCPWF"
+      ]
+    },
+    {
+      "id": "n3264",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4138,
+      "endLine": 4138,
+      "target": "sym.var.G7319A",
+      "symbols": [
+        "sym.var.G7319A",
+        "sym.var.DLCPWF"
+      ]
+    },
+    {
+      "id": "n3265",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4139,
+      "endLine": 4139,
+      "target": "sym.var.G7320A",
+      "symbols": [
+        "sym.var.G7320A",
+        "sym.var.DSCPWF"
+      ]
+    },
+    {
+      "id": "n3266",
+      "kind": "Else",
+      "opcode": "ELSE",
+      "startLine": 4140,
+      "endLine": 4140
+    },
+    {
+      "id": "n3267",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4141,
+      "endLine": 4141,
+      "target": "sym.ind.84",
+      "symbols": [
+        "sym.ind.84"
+      ]
+    },
+    {
+      "id": "n3268",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4142,
+      "endLine": 4142,
+      "target": "sym.var.KLMAT",
+      "symbols": [
+        "sym.var.KLMAT",
+        "sym.var.DFTAWF"
+      ]
+    },
+    {
+      "id": "n3269",
+      "kind": "SetLL",
+      "opcode": "SETLL",
+      "startLine": 4143,
+      "endLine": 4143,
+      "target": "S3F084",
+      "symbols": [
+        "sym.file.S3F084",
+        "sym.var.KEY084"
+      ]
+    },
+    {
+      "id": "n3270",
+      "kind": "Read",
+      "opcode": "READ",
+      "startLine": 4144,
+      "endLine": 4144,
+      "target": "S3F084",
+      "symbols": [
+        "sym.file.S3F084"
+      ]
+    },
+    {
+      "id": "n3271",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4145,
+      "endLine": 4147
+    },
+    {
+      "id": "n3276",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4148,
+      "endLine": 4156
+    },
+    {
+      "id": "n3286",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4157,
+      "endLine": 4157
+    },
+    {
+      "id": "n3296",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4165,
+      "endLine": 4165,
+      "symbols": [
+        "sym.var.EpsType"
+      ]
+    },
+    {
+      "id": "n3301",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4169,
+      "endLine": 4169,
+      "symbols": [
+        "sym.var.EpsType"
+      ]
+    },
+    {
+      "id": "n3306",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4173,
+      "endLine": 4173,
+      "symbols": [
+        "sym.var.EpsType"
+      ]
+    },
+    {
+      "id": "n3311",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4177,
+      "endLine": 4177,
+      "symbols": [
+        "sym.var.D_EPS"
+      ]
+    },
+    {
+      "id": "n3314",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4182,
+      "endLine": 4182
+    },
+    {
+      "id": "n3316",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4183,
+      "endLine": 4185
+    },
+    {
+      "id": "n3320",
+      "kind": "EndDo",
+      "opcode": null,
+      "startLine": 4188,
+      "endLine": 4188
+    },
+    {
+      "id": "n3323",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4193,
+      "endLine": 4193
+    },
+    {
+      "id": "n3325",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4194,
+      "endLine": 4196
+    },
+    {
+      "id": "n3329",
+      "kind": "EndDo",
+      "opcode": null,
+      "startLine": 4199,
+      "endLine": 4199
+    },
+    {
+      "id": "n3343",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4209,
+      "endLine": 4209
+    },
+    {
+      "id": "n3234",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4116,
+      "endLine": 4116
+    },
+    {
+      "id": "n3272",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4145,
+      "endLine": 4145,
+      "symbols": [
+        "sym.var.KLMAT",
+        "sym.var.DFTAWE"
+      ]
+    },
+    {
+      "id": "n3274",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4146,
+      "endLine": 4146,
+      "target": "sym.ind.84",
+      "symbols": [
+        "sym.ind.84"
+      ]
+    },
+    {
+      "id": "n3275",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4147,
+      "endLine": 4147
+    },
+    {
+      "id": "n3277",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4148,
+      "endLine": 4148,
+      "symbols": [
+        "sym.ind.84"
+      ]
+    },
+    {
+      "id": "n3278",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4149,
+      "endLine": 4149,
+      "target": "sym.var.G7318A",
+      "symbols": [
+        "sym.var.G7318A"
+      ]
+    },
+    {
+      "id": "n3279",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4150,
+      "endLine": 4150,
+      "target": "sym.var.G7319A",
+      "symbols": [
+        "sym.var.G7319A"
+      ]
+    },
+    {
+      "id": "n3280",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4151,
+      "endLine": 4151,
+      "target": "sym.var.G7320A",
+      "symbols": [
+        "sym.var.G7320A"
+      ]
+    },
+    {
+      "id": "n3281",
+      "kind": "Else",
+      "opcode": "ELSE",
+      "startLine": 4152,
+      "endLine": 4152
+    },
+    {
+      "id": "n3282",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4153,
+      "endLine": 4153,
+      "target": "sym.var.G7318A",
+      "symbols": [
+        "sym.var.G7318A",
+        "sym.var.DMCPWE"
+      ]
+    },
+    {
+      "id": "n3283",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4154,
+      "endLine": 4154,
+      "target": "sym.var.G7319A",
+      "symbols": [
+        "sym.var.G7319A",
+        "sym.var.DLCPWE"
+      ]
+    },
+    {
+      "id": "n3284",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4155,
+      "endLine": 4155,
+      "target": "sym.var.G7320A",
+      "symbols": [
+        "sym.var.G7320A",
+        "sym.var.DSCPWE"
+      ]
+    },
+    {
+      "id": "n3285",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4156,
+      "endLine": 4156
+    },
+    {
+      "id": "n3315",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4182,
+      "endLine": 4182
+    },
+    {
+      "id": "n3317",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4183,
+      "endLine": 4183,
+      "symbols": [
+        "sym.var.AHT470"
+      ]
+    },
+    {
+      "id": "n3318",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4184,
+      "endLine": 4184,
+      "target": "sym.var.G7318A",
+      "symbols": [
+        "sym.var.G7318A",
+        "sym.var.AHT480"
+      ]
+    },
+    {
+      "id": "n3319",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4185,
+      "endLine": 4185
+    },
+    {
+      "id": "n3324",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4193,
+      "endLine": 4193
+    },
+    {
+      "id": "n3326",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4194,
+      "endLine": 4194,
+      "symbols": [
+        "sym.var.AHW330"
+      ]
+    },
+    {
+      "id": "n3327",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4195,
+      "endLine": 4195,
+      "target": "sym.var.G7319A",
+      "symbols": [
+        "sym.var.G7319A",
+        "sym.var.AHW340"
+      ]
+    },
+    {
+      "id": "n3328",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4196,
+      "endLine": 4196
+    },
+    {
+      "id": "n3273",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4145,
+      "endLine": 4145
+    }
+  ],
+  "lineToNodeMap": {
+    "4104": [
+      "n3216"
+    ],
+    "4105": [
+      "n3217"
+    ],
+    "4106": [
+      "n3218"
+    ],
+    "4107": [
+      "n3219"
+    ],
+    "4108": [
+      "n3220"
+    ],
+    "4109-4120": [
+      "n3221"
+    ],
+    "4121": [
+      "n3239"
+    ],
+    "4122-4127": [
+      "n3240"
+    ],
+    "4128": [
+      "n3250"
+    ],
+    "4129-4159": [
+      "n3251"
+    ],
+    "4160": [
+      "n3289"
+    ],
+    "4161-4206": [
+      "n3290"
+    ],
+    "4207-4212": [
+      "n3337"
+    ],
+    "4213": [
+      "n3347"
+    ],
+    "4214": [
+      "n3348"
+    ],
+    "4215": [
+      "n3349"
+    ],
+    "4216": [
+      "n3350"
+    ],
+    "4217": [
+      "n3351"
+    ],
+    "4218": [
+      "n3352"
+    ],
+    "4219": [
+      "n3353"
+    ],
+    "4109": [
+      "n3222"
+    ],
+    "4110": [
+      "n3223"
+    ],
+    "4111-4119": [
+      "n3224"
+    ],
+    "4120": [
+      "n3238"
+    ],
+    "4122": [
+      "n3241"
+    ],
+    "4123": [
+      "n3242",
+      "n3243"
+    ],
+    "4124-4126": [
+      "n3244"
+    ],
+    "4127": [
+      "n3249"
+    ],
+    "4129": [
+      "n3252"
+    ],
+    "4130": [
+      "n3253"
+    ],
+    "4131": [
+      "n3254"
+    ],
+    "4132": [
+      "n3255"
+    ],
+    "4133": [
+      "n3256"
+    ],
+    "4134": [
+      "n3257"
+    ],
+    "4135-4158": [
+      "n3258"
+    ],
+    "4159": [
+      "n3288"
+    ],
+    "4161": [
+      "n3291"
+    ],
+    "4162": [
+      "n3292"
+    ],
+    "4163": [
+      "n3293"
+    ],
+    "4164-4205": [
+      "n3294"
+    ],
+    "4206": [
+      "n3336"
+    ],
+    "4207": [
+      "n3338"
+    ],
+    "4208": [
+      "n3339",
+      "n3340"
+    ],
+    "4209-4211": [
+      "n3341"
+    ],
+    "4212": [
+      "n3346"
+    ],
+    "4111": [
+      "n3225",
+      "n3226"
+    ],
+    "4112-4114": [
+      "n3227"
+    ],
+    "4115": [
+      "n3231"
+    ],
+    "4116-4118": [
+      "n3232"
+    ],
+    "4119": [
+      "n3237"
+    ],
+    "4124": [
+      "n3245",
+      "n3246"
+    ],
+    "4125": [
+      "n3247"
+    ],
+    "4126": [
+      "n3248"
+    ],
+    "4135": [
+      "n3259",
+      "n3260"
+    ],
+    "4136-4157": [
+      "n3261"
+    ],
+    "4158": [
+      "n3287"
+    ],
+    "4165": [
+      "n3295",
+      "n3296"
+    ],
+    "4166": [
+      "n3297"
+    ],
+    "4167": [
+      "n3298"
+    ],
+    "4168": [
+      "n3299"
+    ],
+    "4169": [
+      "n3300",
+      "n3301"
+    ],
+    "4170": [
+      "n3302"
+    ],
+    "4171": [
+      "n3303"
+    ],
+    "4172": [
+      "n3304"
+    ],
+    "4173": [
+      "n3305",
+      "n3306"
+    ],
+    "4174": [
+      "n3307"
+    ],
+    "4175": [
+      "n3308"
+    ],
+    "4176": [
+      "n3309"
+    ],
+    "4177": [
+      "n3310",
+      "n3311"
+    ],
+    "4178-4179": [
+      "n3312"
+    ],
+    "4182-4188": [
+      "n3313"
+    ],
+    "4189-4190": [
+      "n3321"
+    ],
+    "4193-4199": [
+      "n3322"
+    ],
+    "4200": [
+      "n3330"
+    ],
+    "4201": [
+      "n3331"
+    ],
+    "4202": [
+      "n3332"
+    ],
+    "4203": [
+      "n3333"
+    ],
+    "4204": [
+      "n3334"
+    ],
+    "4205": [
+      "n3335"
+    ],
+    "4209": [
+      "n3342",
+      "n3343"
+    ],
+    "4210": [
+      "n3344"
+    ],
+    "4211": [
+      "n3345"
+    ],
+    "4112": [
+      "n3228"
+    ],
+    "4113": [
+      "n3229"
+    ],
+    "4114": [
+      "n3230"
+    ],
+    "4116": [
+      "n3233",
+      "n3234"
+    ],
+    "4117": [
+      "n3235"
+    ],
+    "4118": [
+      "n3236"
+    ],
+    "4136": [
+      "n3262"
+    ],
+    "4137": [
+      "n3263"
+    ],
+    "4138": [
+      "n3264"
+    ],
+    "4139": [
+      "n3265"
+    ],
+    "4140": [
+      "n3266"
+    ],
+    "4141": [
+      "n3267"
+    ],
+    "4142": [
+      "n3268"
+    ],
+    "4143": [
+      "n3269"
+    ],
+    "4144": [
+      "n3270"
+    ],
+    "4145-4147": [
+      "n3271"
+    ],
+    "4148-4156": [
+      "n3276"
+    ],
+    "4157": [
+      "n3286"
+    ],
+    "4182": [
+      "n3314",
+      "n3315"
+    ],
+    "4183-4185": [
+      "n3316"
+    ],
+    "4188": [
+      "n3320"
+    ],
+    "4193": [
+      "n3323",
+      "n3324"
+    ],
+    "4194-4196": [
+      "n3325"
+    ],
+    "4199": [
+      "n3329"
+    ],
+    "4145": [
+      "n3272",
+      "n3273"
+    ],
+    "4146": [
+      "n3274"
+    ],
+    "4147": [
+      "n3275"
+    ],
+    "4148": [
+      "n3277"
+    ],
+    "4149": [
+      "n3278"
+    ],
+    "4150": [
+      "n3279"
+    ],
+    "4151": [
+      "n3280"
+    ],
+    "4152": [
+      "n3281"
+    ],
+    "4153": [
+      "n3282"
+    ],
+    "4154": [
+      "n3283"
+    ],
+    "4155": [
+      "n3284"
+    ],
+    "4156": [
+      "n3285"
+    ],
+    "4183": [
+      "n3317"
+    ],
+    "4184": [
+      "n3318"
+    ],
+    "4185": [
+      "n3319"
+    ],
+    "4194": [
+      "n3326"
+    ],
+    "4195": [
+      "n3327"
+    ],
+    "4196": [
+      "n3328"
+    ]
+  }
+}

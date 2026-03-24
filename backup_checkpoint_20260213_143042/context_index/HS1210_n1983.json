@@ -1,0 +1,53 @@
+{
+  "astNode": {
+    "id": "n1983",
+    "kind": "Procedure",
+    "name": null,
+    "sem": null,
+    "outgoingEdges": [],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1210",
+      "startLine": 3035,
+      "startColumn": 7,
+      "endLine": 3058,
+      "endColumn": 24
+    },
+    "raw": {
+      "id": "n1983",
+      "kind": "Procedure",
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+        "startLine": 3035,
+        "startLinePP": 3037,
+        "startCol": 7,
+        "startByte": 141229,
+        "endLine": 3058,
+        "endLinePP": 3060,
+        "endCol": 24,
+        "endByte": 142061
+      },
+      "props": {
+        "procedure_name": "CheckClaim",
+        "opcode": "PROC",
+        "name": "CheckV4"
+      },
+      "children": [
+        "n1984",
+        "n1985",
+        "n2008"
+      ]
+    }
+  },
+  "narrative": "### Node n1983: Procedure\n\nProcedure `n1983` expresses business logic derived from its semantic block and referenced symbols/files.\n\n",
+  "rpgSnippet": "     P CheckV4         B\n     D CheckV4         PI              N\n     D*****************************************************************\nRM#8   Monitor;\nRM#8      If %Subst(G71200:8:2) = 'V4';\n             Return *Off;\n          EndIf;\nRM#8      Chain (G71000:G71010:G71020:' ':\nRM#8             G71030:G71040:G71190:%Subst(G71200:8:2)) HSAHKPF;\nRM#8      If %Found(HSAHKPF);\nRM#8         SetLl (AHK000:AHK040:AHK050:AHK060:'V4') HSEPAF;\nRM#8         ReadE (AHK000:AHK040:AHK050:AHK060:'V4') HSEPAF;\nRM#8         DoW Not %EoF(HSEPAF);\nRM#8            If EPA_DATV = AHK080;\nRM#8               return *On;\nRM#8            EndIf;\nRM#8            ReadE (AHK000:AHK040:AHK050:AHK060:'V4') HSEPAF;\nRM#8         EndDo;\nRM#8      EndIf;\nRM#8   On-Error *All;\nRM#8\nRM#8   EndMon;\n       Return *Off;\n     P                 E",
+  "dbContracts": [],
+  "symbolMetadata": {},
+  "displayFiles": [
+    {
+      "symbolId": "sym.dspf.HS1210D",
+      "name": "HS1210D",
+      "fileId": "qsys:HSSRC/QDDSSRC/HS1210D",
+      "path": "/QSYS.LIB/HSSRC.LIB/QDDSSRC.FILE/HS1210D.MBR"
+    }
+  ]
+}

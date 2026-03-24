@@ -1,0 +1,160 @@
+.claims-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.claims-header {
+  margin-bottom: 1.5rem;
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 0 0 1rem 0;
+  }
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+
+  .filter-label {
+    font-weight: 500;
+    color: #4a5568;
+    margin-right: 0.5rem;
+  }
+
+  input[type="text"] {
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    width: 5rem;
+  }
+
+  .checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #4a5568;
+  }
+
+  .filter-panel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: #e2e8f0;
+    border-radius: 4px;
+  }
+
+  .filter-hint { font-size: 0.85rem; color: #4a5568; }
+  .filter-close { padding: 0.25rem 0.5rem; font-size: 0.8rem; cursor: pointer; }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.action-btn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  background: #fff;
+  border: 1px solid #cbd5e0;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #2d3748;
+  transition: background 0.2s, border-color 0.2s;
+
+  &:hover {
+    background: #edf2f7;
+    border-color: #a0aec0;
+  }
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.claims-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  th, td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  th {
+    background: #f1f5f9;
+    font-weight: 600;
+    color: #334155;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:hover td {
+    background: #f8fafc;
+  }
+
+  tr.selected td {
+    background: #e6f7ff;
+    border-left: 3px solid #1890ff;
+  }
+
+  tr {
+    cursor: pointer;
+  }
+
+  tr.color-indicator {
+    border-left: 3px solid #4299e1;
+  }
+}
+
+.error {
+  color: #c53030;
+  padding: 1rem;
+  background: #fff5f5;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.loading {
+  padding: 2rem;
+  text-align: center;
+  color: #718096;
+}
+
+.empty {
+  padding: 2rem;
+  text-align: center;
+  color: #718096;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px dashed #cbd5e0;
+}

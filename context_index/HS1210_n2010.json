@@ -1,0 +1,102 @@
+{
+  "astNode": {
+    "id": "n2010",
+    "kind": "Procedure",
+    "name": "AddAttachments",
+    "sem": "{\"sym.var.sid\": {\"refersTo\": \"sym.var.sid\"}}",
+    "outgoingEdges": [
+      "sym.var.sid"
+    ],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1210",
+      "startLine": 3060,
+      "startColumn": 7,
+      "endLine": 3079,
+      "endColumn": 24
+    }
+  },
+  "narrative": "### Node n2010: Procedure `AddAttachments`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Variables**:\n  - sid (type: t.dec9_0)\n\n- **Raw sem JSON**:\n```json\n{\n  \"sym.var.sid\": {\n    \"refersTo\": \"sym.var.sid\"\n  }\n}\n```",
+  "rpgSnippet": "     P AddAttachments  B\n     D AddAttachments  PI\n     D   id                           9  0 value\n     D   dealerId                     3A   value\n     D   claimNo                      8A   value\n     D   failNo                       2A   value\n     D*----------------------------------------------------------------\n     D sid             S              9  0 Inz(0)\n     D*****************************************************************\n       exec sql select wkt_sid into :sid from hswktf\n                where wkt_id = :id;\n        If SQLCOD = 0 and sid > 0;\n          exec sql\n             INSERT INTO HSG75F (G75_KZL, G75_C00001, G75_FAILNO,\n             G75_FILE, G75_F00001)\n             SELECT :dealerid, :claimNo, :failNo, ATT_BLOB,\n             ATT_NAME FROM cdattf WHERE att_dmg_id = :sid;\n        EndIf;\n        Return;\n     P                 E",
+  "dbContracts": [],
+  "symbolMetadata": {
+    "sym.var.sid": {
+      "name": "sid",
+      "kind": "variable",
+      "typeId": "t.dec9_0",
+      "scopeId": "scope.AddAttachments",
+      "shared": true
+    }
+  },
+  "callGraph": {
+    "calls": [],
+    "calledBy": []
+  },
+  "statementNodes": [
+    {
+      "id": "n2011",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 3066,
+      "endLine": 3066
+    },
+    {
+      "id": "n2012",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 3068,
+      "endLine": 3068
+    },
+    {
+      "id": "n2014",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 3071,
+      "endLine": 3077
+    },
+    {
+      "id": "n2018",
+      "kind": "Return",
+      "opcode": "RETURN",
+      "startLine": 3078,
+      "endLine": 3078
+    },
+    {
+      "id": "n2015",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3071,
+      "endLine": 3071,
+      "symbols": [
+        "sym.var.sid",
+        "sym.var.SQLCOD"
+      ]
+    },
+    {
+      "id": "n2017",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 3077,
+      "endLine": 3077
+    }
+  ],
+  "lineToNodeMap": {
+    "3066": [
+      "n2011"
+    ],
+    "3068": [
+      "n2012"
+    ],
+    "3071-3077": [
+      "n2014"
+    ],
+    "3078": [
+      "n2018"
+    ],
+    "3071": [
+      "n2015"
+    ],
+    "3077": [
+      "n2017"
+    ]
+  }
+}

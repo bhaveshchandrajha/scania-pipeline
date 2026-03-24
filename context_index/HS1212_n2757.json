@@ -1,0 +1,383 @@
+{
+  "astNode": {
+    "id": "n2757",
+    "kind": "Procedure",
+    "name": "saveText",
+    "sem": "{}",
+    "outgoingEdges": [],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "startLine": 3706,
+      "startColumn": 7,
+      "endLine": 3748,
+      "endColumn": 24
+    }
+  },
+  "narrative": "### Node n2757: Procedure `saveText`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Raw sem JSON**:\n```json\n{}\n```",
+  "rpgSnippet": "     P saveText        B\n     D saveText        PI\n     D*----------------------------------------------------------------\n       count = 1;\n       countZ = 0;\n       txt = *Blanks;\n       DoW count < 100;\n          Chain count HS1212ST;\n          If text = *Blanks;\n             exec sql\n                  delete from hsgptf\n                         where GPT_KZL = :G71000 and GPT_CNR = :G71050 and\n                               GPT_FNR = :G7306A AND GPT_ZNR = :count;\n          Else;\n             If countZ < 4;\n                countZ +=1;\n                txt(countZ) = TEXT;\n             EndIf;\n             exec sql\n                  update hsgptf set gpt_txt = :TEXT\n                         where GPT_KZL = :G71000 and GPT_CNR = :G71050 and\n                               GPT_FNR = :G7306A AND GPT_ZNR = :count;\n             If SQLCOD <> 0;\n                exec sql\n                     INSERT INTO HSGPTF\n                            (GPT_KZL, GPT_CNR, GPT_FNR, GPT_WNR, GPT_ZNR,\n                             GPT_TXT)\n                            VALUES(:G71000, :G71050, :G7306A, :G73065, :count,\n                                   :text);\n             EndIf;\n          EndIf;\n          count += 1;\n       EndDo;\n       G7312A = txt(1);\n       G7313A = txt(2);\n       G7332A = txt(3);\n       G7333A = txt(4);\n       exec sql\n            update hsg73pf set G73120 = :G7312A, G73130 = :G7313A,\n                               G73320 = :G7332A, G73330 = :G7333A\n                   where G73000 = :G71000 and G73050 = :G71050 and\n                         G73060 = :G7306A AND G73065 = :G73065;\n     P                 E",
+  "dbContracts": [],
+  "symbolMetadata": {},
+  "callGraph": {
+    "calls": [],
+    "calledBy": [
+      "n498",
+      "n498"
+    ],
+    "tableAccess": {
+      "HS1212D": [
+        {
+          "nodeId": "n2764",
+          "opcode": "CHAIN",
+          "line": 3713
+        }
+      ]
+    }
+  },
+  "statementNodes": [
+    {
+      "id": "n2758",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 3708,
+      "endLine": 3708
+    },
+    {
+      "id": "n2759",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3709,
+      "endLine": 3709,
+      "target": "sym.var.Count",
+      "symbols": [
+        "sym.var.Count"
+      ]
+    },
+    {
+      "id": "n2760",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3710,
+      "endLine": 3710,
+      "target": "sym.var.CountZ",
+      "symbols": [
+        "sym.var.CountZ"
+      ]
+    },
+    {
+      "id": "n2761",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3711,
+      "endLine": 3711,
+      "target": "sym.var.TXT",
+      "symbols": [
+        "sym.var.TXT"
+      ]
+    },
+    {
+      "id": "n2762",
+      "kind": "DoW",
+      "opcode": "DOW",
+      "startLine": 3712,
+      "endLine": 3738
+    },
+    {
+      "id": "n2784",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3739,
+      "endLine": 3739,
+      "target": "sym.var.G7312A",
+      "symbols": [
+        "sym.var.TXT",
+        "sym.var.G7312A"
+      ]
+    },
+    {
+      "id": "n2785",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3740,
+      "endLine": 3740,
+      "target": "sym.var.G7313A",
+      "symbols": [
+        "sym.var.TXT",
+        "sym.var.G7313A"
+      ]
+    },
+    {
+      "id": "n2786",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3741,
+      "endLine": 3741,
+      "target": "sym.var.G7332A",
+      "symbols": [
+        "sym.var.TXT",
+        "sym.var.G7332A"
+      ]
+    },
+    {
+      "id": "n2787",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3742,
+      "endLine": 3742,
+      "target": "sym.var.G7333A",
+      "symbols": [
+        "sym.var.TXT",
+        "sym.var.G7333A"
+      ]
+    },
+    {
+      "id": "n2763",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3712,
+      "endLine": 3712,
+      "symbols": [
+        "sym.var.Count"
+      ]
+    },
+    {
+      "id": "n2764",
+      "kind": "Chain",
+      "opcode": "CHAIN",
+      "startLine": 3713,
+      "endLine": 3713,
+      "target": "HS1212D",
+      "symbols": [
+        "sym.var.Count",
+        "sym.var.HS1212ST"
+      ]
+    },
+    {
+      "id": "n2765",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 3714,
+      "endLine": 3736
+    },
+    {
+      "id": "n2782",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3737,
+      "endLine": 3737,
+      "target": "sym.var.Count",
+      "symbols": [
+        "sym.var.Count"
+      ]
+    },
+    {
+      "id": "n2783",
+      "kind": "EndDo",
+      "opcode": null,
+      "startLine": 3738,
+      "endLine": 3738
+    },
+    {
+      "id": "n2789",
+      "kind": "Update",
+      "opcode": "UPDATE",
+      "startLine": 3744,
+      "endLine": 3747
+    },
+    {
+      "id": "n2766",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3714,
+      "endLine": 3714,
+      "symbols": [
+        "sym.var.TEXT"
+      ]
+    },
+    {
+      "id": "n2769",
+      "kind": "Else",
+      "opcode": "ELSE",
+      "startLine": 3719,
+      "endLine": 3719
+    },
+    {
+      "id": "n2770",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 3720,
+      "endLine": 3723
+    },
+    {
+      "id": "n2777",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 3728,
+      "endLine": 3735
+    },
+    {
+      "id": "n2781",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 3736,
+      "endLine": 3736
+    },
+    {
+      "id": "n2768",
+      "kind": "Delete",
+      "opcode": "DELETE",
+      "startLine": 3716,
+      "endLine": 3718
+    },
+    {
+      "id": "n2771",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3720,
+      "endLine": 3720,
+      "symbols": [
+        "sym.var.CountZ"
+      ]
+    },
+    {
+      "id": "n2772",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3721,
+      "endLine": 3721,
+      "target": "sym.var.CountZ",
+      "symbols": [
+        "sym.var.CountZ"
+      ]
+    },
+    {
+      "id": "n2773",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3722,
+      "endLine": 3722,
+      "target": "sym.var.TXT",
+      "symbols": [
+        "sym.var.CountZ",
+        "sym.var.TXT",
+        "sym.var.TEXT"
+      ]
+    },
+    {
+      "id": "n2774",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 3723,
+      "endLine": 3723
+    },
+    {
+      "id": "n2776",
+      "kind": "Update",
+      "opcode": "UPDATE",
+      "startLine": 3725,
+      "endLine": 3727
+    },
+    {
+      "id": "n2778",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3728,
+      "endLine": 3728,
+      "symbols": [
+        "sym.var.SQLCOD"
+      ]
+    },
+    {
+      "id": "n2780",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 3735,
+      "endLine": 3735
+    }
+  ],
+  "lineToNodeMap": {
+    "3708": [
+      "n2758"
+    ],
+    "3709": [
+      "n2759"
+    ],
+    "3710": [
+      "n2760"
+    ],
+    "3711": [
+      "n2761"
+    ],
+    "3712-3738": [
+      "n2762"
+    ],
+    "3739": [
+      "n2784"
+    ],
+    "3740": [
+      "n2785"
+    ],
+    "3741": [
+      "n2786"
+    ],
+    "3742": [
+      "n2787"
+    ],
+    "3712": [
+      "n2763"
+    ],
+    "3713": [
+      "n2764"
+    ],
+    "3714-3736": [
+      "n2765"
+    ],
+    "3737": [
+      "n2782"
+    ],
+    "3738": [
+      "n2783"
+    ],
+    "3744-3747": [
+      "n2789"
+    ],
+    "3714": [
+      "n2766"
+    ],
+    "3719": [
+      "n2769"
+    ],
+    "3720-3723": [
+      "n2770"
+    ],
+    "3728-3735": [
+      "n2777"
+    ],
+    "3736": [
+      "n2781"
+    ],
+    "3716-3718": [
+      "n2768"
+    ],
+    "3720": [
+      "n2771"
+    ],
+    "3721": [
+      "n2772"
+    ],
+    "3722": [
+      "n2773"
+    ],
+    "3723": [
+      "n2774"
+    ],
+    "3725-3727": [
+      "n2776"
+    ],
+    "3728": [
+      "n2778"
+    ],
+    "3735": [
+      "n2780"
+    ]
+  }
+}

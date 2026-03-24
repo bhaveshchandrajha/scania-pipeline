@@ -1,0 +1,1164 @@
+{
+  "astNode": {
+    "id": "n3357",
+    "kind": "Procedure",
+    "name": "loadClaim",
+    "sem": "{}",
+    "outgoingEdges": [],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "startLine": 4224,
+      "startColumn": 7,
+      "endLine": 4296,
+      "endColumn": 24
+    }
+  },
+  "narrative": "### Node n3357: Procedure `loadClaim`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Raw sem JSON**:\n```json\n{}\n```",
+  "rpgSnippet": "     P loadClaim       B\n     D loadClaim       PI\n     C*****************************************************************\n       G7324A = %Char(G73240);\n       G7325A = 0;\n       If G73250 > 0;\n          G7325A = %Dec(%Date(G73250:*Iso):*Eur);\n       EndIf;\n       G7326A = G73260;\n       G7328A = G73280;\n       G7327A = G73270;\n       G7312A = G73120;\n       G7313A = G73130;\n       G7332A = G73320;\n       G7333A = G73330;\n       G7335A = G73350;\n       G7306A = G73060;\n       G7307A = G73070;\n       G7308A = G73080;\n       G7310A = G73100;\n       G7311A = G73110;\n       G7314A = G73140;\n       TEIL = GetPartDesc('':G73070);\n       If TEIL = *Blanks;\n          TEIL = GetPartDesc('':'1' + G73070);\n       EndIf;\n       HGRP = *Blanks;\n       SCOD = *Blanks;\n       If G7308A <> *Blanks;\n          Chain (%Dec(G7308A:2:0):'  ') S3F018;\n          If %Found(S3F018);\n             HGRP = DESCYY;\n          EndIf;\n       EndIf;\n       If G7310A <> *Blanks;\n          Chain (%Dec(G7310A:2:0)) S3F019;\n          If %Found(S3F019);\n             SCOD = DESCYZ;\n          EndIf;\n       EndIf;\n       STEUER = *Blanks;\n       G7318A = 0;\n       G7319A = 0;\n       G7320A = 0;\n       Chain G7314A S3F085;\n       If %Found(S3F085) And G7314A <> *Blanks;\n          STEUER = DESCWF;\n          G7318A = DMCPWF;\n          G7319A = DLCPWF;\n          G7320A = DSCPWF;\n       Else;\n          STEUER = 'Garantie';\n          G7318A = G73180;\n          G7319A = G73190;\n          G7320A = G73200;\n       EndIf;\n       A_EPS = G73285;\n       A_C1 = G73360;\n       A_C2 = G73370;\n       A_C3 = G73380;\n       A_C4 = G73390;\n       A_C5 = G73400;\n       A_C6 = G73410;\n       D_EPS = getEpsTitle(A_EPS);\n       D_C1 = getCwpMsg('':C1:A_C1);\n       D_C2 = getCwpMsg('':C2:A_C2);\n       D_C3 = getCwpMsg('':C3:A_C3);\n       D_C4 = getCwpMsg('':C4:A_C4);\n       D_C5 = getCwpMsg('':C5:A_C5);\n       D_C6 = getCwpMsg('':C6:A_C6);\n       *In42 = isWarrScope(G7314A);\n       loadText('GPT');\n     P                 E",
+  "dbContracts": [],
+  "symbolMetadata": {},
+  "callGraph": {
+    "calls": [],
+    "calledBy": [
+      "n498",
+      "n498"
+    ],
+    "tableAccess": {
+      "S3F085": [
+        {
+          "nodeId": "n3413",
+          "opcode": "CHAIN",
+          "line": 4268
+        }
+      ],
+      "S3F018": [
+        {
+          "nodeId": "n3391",
+          "opcode": "CHAIN",
+          "line": 4253
+        }
+      ],
+      "S3F019": [
+        {
+          "nodeId": "n3401",
+          "opcode": "CHAIN",
+          "line": 4259
+        }
+      ]
+    }
+  },
+  "statementNodes": [
+    {
+      "id": "n3358",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 4226,
+      "endLine": 4226
+    },
+    {
+      "id": "n3359",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4227,
+      "endLine": 4227,
+      "target": "sym.var.G7324A",
+      "symbols": [
+        "sym.var.G7324A"
+      ]
+    },
+    {
+      "id": "n3361",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4228,
+      "endLine": 4228,
+      "target": "sym.var.G7325A",
+      "symbols": [
+        "sym.var.G7325A"
+      ]
+    },
+    {
+      "id": "n3362",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4229,
+      "endLine": 4231
+    },
+    {
+      "id": "n3368",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4232,
+      "endLine": 4232,
+      "target": "sym.var.G7326A",
+      "symbols": [
+        "sym.var.G7326A",
+        "sym.var.G73260"
+      ]
+    },
+    {
+      "id": "n3369",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4233,
+      "endLine": 4233,
+      "target": "sym.var.G7328A",
+      "symbols": [
+        "sym.var.G73280",
+        "sym.var.G7328A"
+      ]
+    },
+    {
+      "id": "n3370",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4234,
+      "endLine": 4234,
+      "target": "sym.var.G7327A",
+      "symbols": [
+        "sym.var.G7327A",
+        "sym.var.G73270"
+      ]
+    },
+    {
+      "id": "n3371",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4235,
+      "endLine": 4235,
+      "target": "sym.var.G7312A",
+      "symbols": [
+        "sym.var.G7312A",
+        "sym.var.G73120"
+      ]
+    },
+    {
+      "id": "n3372",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4236,
+      "endLine": 4236,
+      "target": "sym.var.G7313A",
+      "symbols": [
+        "sym.var.G7313A",
+        "sym.var.G73130"
+      ]
+    },
+    {
+      "id": "n3373",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4237,
+      "endLine": 4237,
+      "target": "sym.var.G7332A",
+      "symbols": [
+        "sym.var.G7332A",
+        "sym.var.G73320"
+      ]
+    },
+    {
+      "id": "n3374",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4238,
+      "endLine": 4238,
+      "target": "sym.var.G7333A",
+      "symbols": [
+        "sym.var.G7333A",
+        "sym.var.G73330"
+      ]
+    },
+    {
+      "id": "n3375",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4239,
+      "endLine": 4239,
+      "target": "sym.var.G7335A",
+      "symbols": [
+        "sym.var.G7335A",
+        "sym.var.G73350"
+      ]
+    },
+    {
+      "id": "n3376",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4240,
+      "endLine": 4240,
+      "target": "sym.var.G7306A",
+      "symbols": [
+        "sym.var.G7306A"
+      ]
+    },
+    {
+      "id": "n3377",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4241,
+      "endLine": 4241,
+      "target": "sym.var.G7307A",
+      "symbols": [
+        "sym.var.G7307A",
+        "sym.var.G73070"
+      ]
+    },
+    {
+      "id": "n3378",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4242,
+      "endLine": 4242,
+      "target": "sym.var.G7308A",
+      "symbols": [
+        "sym.var.G73080",
+        "sym.var.G7308A"
+      ]
+    },
+    {
+      "id": "n3379",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4243,
+      "endLine": 4243,
+      "target": "sym.var.G7310A",
+      "symbols": [
+        "sym.var.G73100",
+        "sym.var.G7310A"
+      ]
+    },
+    {
+      "id": "n3380",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4244,
+      "endLine": 4244,
+      "target": "sym.var.G7311A",
+      "symbols": [
+        "sym.var.G73110",
+        "sym.var.G7311A"
+      ]
+    },
+    {
+      "id": "n3381",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4245,
+      "endLine": 4245,
+      "target": "sym.var.G7314A",
+      "symbols": [
+        "sym.var.G73140",
+        "sym.var.G7314A"
+      ]
+    },
+    {
+      "id": "n3382",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4246,
+      "endLine": 4246,
+      "target": "sym.var.TEIL",
+      "symbols": [
+        "sym.var.G73070",
+        "sym.var.TEIL"
+      ]
+    },
+    {
+      "id": "n3383",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4247,
+      "endLine": 4249
+    },
+    {
+      "id": "n3387",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4250,
+      "endLine": 4250,
+      "target": "sym.var.HGRP",
+      "symbols": [
+        "sym.var.HGRP"
+      ]
+    },
+    {
+      "id": "n3388",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4251,
+      "endLine": 4251,
+      "target": "sym.var.SCOD",
+      "symbols": [
+        "sym.var.SCOD"
+      ]
+    },
+    {
+      "id": "n3389",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4252,
+      "endLine": 4257
+    },
+    {
+      "id": "n3399",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4258,
+      "endLine": 4263
+    },
+    {
+      "id": "n3409",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4264,
+      "endLine": 4264,
+      "target": "sym.var.STEUER",
+      "symbols": [
+        "sym.var.STEUER"
+      ]
+    },
+    {
+      "id": "n3410",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4265,
+      "endLine": 4265,
+      "target": "sym.var.G7318A",
+      "symbols": [
+        "sym.var.G7318A"
+      ]
+    },
+    {
+      "id": "n3411",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4266,
+      "endLine": 4266,
+      "target": "sym.var.G7319A",
+      "symbols": [
+        "sym.var.G7319A"
+      ]
+    },
+    {
+      "id": "n3412",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4267,
+      "endLine": 4267,
+      "target": "sym.var.G7320A",
+      "symbols": [
+        "sym.var.G7320A"
+      ]
+    },
+    {
+      "id": "n3413",
+      "kind": "Chain",
+      "opcode": "CHAIN",
+      "startLine": 4268,
+      "endLine": 4268,
+      "target": "S3F085",
+      "symbols": [
+        "sym.file.S3F085",
+        "sym.var.G7314A"
+      ]
+    },
+    {
+      "id": "n3414",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4269,
+      "endLine": 4279
+    },
+    {
+      "id": "n3427",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4280,
+      "endLine": 4280,
+      "target": "sym.var.A_EPS",
+      "symbols": [
+        "sym.var.A_EPS",
+        "sym.var.G73285"
+      ]
+    },
+    {
+      "id": "n3428",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4281,
+      "endLine": 4281,
+      "target": "sym.var.A_C1",
+      "symbols": [
+        "sym.var.A_C1",
+        "sym.var.G73360"
+      ]
+    },
+    {
+      "id": "n3429",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4282,
+      "endLine": 4282,
+      "target": "sym.var.A_C2",
+      "symbols": [
+        "sym.var.A_C2",
+        "sym.var.G73370"
+      ]
+    },
+    {
+      "id": "n3430",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4283,
+      "endLine": 4283,
+      "target": "sym.var.A_C3",
+      "symbols": [
+        "sym.var.A_C3",
+        "sym.var.G73380"
+      ]
+    },
+    {
+      "id": "n3431",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4284,
+      "endLine": 4284,
+      "target": "sym.var.A_C4",
+      "symbols": [
+        "sym.var.A_C4",
+        "sym.var.G73390"
+      ]
+    },
+    {
+      "id": "n3432",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4285,
+      "endLine": 4285,
+      "target": "sym.var.A_C5",
+      "symbols": [
+        "sym.var.A_C5",
+        "sym.var.G73400"
+      ]
+    },
+    {
+      "id": "n3433",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4286,
+      "endLine": 4286,
+      "target": "sym.var.A_C6",
+      "symbols": [
+        "sym.var.A_C6",
+        "sym.var.G73410"
+      ]
+    },
+    {
+      "id": "n3434",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4287,
+      "endLine": 4287,
+      "target": "sym.var.D_EPS",
+      "symbols": [
+        "sym.var.A_EPS",
+        "sym.var.D_EPS"
+      ]
+    },
+    {
+      "id": "n3435",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4288,
+      "endLine": 4288,
+      "target": "sym.var.D_C1",
+      "symbols": [
+        "sym.var.C1",
+        "sym.var.A_C1",
+        "sym.var.D_C1"
+      ]
+    },
+    {
+      "id": "n3436",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4289,
+      "endLine": 4289,
+      "target": "sym.var.D_C2",
+      "symbols": [
+        "sym.var.C2",
+        "sym.var.A_C2",
+        "sym.var.D_C2"
+      ]
+    },
+    {
+      "id": "n3437",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4290,
+      "endLine": 4290,
+      "target": "sym.var.D_C3",
+      "symbols": [
+        "sym.var.C3",
+        "sym.var.A_C3",
+        "sym.var.D_C3"
+      ]
+    },
+    {
+      "id": "n3438",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4291,
+      "endLine": 4291,
+      "target": "sym.var.D_C4",
+      "symbols": [
+        "sym.var.C4",
+        "sym.var.A_C4",
+        "sym.var.D_C4"
+      ]
+    },
+    {
+      "id": "n3439",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4292,
+      "endLine": 4292,
+      "target": "sym.var.D_C5",
+      "symbols": [
+        "sym.var.C5",
+        "sym.var.A_C5",
+        "sym.var.D_C5"
+      ]
+    },
+    {
+      "id": "n3440",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4293,
+      "endLine": 4293,
+      "target": "sym.var.D_C6",
+      "symbols": [
+        "sym.var.C6",
+        "sym.var.A_C6",
+        "sym.var.D_C6"
+      ]
+    },
+    {
+      "id": "n3441",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4294,
+      "endLine": 4294,
+      "target": "sym.ind.42",
+      "symbols": [
+        "sym.var.G7314A",
+        "sym.ind.42"
+      ]
+    },
+    {
+      "id": "n3360",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4227,
+      "endLine": 4227,
+      "symbols": [
+        "sym.var.G73240"
+      ]
+    },
+    {
+      "id": "n3363",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4229,
+      "endLine": 4229,
+      "symbols": [
+        "sym.var.G73250"
+      ]
+    },
+    {
+      "id": "n3364",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4230,
+      "endLine": 4230,
+      "target": "sym.var.G7325A",
+      "symbols": [
+        "sym.var.G7325A"
+      ]
+    },
+    {
+      "id": "n3367",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4231,
+      "endLine": 4231
+    },
+    {
+      "id": "n3384",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4247,
+      "endLine": 4247,
+      "symbols": [
+        "sym.var.TEIL"
+      ]
+    },
+    {
+      "id": "n3385",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4248,
+      "endLine": 4248,
+      "target": "sym.var.TEIL",
+      "symbols": [
+        "sym.var.G73070",
+        "sym.var.TEIL"
+      ]
+    },
+    {
+      "id": "n3386",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4249,
+      "endLine": 4249
+    },
+    {
+      "id": "n3390",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4252,
+      "endLine": 4252,
+      "symbols": [
+        "sym.var.G7308A"
+      ]
+    },
+    {
+      "id": "n3391",
+      "kind": "Chain",
+      "opcode": "CHAIN",
+      "startLine": 4253,
+      "endLine": 4253,
+      "target": "S3F018",
+      "symbols": [
+        "sym.file.S3F018",
+        "sym.var.4280"
+      ]
+    },
+    {
+      "id": "n3393",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4254,
+      "endLine": 4256
+    },
+    {
+      "id": "n3398",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4257,
+      "endLine": 4257
+    },
+    {
+      "id": "n3400",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4258,
+      "endLine": 4258,
+      "symbols": [
+        "sym.var.G7310A"
+      ]
+    },
+    {
+      "id": "n3401",
+      "kind": "Chain",
+      "opcode": "CHAIN",
+      "startLine": 4259,
+      "endLine": 4259,
+      "target": "S3F019",
+      "symbols": [
+        "sym.file.S3F019"
+      ]
+    },
+    {
+      "id": "n3403",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 4260,
+      "endLine": 4262
+    },
+    {
+      "id": "n3408",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4263,
+      "endLine": 4263
+    },
+    {
+      "id": "n3415",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4269,
+      "endLine": 4269,
+      "symbols": [
+        "sym.var.G7314A"
+      ]
+    },
+    {
+      "id": "n3417",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4270,
+      "endLine": 4270,
+      "target": "sym.var.STEUER",
+      "symbols": [
+        "sym.var.DESCWF",
+        "sym.var.STEUER"
+      ]
+    },
+    {
+      "id": "n3418",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4271,
+      "endLine": 4271,
+      "target": "sym.var.G7318A",
+      "symbols": [
+        "sym.var.G7318A",
+        "sym.var.DMCPWF"
+      ]
+    },
+    {
+      "id": "n3419",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4272,
+      "endLine": 4272,
+      "target": "sym.var.G7319A",
+      "symbols": [
+        "sym.var.G7319A",
+        "sym.var.DLCPWF"
+      ]
+    },
+    {
+      "id": "n3420",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4273,
+      "endLine": 4273,
+      "target": "sym.var.G7320A",
+      "symbols": [
+        "sym.var.G7320A",
+        "sym.var.DSCPWF"
+      ]
+    },
+    {
+      "id": "n3421",
+      "kind": "Else",
+      "opcode": "ELSE",
+      "startLine": 4274,
+      "endLine": 4274
+    },
+    {
+      "id": "n3422",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4275,
+      "endLine": 4275,
+      "target": "sym.var.STEUER",
+      "symbols": [
+        "sym.var.STEUER"
+      ]
+    },
+    {
+      "id": "n3423",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4276,
+      "endLine": 4276,
+      "target": "sym.var.G7318A",
+      "symbols": [
+        "sym.var.G73180",
+        "sym.var.G7318A"
+      ]
+    },
+    {
+      "id": "n3424",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4277,
+      "endLine": 4277,
+      "target": "sym.var.G7319A",
+      "symbols": [
+        "sym.var.G73190",
+        "sym.var.G7319A"
+      ]
+    },
+    {
+      "id": "n3425",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4278,
+      "endLine": 4278,
+      "target": "sym.var.G7320A",
+      "symbols": [
+        "sym.var.G73200",
+        "sym.var.G7320A"
+      ]
+    },
+    {
+      "id": "n3426",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4279,
+      "endLine": 4279
+    },
+    {
+      "id": "n3365",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4230,
+      "endLine": 4230
+    },
+    {
+      "id": "n3392",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4253,
+      "endLine": 4253,
+      "symbols": [
+        "sym.var.G7308A"
+      ]
+    },
+    {
+      "id": "n3394",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4254,
+      "endLine": 4254
+    },
+    {
+      "id": "n3396",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4255,
+      "endLine": 4255,
+      "target": "sym.var.HGRP",
+      "symbols": [
+        "sym.var.DESCYY",
+        "sym.var.HGRP"
+      ]
+    },
+    {
+      "id": "n3397",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4256,
+      "endLine": 4256
+    },
+    {
+      "id": "n3402",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4259,
+      "endLine": 4259,
+      "symbols": [
+        "sym.var.G7310A"
+      ]
+    },
+    {
+      "id": "n3404",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 4260,
+      "endLine": 4260
+    },
+    {
+      "id": "n3406",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 4261,
+      "endLine": 4261,
+      "target": "sym.var.SCOD",
+      "symbols": [
+        "sym.var.DESCYZ",
+        "sym.var.SCOD"
+      ]
+    },
+    {
+      "id": "n3407",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 4262,
+      "endLine": 4262
+    },
+    {
+      "id": "n3416",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4269,
+      "endLine": 4269
+    },
+    {
+      "id": "n3366",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4230,
+      "endLine": 4230,
+      "symbols": [
+        "sym.var.G73250"
+      ]
+    },
+    {
+      "id": "n3395",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4254,
+      "endLine": 4254
+    },
+    {
+      "id": "n3405",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 4260,
+      "endLine": 4260
+    }
+  ],
+  "lineToNodeMap": {
+    "4226": [
+      "n3358"
+    ],
+    "4227": [
+      "n3359",
+      "n3360"
+    ],
+    "4228": [
+      "n3361"
+    ],
+    "4229-4231": [
+      "n3362"
+    ],
+    "4232": [
+      "n3368"
+    ],
+    "4233": [
+      "n3369"
+    ],
+    "4234": [
+      "n3370"
+    ],
+    "4235": [
+      "n3371"
+    ],
+    "4236": [
+      "n3372"
+    ],
+    "4237": [
+      "n3373"
+    ],
+    "4238": [
+      "n3374"
+    ],
+    "4239": [
+      "n3375"
+    ],
+    "4240": [
+      "n3376"
+    ],
+    "4241": [
+      "n3377"
+    ],
+    "4242": [
+      "n3378"
+    ],
+    "4243": [
+      "n3379"
+    ],
+    "4244": [
+      "n3380"
+    ],
+    "4245": [
+      "n3381"
+    ],
+    "4246": [
+      "n3382"
+    ],
+    "4247-4249": [
+      "n3383"
+    ],
+    "4250": [
+      "n3387"
+    ],
+    "4251": [
+      "n3388"
+    ],
+    "4252-4257": [
+      "n3389"
+    ],
+    "4258-4263": [
+      "n3399"
+    ],
+    "4264": [
+      "n3409"
+    ],
+    "4265": [
+      "n3410"
+    ],
+    "4266": [
+      "n3411"
+    ],
+    "4267": [
+      "n3412"
+    ],
+    "4268": [
+      "n3413"
+    ],
+    "4269-4279": [
+      "n3414"
+    ],
+    "4280": [
+      "n3427"
+    ],
+    "4281": [
+      "n3428"
+    ],
+    "4282": [
+      "n3429"
+    ],
+    "4283": [
+      "n3430"
+    ],
+    "4284": [
+      "n3431"
+    ],
+    "4285": [
+      "n3432"
+    ],
+    "4286": [
+      "n3433"
+    ],
+    "4287": [
+      "n3434"
+    ],
+    "4288": [
+      "n3435"
+    ],
+    "4289": [
+      "n3436"
+    ],
+    "4290": [
+      "n3437"
+    ],
+    "4291": [
+      "n3438"
+    ],
+    "4292": [
+      "n3439"
+    ],
+    "4293": [
+      "n3440"
+    ],
+    "4294": [
+      "n3441"
+    ],
+    "4229": [
+      "n3363"
+    ],
+    "4230": [
+      "n3364",
+      "n3365",
+      "n3366"
+    ],
+    "4231": [
+      "n3367"
+    ],
+    "4247": [
+      "n3384"
+    ],
+    "4248": [
+      "n3385"
+    ],
+    "4249": [
+      "n3386"
+    ],
+    "4252": [
+      "n3390"
+    ],
+    "4253": [
+      "n3391",
+      "n3392"
+    ],
+    "4254-4256": [
+      "n3393"
+    ],
+    "4257": [
+      "n3398"
+    ],
+    "4258": [
+      "n3400"
+    ],
+    "4259": [
+      "n3401",
+      "n3402"
+    ],
+    "4260-4262": [
+      "n3403"
+    ],
+    "4263": [
+      "n3408"
+    ],
+    "4269": [
+      "n3415",
+      "n3416"
+    ],
+    "4270": [
+      "n3417"
+    ],
+    "4271": [
+      "n3418"
+    ],
+    "4272": [
+      "n3419"
+    ],
+    "4273": [
+      "n3420"
+    ],
+    "4274": [
+      "n3421"
+    ],
+    "4275": [
+      "n3422"
+    ],
+    "4276": [
+      "n3423"
+    ],
+    "4277": [
+      "n3424"
+    ],
+    "4278": [
+      "n3425"
+    ],
+    "4279": [
+      "n3426"
+    ],
+    "4254": [
+      "n3394",
+      "n3395"
+    ],
+    "4255": [
+      "n3396"
+    ],
+    "4256": [
+      "n3397"
+    ],
+    "4260": [
+      "n3404",
+      "n3405"
+    ],
+    "4261": [
+      "n3406"
+    ],
+    "4262": [
+      "n3407"
+    ]
+  }
+}

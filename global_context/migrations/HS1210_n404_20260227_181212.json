@@ -1,0 +1,195 @@
+{
+  "programId": "HS1210",
+  "unitId": "qsys:HSSRC/QRPGLESRC/HS1210",
+  "entryNodeId": "n404",
+  "nodesInSlice": [
+    {
+      "nodeId": "n404",
+      "kind": "Subroutine",
+      "name": null,
+      "procedureName": null,
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+        "startLine": 824,
+        "endLine": 2798
+      }
+    }
+  ],
+  "contextFiles": [
+    "/Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/context_index/HS1210_n404.json"
+  ],
+  "dbFiles": [
+    {
+      "name": "AUFWKO",
+      "library": "HSSRC"
+    },
+    {
+      "name": "FISTAM",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HS1210D",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKLF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKLF8",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHPPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHTPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHWPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSBTSLF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSBTSPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSEPAF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSFLALF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG70F",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF2",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF7",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71PF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG73LF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG73PF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG79F",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGFIPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSLF2",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSLF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGSCPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSKAMPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "RWAPRL1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "ITLSMF3",
+      "library": "P400IMS"
+    },
+    {
+      "name": "PIPPMST",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F001",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F002",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F003",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F009",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F085",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3L004H",
+      "library": "S400CAS"
+    }
+  ],
+  "generatedFiles": [
+    "com/scania/warranty/domain/ExternalService.java",
+    "com/scania/warranty/domain/Invoice.java",
+    "com/scania/warranty/domain/WorkPosition.java",
+    "com/scania/warranty/domain/SubmissionDeadlineRelease.java",
+    "com/scania/warranty/domain/Claim.java",
+    "com/scania/warranty/domain/ClaimError.java",
+    "com/scania/warranty/domain/ClaimStatus.java",
+    "com/scania/warranty/repository/ExternalServiceRepository.java",
+    "com/scania/warranty/repository/InvoiceRepository.java",
+    "com/scania/warranty/repository/WorkPositionRepository.java",
+    "com/scania/warranty/repository/SubmissionDeadlineReleaseRepository.java",
+    "com/scania/warranty/repository/ClaimRepository.java",
+    "com/scania/warranty/repository/ClaimErrorRepository.java",
+    "com/scania/warranty/service/ClaimCreationService.java",
+    "com/scania/warranty/dto/ClaimDto.java",
+    "com/scania/warranty/dto/ClaimCreationRequest.java",
+    "com/scania/warranty/dto/ClaimCreationResponse.java"
+  ],
+  "runs": [
+    {
+      "contextFile": "/Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/context_index/HS1210_n404.json",
+      "returnCode": 0,
+      "stdoutPreview": "// === domain/ExternalService.java ===\npackage com.scania.warranty.domain;\n\nimport jakarta.persistence.*;\nimport java.math.BigDecimal;\nimport java.time.LocalDate;\n\n/**\n * JPA entity for external service line items (HSFLALF1).\n */\n@Entity\n@Table(name = \"HSFLALF1\")\npublic class ExternalService {\n\n    @Id\n    @GeneratedValue(strategy = GenerationType.IDENTITY)\n    private Long id;\n\n    @Column(name = \"PKZ\", length = 3, nullable = false)\n    private String companyCode;\n\n    @Column(name = \"BES-DAT\", length = 8, nullable = false)\n    private String orderDate;\n\n    @Column(name = \"BES-NR\", length = 5, nullable = false)\n    private String orderNumber;\n\n    @Column(name = \"LNR-FL\", precision = 3, scale = 0, nullable = false)\n    private Integer lineNumberExternal;\n\n    @Column(name = \"KEN-FL\", length = 8, nullable = false)\n    private String externalServiceId;\n\n    @Column(name = \"LNR\", precision = 3, scale = 0, nullable = false)\n    private Integer lineNumber;\n\n    @Column(name = \"BESCHREIBUNG\", length = 40, nullable = false)\n    private String description;\n\n    @Column(name = \"TEXTZEILEN\", precision = 3, scale = 0, nullable = false)\n    private Integer textLines;\n\n    @Column(name = \"EK-PREIS\", precision = 7, scale = 2, nullable = false)\n    private BigDecimal purchasePrice;\n\n    @Column(name = \"MENGE\", precision = 5, scale = 0, nullable = false)\n    private Integer quantity;\n\n    @Column(name = \"EK-RENR\", length = 10, nullable = false)\n    private String purchaseInvoiceNumber;\n\n    @Column(name = \"EK-REDAT\", length = 8, nullable = false)\n    private String purchaseInvoiceDate;\n\n    @Column(name = \"EK BEMERKUNGEN 1\", length = 60, nullable = false)\n    private String purchaseRemarks1;\n\n    @Column(name = \"EK BEMERKUNGEN 2\", length = 60, nullable = false)\n    private String purchaseRemarks2;\n\n    @Column(name = \"EK-WERT\", precision = 9, scale = 2, nullable = false)\n    private BigDecimal purchaseValue;\n\n    @Column(name = \"ZUS %\", length = 3, nullable = false)\n    private String surchargePercent;\n\n    @Column(name = \"VK-WERT\", precision = 9, scale = 2, nullable = false)\n    private BigDecimal salesValue;\n\n    @Column(name = \"AUFNR\", length = 5, nullable = false)\n    private String jobNumber;\n\n    @Column(name = \"BEREI\", length = 1, nullable = false)\n    private String area;\n\n    @Column(name = \"WT\", length = 1, nullable = false)\n    private String workshopTheke;\n\n    @Column(name = \"SPL\", length = 2, nullable = false)\n    private String split;\n\n    @Column(name = \"AUFDAT\", length = 8, nullable = false)\n    private String jobDate;\n\n    @Column(name = \"POS.\", precision = 3, scale = 0, nullable = false)\n    private Integer position;\n\n    @Column(name = \"ERL-GRP\", length = 2, nullable = false)\n    private String revenueGroup;\n\n    @Column(name = \"RECNR\", length = 5, nullable = false)\n    private String invoiceNumber;\n\n    @Column(name = \"RECDAT\", length = 8, nullable = false)\n    private String invoiceDate;\n\n    @Column(name = \"STATUS\", length = 1, nullable = false)\n    private String status;\n\n    @Column(name = \"SDPS JOB UUID\", length = 40, nullable = false)\n    private String sdpsJobUuid;\n\n    @Column(name = \"SDPS FLA UUID\", length = 40, nullable = false)\n    private String sdpsFlaUuid;\n\n    public ExternalService() {\n    }\n\n    // Getters and Setters\n    public Long getId() {\n        return id;\n    }\n\n    public void setId(Long id) {\n        this.id = id;\n    }\n\n    public String getCompanyCode() {\n        return companyCode;\n    }\n\n    public void setCompanyCode(String companyCode) {\n        this.companyCode = companyCode;\n    }\n\n    public String getOrderDate() {\n        return orderDate;\n    }\n\n    public void setOrderDate(String orderDate) {\n        this.orderDate = orderDate;\n    }\n\n    public String getOrderNumber() {\n        return orderNumber;\n    }\n\n    public void setOrderNumber(String orderNumber) {\n        this.orderNumber = orderNumber;\n    }\n\n    public Integer getLineNumberExternal() {\n        return lineNumberExternal;\n",
+      "stderrPreview": "// Context package size: 231.9 KB\n// DB Contracts: 6, Total columns: 296\n// Generating Pure Java (Track B) with layered architecture...\n// This may take 60-120 seconds for large packages...\n// Prompt size: 237.3 KB\n// Integration mode: writing into existing project warranty_demo\n// Starting Pure Java migration (Track B)...\n// Sending request to LLM (this may take 60-120 seconds for large prompts)...\n// LLM response received in 314.5 seconds\n// Parsing multi-file output...\n// Parser extracted 17 files:\n//   - domain/Claim.java\n//   - domain/ClaimError.java\n//   - domain/ClaimStatus.java\n//   - domain/ExternalService.java\n//   - domain/Invoice.java\n//   - domain/SubmissionDeadlineRelease.java\n//   - domain/WorkPosition.java\n//   - dto/ClaimCreationRequest.java\n//   - dto/ClaimCreationResponse.java\n//   - dto/ClaimDto.java\n//   - repository/ClaimErrorRepository.java\n//   - repository/ClaimRepository.java\n//   - repository/ExternalServiceRepository.java\n//   - repository/InvoiceRepository.java\n//   - repository/SubmissionDeadlineReleaseRepository.java\n//   - repository/WorkPositionRepository.java\n//   - service/ClaimCreationService.java\n// Found 17 Java files to write\n// \u2705 Wrote com/scania/warranty/domain/ExternalService.java (8656 chars)\n// \u2705 Wrote com/scania/warranty/domain/Invoice.java (38747 chars)\n// \u2705 Wrote com/scania/warranty/domain/WorkPosition.java (14905 chars)\n// \u2705 Wrote com/scania/warranty/domain/SubmissionDeadlineRelease.java (3174 chars)\n// \u2705 Wrote com/scania/warranty/domain/Claim.java (6322 chars)\n// \u2705 Wrote com/scania/warranty/domain/ClaimError.java (14867 chars)\n// \u2705 Wrote com/scania/warranty/domain/ClaimStatus.java (712 chars)\n// \u2705 Wrote com/scania/warranty/repository/ExternalServiceRepository.java (1550 chars)\n// \u2705 Wrote com/scania/warranty/repository/InvoiceRepository.java (1577 chars)\n// \u2705 Wrote com/scania/warranty/repository/WorkPositionRepository.java (1323 chars)\n// \u2705 Wrote com/scania/warranty/repository/SubmissionDeadlineReleaseRepository.java (1149 chars)\n// \u2705 Wrote com/scania/warranty/repository/ClaimRepository.java (2104 chars)\n// \u2705 Wrote com/scania/warranty/repository/ClaimErrorRepository.java (1752 chars)\n// \u2705 Wrote com/scania/warranty/service/ClaimCreationService.java (14469 chars)\n// \u2705 Wrote com/scania/warranty/dto/ClaimDto.java (500 chars)\n// \u2705 Wrote com/scania/warranty/dto/ClaimCreationRequest.java (361 chars)\n// \u2705 Wrote com/scania/warranty/dto/ClaimCreationResponse.java (285 chars)\n\n// \u2705 Successfully generated 17 Java files\n// \ud83d\udcc1 Output directory: /Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/warranty_demo/src/main/java\n// \ud83d\udce6 Package structure:\n//    com/scania/warranty/domain/Claim.java\n//    com/scania/warranty/domain/ClaimError.java\n//    com/scania/warranty/domain/ClaimStatus.java\n//    com/scania/warranty/domain/ExternalService.java\n//    com/scania/warranty/domain/Invoice.java\n//    com/scania/warranty/domain/SubmissionDeadlineRelease.java\n//    com/scania/warranty/domain/WorkPosition.java\n//    com/scania/warranty/dto/ClaimCreationRequest.java\n//    com/scania/warranty/dto/ClaimCreationResponse.java\n//    com/scania/warranty/dto/ClaimDto.java\n//    ... and 7 more files\n// \u2705 Migration complete! Files integrated into project: warranty_demo/src\n"
+    }
+  ],
+  "summary": "Migrated feature starting at HS1210 n404 with 1 node(s); DB files involved: AUFWKO (HSSRC), FISTAM (HSSRC), HS1210D (HSSRC), HSAHKLF3 (HSSRC), HSAHKLF8 (HSSRC), HSAHKPF (HSSRC), HSAHPPF (HSSRC), HSAHTPF (HSSRC), HSAHWPF (HSSRC), HSBTSLF1 (HSSRC), HSBTSPF (HSSRC), HSEPAF (HSSRC), HSFLALF1 (HSSRC), HSG70F (HSSRC), HSG71LF2 (HSSRC), HSG71LF3 (HSSRC), HSG71LF7 (HSSRC), HSG71PF (HSSRC), HSG73LF1 (HSSRC), HSG73PF (HSSRC), HSG79F (HSSRC), HSGFIPF (HSSRC), HSGPSLF2 (HSSRC), HSGPSLF3 (HSSRC), HSGPSPF (HSSRC), HSGSCPF (HSSRC), HSKAMPF (HSSRC), RWAPRL1 (HSSRC), ITLSMF3 (P400IMS), PIPPMST (S400CAS), S3F001 (S400CAS), S3F002 (S400CAS), S3F003 (S400CAS), S3F009 (S400CAS), S3F085 (S400CAS), S3L004H (S400CAS)."
+}

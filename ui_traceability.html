@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RPG → Java Traceability Viewer</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #020617;
+      color: #e5e7eb;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 20px; background: #0b1120;
+      border-bottom: 1px solid #1f2937; flex-shrink: 0;
+    }
+    header h1 { font-size: 16px; }
+    header .sub { font-size: 11px; color: #9ca3af; }
+    .back-link {
+      font-size: 11px; color: #60a5fa; text-decoration: none;
+      border: 1px solid #1e3a5f; padding: 4px 10px; border-radius: 4px;
+    }
+    .back-link:hover { background: #1e3a5f; }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      display: flex; align-items: center; gap: 10px; padding: 8px 20px;
+      background: #0b1120; border-bottom: 1px solid #1f2937;
+      flex-shrink: 0; flex-wrap: wrap;
+    }
+    .toolbar label { font-size: 11px; color: #9ca3af; }
+    .toolbar select {
+      background: #020617; color: #e5e7eb; border: 1px solid #374151;
+      border-radius: 4px; padding: 4px 8px; font-size: 11px; min-width: 180px;
+    }
+    .btn {
+      background: #3b82f6; color: white; border: 1px solid #2563eb;
+      border-radius: 4px; padding: 4px 12px; font-size: 11px; cursor: pointer;
+    }
+    .btn:hover { background: #2563eb; }
+    .btn:disabled { opacity: 0.5; cursor: default; }
+    .toolbar .stats { font-size: 10px; color: #6b7280; margin-left: auto; }
+
+    /* ── Split panels ── */
+    .split {
+      flex: 1; display: flex; overflow: hidden;
+    }
+    .panel-rpg {
+      flex: 1; min-width: 0; overflow: auto;
+      border-right: 2px solid #1f2937;
+    }
+    .panel-java {
+      flex: 1; min-width: 0; overflow: auto;
+      display: flex; flex-direction: column;
+    }
+    .panel-header {
+      padding: 6px 14px; font-size: 11px; color: #9ca3af;
+      background: #0b1120; border-bottom: 1px solid #1f2937;
+      flex-shrink: 0; display: flex; align-items: center; gap: 8px;
+    }
+    .panel-header .title { font-weight: 600; color: #e5e7eb; }
+    .panel-header .detail { color: #6b7280; }
+
+    /* ── Code rendering ── */
+    .code-wrap {
+      font-family: 'JetBrains Mono','Fira Code','Cascadia Code','Consolas',monospace;
+      font-size: 12px; line-height: 1.65; padding: 4px 0; min-width: fit-content;
+    }
+    .code-line {
+      display: flex; padding: 0 14px 0 0; min-height: 20px; position: relative;
+    }
+    .code-line:hover { background: rgba(255,255,255,0.03); }
+    .line-num {
+      display: inline-block; width: 52px; text-align: right; padding-right: 12px;
+      color: #4b5563; user-select: none; flex-shrink: 0;
+    }
+    .line-content { flex: 1; white-space: pre; tab-size: 4; }
+
+    /* RPG traced lines */
+    .code-line.rpg-traced {
+      border-left: 3px solid transparent;
+      cursor: pointer;
+    }
+    .code-line.rpg-eval    { border-left-color: #3b82f6; }
+    .code-line.rpg-if      { border-left-color: #a855f7; }
+    .code-line.rpg-io      { border-left-color: #f59e0b; }
+    .code-line.rpg-call    { border-left-color: #10b981; }
+    .code-line.rpg-decl    { border-left-color: #6b7280; }
+    .code-line.rpg-other   { border-left-color: #64748b; }
+    .code-line.rpg-traced:hover  { background: rgba(59,130,246,0.10); }
+    .code-line.rpg-active  { background: rgba(59,130,246,0.18) !important; }
+
+    .node-badge {
+      display: inline-block; font-size: 9px; border-radius: 3px;
+      padding: 0 4px; margin-left: 10px; vertical-align: middle;
+      background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3);
+      color: #93c5fd; cursor: pointer;
+    }
+    .node-badge.kind-eval  { background: rgba(59,130,246,0.15); color: #93c5fd; }
+    .node-badge.kind-if    { background: rgba(168,85,247,0.15); color: #c4b5fd; }
+    .node-badge.kind-io    { background: rgba(245,158,11,0.15); color: #fcd34d; }
+    .node-badge.kind-call  { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+
+    /* RPG syntax */
+    .rpg-kw    { color: #c084fc; font-weight: 600; }
+    .rpg-cm    { color: #6b7280; font-style: italic; }
+    .rpg-str   { color: #86efac; }
+    .rpg-sym   { color: #67e8f9; }
+
+    /* Java syntax */
+    .kw  { color: #c084fc; }
+    .str { color: #86efac; }
+    .num { color: #fbbf24; }
+    .cm  { color: #6b7280; font-style: italic; }
+    .ann { color: #f97316; }
+
+    /* Java panel: file groups */
+    .java-group {
+      border-bottom: 1px solid #1f2937;
+    }
+    .java-group-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 14px; background: #111827;
+      font-size: 11px; cursor: pointer; user-select: none;
+    }
+    .java-group-header:hover { background: #1a2332; }
+    .java-group-header .fname { color: #60a5fa; font-family: monospace; }
+    .java-group-header .layer {
+      font-size: 9px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.4px;
+    }
+    .java-group-body { display: none; }
+    .java-group-body.open { display: block; }
+
+    /* AST detail panel (bottom of right panel) */
+    .ast-detail {
+      border-top: 1px solid #374151; background: #0b1120;
+      padding: 10px 14px; flex-shrink: 0; max-height: 260px; overflow: auto;
+    }
+    .ast-detail .section-title {
+      font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;
+      color: #6b7280; margin-bottom: 3px; margin-top: 8px;
+    }
+    .ast-detail .section-title:first-child { margin-top: 0; }
+    .ast-detail pre {
+      font-family: 'JetBrains Mono',monospace; font-size: 10px; line-height: 1.5;
+      background: #020617; border: 1px solid #1f2937; border-radius: 4px;
+      padding: 6px 8px; overflow-x: auto; max-height: 120px; color: #e5e7eb;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .ast-detail .kv { display: flex; gap: 8px; font-size: 11px; margin-bottom: 1px; }
+    .ast-detail .kv .k { color: #9ca3af; min-width: 70px; }
+    .ast-detail .kv .v { color: #e5e7eb; font-family: monospace; font-size: 11px; }
+
+    /* Empty / loading */
+    .empty-state {
+      display: flex; align-items: center; justify-content: center;
+      height: 100%; color: #6b7280; font-size: 14px;
+      flex-direction: column; gap: 8px;
+    }
+    .empty-state .hint { font-size: 11px; color: #4b5563; }
+    .loading {
+      display: flex; align-items: center; justify-content: center;
+      height: 100%; color: #9ca3af; font-size: 13px;
+    }
+    .spinner {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid #374151; border-top-color: #3b82f6;
+      border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .java-empty {
+      padding: 40px 20px; text-align: center; color: #6b7280; font-size: 13px;
+    }
+    .java-empty .arrow { font-size: 28px; margin-bottom: 8px; color: #374151; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>RPG → Java Traceability</h1>
+      <div class="sub">Click any RPG line to see the generated Java and AST node details</div>
+    </div>
+    <a href="/" class="back-link">← Global Context</a>
+  </header>
+
+  <div class="toolbar">
+    <label>Program:</label>
+    <select id="sel-program"></select>
+    <label>Feature:</label>
+    <select id="sel-node"></select>
+    <button class="btn" id="btn-load">Load</button>
+    <div class="stats" id="stats"></div>
+  </div>
+
+  <div class="split">
+    <!-- Left: RPG source -->
+    <div class="panel-rpg" id="panel-rpg">
+      <div class="panel-header">
+        <span class="title">RPG Source</span>
+        <span class="detail" id="rpg-file-label"></span>
+      </div>
+      <div id="rpg-code">
+        <div class="empty-state">
+          <div>Select a program and feature, then click <strong>Load</strong></div>
+          <div class="hint">RPG source lines are color-coded by statement kind</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Generated Java + AST detail -->
+    <div class="panel-java" id="panel-java">
+      <div class="panel-header">
+        <span class="title">Generated Java</span>
+        <span class="detail" id="java-detail-label"></span>
+      </div>
+      <div id="java-code" style="flex:1;overflow:auto;">
+        <div class="java-empty">
+          <div class="arrow">←</div>
+          Click an RPG line to see the Java code generated from it
+        </div>
+      </div>
+      <div class="ast-detail" id="ast-detail" style="display:none;"></div>
+    </div>
+  </div>
+
+  <script>
+    let DATA = {};
+    let activeRpgLine = null;
+
+    // ─── Helpers ───
+    function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    function layerFromPath(p) {
+      if (p.includes('/domain/'))     return 'domain';
+      if (p.includes('/repository/')) return 'repository';
+      if (p.includes('/service/'))    return 'service';
+      if (p.includes('/dto/'))        return 'dto';
+      if (p.includes('/web/'))        return 'web';
+      if (p.includes('/config/'))     return 'config';
+      return 'other';
+    }
+
+    function shortName(p) { return p.split('/').pop(); }
+
+    // ─── Classify RPG node kind for color coding ───
+    function kindClass(kind) {
+      if (!kind) return 'rpg-other';
+      const k = kind.toLowerCase();
+      if (['eval','assign','builtin','setoff','seton'].includes(k)) return 'rpg-eval';
+      if (['if','else','endif','dow','enddo','select','when','endselect','condition','monitor','onerror','endmon'].includes(k)) return 'rpg-if';
+      if (['chain','read','write','update','setll','dclf'].includes(k)) return 'rpg-io';
+      if (['exsr','return','procedure','subroutine'].includes(k)) return 'rpg-call';
+      if (['dclds','dclconst'].includes(k)) return 'rpg-decl';
+      return 'rpg-other';
+    }
+
+    function kindBadgeClass(kind) {
+      if (!kind) return '';
+      const k = kind.toLowerCase();
+      if (['eval','assign','builtin'].includes(k)) return 'kind-eval';
+      if (['if','else','dow','select','when','condition'].includes(k)) return 'kind-if';
+      if (['chain','read','write','update','setll'].includes(k)) return 'kind-io';
+      if (['exsr','return','procedure'].includes(k)) return 'kind-call';
+      return '';
+    }
+
+    // ─── RPG syntax highlight ───
+    function highlightRpg(line) {
+      let h = esc(line);
+      // Comments: lines starting with // or * in col 7
+      if (/^\s*(\/\/|\*)/.test(line)) return '<span class="rpg-cm">' + h + '</span>';
+      // Keywords (free-format)
+      h = h.replace(/\b(IF|ELSE|ELSEIF|ENDIF|DOW|ENDDO|DOU|FOR|ENDFOR|SELECT|WHEN|OTHER|ENDSL|EVAL|CHAIN|READ|READE|READP|READPE|WRITE|UPDATE|DELETE|SETLL|SETGT|EXSR|BEGSR|ENDSR|RETURN|MONITOR|ON-ERROR|ENDMON|DCL-F|DCL-DS|DCL-S|DCL-C|DCL-PI|DCL-PR|DCL-PROC|END-PROC|END-DS|END-PI|END-PR|SETON|SETOFF|CLEAR|RESET|EXFMT|OPEN|CLOSE|SORTA|LOOKUP|COMP|MOVE|MOVEL|Z-ADD|Z-SUB|ADD|SUB|MULT|DIV|BEGSR|ENDSR|DSPLY|DUMP|GOTO|TAG|CAB|CALL|PARM|PLIST|KLIST|KFLD)\b/gi,
+        '<span class="rpg-kw">$1</span>');
+      // Strings
+      h = h.replace(/('(?:[^'\\]|\\.)*')/g, '<span class="rpg-str">$1</span>');
+      return h;
+    }
+
+    // ─── Java syntax highlight ───
+    function highlightJava(line) {
+      let h = esc(line);
+      h = h.replace(/(@\w+)/g, '<span class="ann">$1</span>');
+      h = h.replace(/\b(package|import|public|private|protected|static|final|class|interface|enum|record|extends|implements|abstract|void|return|if|else|for|while|do|switch|case|default|break|continue|new|try|catch|finally|throw|throws|this|super|instanceof|null|true|false|var|int|long|short|byte|float|double|boolean|char|String)\b/g,
+        '<span class="kw">$1</span>');
+      h = h.replace(/("(?:[^"\\]|\\.)*")/g, '<span class="str">$1</span>');
+      h = h.replace(/\b(\d+(?:\.\d+)?[LlFfDd]?)\b/g, '<span class="num">$1</span>');
+      h = h.replace(/(\/\/.*)$/, '<span class="cm">$1</span>');
+      return h;
+    }
+
+    // ─── Build reverse map: nodeId → Java file lines ───
+    function buildNodeToJavaMap(generatedFiles) {
+      const map = {};
+      for (const f of generatedFiles) {
+        const lines = f.content.split('\n');
+        for (let i = 0; i < lines.length; i++) {
+          const m = lines[i].match(/\/\/\s*@rpg-trace:\s*([\w,]+)/);
+          if (m) {
+            for (const nid of m[1].split(',')) {
+              if (!map[nid]) map[nid] = [];
+              map[nid].push({ file: f.path, lineIdx: i, code: lines[i] });
+            }
+          }
+        }
+      }
+      return map;
+    }
+
+    // ─── Build symbol-based reverse map (heuristic) ───
+    function buildSymbolToJavaMap(generatedFiles, nodeIndex) {
+      const symToNodes = {};
+      for (const [nid, node] of Object.entries(nodeIndex)) {
+        const sem = node.sem || {};
+        for (const symId of Object.keys(sem)) {
+          if (!symId.startsWith('sym.')) continue;
+          const short = symId.split('.').pop().toUpperCase();
+          if (!symToNodes[short]) symToNodes[short] = new Set();
+          symToNodes[short].add(nid);
+        }
+        if (node.props?.target) {
+          const t = node.props.target.split('.').pop().toUpperCase();
+          if (!symToNodes[t]) symToNodes[t] = new Set();
+          symToNodes[t].add(nid);
+        }
+      }
+      const nodeToJava = {};
+      const skipRe = /^\s*(\/\/|\/\*|\*|package |import |$|\{|\}|\*\/)/;
+      for (const f of generatedFiles) {
+        const lines = f.content.split('\n');
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          if (skipRe.test(line) || line.trim().length <= 5) continue;
+          const words = line.replace(/[^a-zA-Z0-9_]/g, ' ').split(/\s+/).filter(w => w.length > 2);
+          for (const w of words) {
+            const upper = w.toUpperCase();
+            const nids = symToNodes[upper];
+            if (!nids) continue;
+            for (const nid of nids) {
+              if (!nodeToJava[nid]) nodeToJava[nid] = [];
+              if (nodeToJava[nid].length < 20) {
+                nodeToJava[nid].push({ file: f.path, lineIdx: i, code: line });
+              }
+            }
+          }
+        }
+      }
+      return nodeToJava;
+    }
+
+    // ─── Render RPG source ───
+    function renderRpg() {
+      const rpgSource = DATA.rpgSource || '';
+      const startLine = DATA.rpgStartLine || 1;
+      const lineToNodes = DATA.lineToNodes || {};
+      const nodeIndex = DATA.nodeIndex || {};
+      const container = document.getElementById('rpg-code');
+      container.innerHTML = '';
+
+      if (!rpgSource) {
+        container.innerHTML = '<div class="empty-state">No RPG source available for this feature.</div>';
+        return;
+      }
+
+      const lines = rpgSource.split('\n');
+      const wrap = document.createElement('div');
+      wrap.className = 'code-wrap';
+
+      let tracedCount = 0;
+
+      lines.forEach((line, idx) => {
+        const absLine = startLine + idx;
+        const div = document.createElement('div');
+        div.className = 'code-line';
+        div.dataset.absLine = absLine;
+
+        // Find AST nodes for this line
+        const nodeIds = lineToNodes[String(absLine)] || [];
+        // Pick the most specific (innermost) node — last in the list
+        let primaryNode = null;
+        let primaryId = null;
+        if (nodeIds.length > 0) {
+          for (let i = nodeIds.length - 1; i >= 0; i--) {
+            const n = nodeIndex[nodeIds[i]];
+            if (n && n.kind !== 'Comment' && n.kind !== 'CompilationUnit' && n.kind !== 'Subroutine') {
+              primaryNode = n;
+              primaryId = nodeIds[i];
+              break;
+            }
+          }
+        }
+
+        if (primaryNode) {
+          div.classList.add('rpg-traced', kindClass(primaryNode.kind));
+          div.dataset.nodeIds = nodeIds.join(',');
+          tracedCount++;
+
+          div.addEventListener('click', () => {
+            if (activeRpgLine) activeRpgLine.classList.remove('rpg-active');
+            div.classList.add('rpg-active');
+            activeRpgLine = div;
+            showJavaForNodes(nodeIds, absLine);
+          });
+        }
+
+        const lineNum = document.createElement('span');
+        lineNum.className = 'line-num';
+        lineNum.textContent = String(absLine);
+        div.appendChild(lineNum);
+
+        const lineContent = document.createElement('span');
+        lineContent.className = 'line-content';
+        lineContent.innerHTML = highlightRpg(line);
+
+        if (primaryNode && primaryId) {
+          const badge = document.createElement('span');
+          badge.className = 'node-badge ' + kindBadgeClass(primaryNode.kind);
+          badge.textContent = primaryId + ' ' + (primaryNode.kind || '');
+          lineContent.appendChild(badge);
+        }
+
+        div.appendChild(lineContent);
+        wrap.appendChild(div);
+      });
+
+      container.appendChild(wrap);
+
+      document.getElementById('rpg-file-label').textContent =
+        `${DATA.rpgFileId || DATA.programId} · lines ${startLine}–${startLine + lines.length - 1}`;
+      document.getElementById('stats').textContent =
+        `${lines.length} RPG lines · ${tracedCount} with AST nodes · ${Object.keys(nodeIndex).length} nodes indexed · ${DATA.generatedFiles.length} Java files`;
+    }
+
+    // ─── Show Java code for selected RPG node(s) ───
+    function showJavaForNodes(nodeIds, absLine) {
+      const javaPanel = document.getElementById('java-code');
+      const astDetail = document.getElementById('ast-detail');
+      const detailLabel = document.getElementById('java-detail-label');
+      const nodeIndex = DATA.nodeIndex || {};
+      const nodeToJava = DATA._nodeToJava || {};
+
+      // Collect all Java hits across all nodeIds
+      const hits = {};
+      for (const nid of nodeIds) {
+        const entries = nodeToJava[nid] || [];
+        for (const e of entries) {
+          if (!hits[e.file]) hits[e.file] = [];
+          if (!hits[e.file].some(h => h.lineIdx === e.lineIdx)) {
+            hits[e.file].push(e);
+          }
+        }
+      }
+
+      const fileCount = Object.keys(hits).length;
+      const totalHits = Object.values(hits).reduce((s, a) => s + a.length, 0);
+
+      // Find primary node for AST detail
+      let primaryNode = null;
+      let primaryId = null;
+      for (let i = nodeIds.length - 1; i >= 0; i--) {
+        const n = nodeIndex[nodeIds[i]];
+        if (n && n.kind !== 'Comment' && n.kind !== 'CompilationUnit' && n.kind !== 'Subroutine') {
+          primaryNode = n;
+          primaryId = nodeIds[i];
+          break;
+        }
+      }
+
+      detailLabel.textContent = primaryNode
+        ? `Line ${absLine} → ${primaryId} (${primaryNode.kind})${totalHits > 0 ? ' · ' + totalHits + ' Java lines in ' + fileCount + ' files' : ''}`
+        : `Line ${absLine}`;
+
+      // Render Java hits grouped by file
+      javaPanel.innerHTML = '';
+
+      if (totalHits === 0) {
+        // No direct hits — show all Java files with a search for related context
+        javaPanel.innerHTML = `
+          <div class="java-empty" style="padding:20px;">
+            <div style="font-size:12px;color:#9ca3af;margin-bottom:8px;">
+              No direct Java mapping for this RPG line yet.
+            </div>
+            <div style="font-size:11px;color:#4b5563;">
+              Re-run the migration to get @rpg-trace annotations in the generated Java code.<br>
+              Showing all generated Java files below for reference.
+            </div>
+          </div>`;
+        // Show all files collapsed
+        for (const f of DATA.generatedFiles) {
+          const group = createJavaFileGroup(f.path, f.content, null);
+          javaPanel.appendChild(group);
+        }
+      } else {
+        // Show files with hits, expanded, with highlighted lines
+        const sortedFiles = Object.keys(hits).sort((a, b) => {
+          const la = layerFromPath(a), lb = layerFromPath(b);
+          const order = { service: 0, repository: 1, domain: 2, dto: 3, web: 4, config: 5, other: 6 };
+          return (order[la] || 6) - (order[lb] || 6);
+        });
+
+        for (const filePath of sortedFiles) {
+          const fileHits = hits[filePath];
+          const fullFile = DATA.generatedFiles.find(f => f.path === filePath);
+          const content = fullFile ? fullFile.content : '';
+          const group = createJavaFileGroup(filePath, content, new Set(fileHits.map(h => h.lineIdx)));
+          javaPanel.appendChild(group);
+        }
+      }
+
+      // AST detail panel
+      if (primaryNode) {
+        astDetail.style.display = 'block';
+        renderAstDetail(primaryId, primaryNode);
+      } else {
+        astDetail.style.display = 'none';
+      }
+    }
+
+    function createJavaFileGroup(filePath, content, highlightLines) {
+      const group = document.createElement('div');
+      group.className = 'java-group';
+
+      const header = document.createElement('div');
+      header.className = 'java-group-header';
+      header.innerHTML = `
+        <span class="fname">${esc(shortName(filePath))}</span>
+        <span class="layer">${layerFromPath(filePath)}${highlightLines ? ' · ' + highlightLines.size + ' lines' : ''}</span>
+      `;
+      group.appendChild(header);
+
+      const body = document.createElement('div');
+      body.className = 'java-group-body' + (highlightLines ? ' open' : '');
+      const wrap = document.createElement('div');
+      wrap.className = 'code-wrap';
+
+      const lines = content.split('\n');
+
+      if (highlightLines && highlightLines.size > 0) {
+        // Show only relevant lines with context
+        const relevantRanges = [];
+        const sortedHits = [...highlightLines].sort((a, b) => a - b);
+        for (const li of sortedHits) {
+          const start = Math.max(0, li - 3);
+          const end = Math.min(lines.length - 1, li + 3);
+          relevantRanges.push([start, end, li]);
+        }
+        // Merge overlapping ranges
+        const merged = [];
+        for (const r of relevantRanges) {
+          if (merged.length > 0 && r[0] <= merged[merged.length - 1][1] + 2) {
+            merged[merged.length - 1][1] = Math.max(merged[merged.length - 1][1], r[1]);
+          } else {
+            merged.push([r[0], r[1]]);
+          }
+        }
+
+        let first = true;
+        for (const [start, end] of merged) {
+          if (!first) {
+            const sep = document.createElement('div');
+            sep.className = 'code-line';
+            sep.innerHTML = '<span class="line-num" style="color:#374151;">···</span><span class="line-content" style="color:#374151;">···</span>';
+            wrap.appendChild(sep);
+          }
+          first = false;
+          for (let i = start; i <= end; i++) {
+            const div = document.createElement('div');
+            div.className = 'code-line';
+            if (highlightLines.has(i)) {
+              div.style.background = 'rgba(59,130,246,0.12)';
+              div.style.borderLeft = '3px solid #3b82f6';
+            }
+            div.innerHTML = `<span class="line-num">${i + 1}</span><span class="line-content">${highlightJava(lines[i] || '')}</span>`;
+            wrap.appendChild(div);
+          }
+        }
+      } else {
+        // Show full file
+        lines.forEach((line, i) => {
+          const div = document.createElement('div');
+          div.className = 'code-line';
+          div.innerHTML = `<span class="line-num">${i + 1}</span><span class="line-content">${highlightJava(line)}</span>`;
+          wrap.appendChild(div);
+        });
+      }
+
+      body.appendChild(wrap);
+      group.appendChild(body);
+
+      header.addEventListener('click', () => {
+        body.classList.toggle('open');
+      });
+
+      return group;
+    }
+
+    // ─── AST detail panel ───
+    function renderAstDetail(nodeId, node) {
+      const el = document.getElementById('ast-detail');
+      const props = node.props || {};
+      const range = node.range || {};
+
+      let html = '<div class="section-title">AST Node</div>';
+      const kvs = [
+        ['ID', nodeId],
+        ['Kind', node.kind],
+        ['Opcode', props.opcode || '–'],
+        ['Lines', range.startLine ? `${range.startLine}` + (range.endLine && range.endLine !== range.startLine ? `–${range.endLine}` : '') : '–'],
+      ];
+      if (props.target) kvs.push(['Target', props.target]);
+      for (const [k, v] of kvs) {
+        html += `<div class="kv"><span class="k">${k}:</span><span class="v">${v}</span></div>`;
+      }
+
+      if (node.sem && Object.keys(node.sem).length > 0) {
+        html += '<div class="section-title">Symbol References</div>';
+        html += '<pre>' + esc(JSON.stringify(node.sem, null, 2)) + '</pre>';
+      }
+
+      if (props.value || props.condition) {
+        html += '<div class="section-title">Expression</div>';
+        html += '<pre>' + esc(JSON.stringify(props.value || props.condition, null, 2)) + '</pre>';
+      }
+
+      if (node.rpgSource) {
+        html += '<div class="section-title">RPG Source</div>';
+        html += '<pre style="color:#86efac;">' + esc(node.rpgSource) + '</pre>';
+      }
+
+      el.innerHTML = html;
+    }
+
+    // ─── Load traceability data ───
+    async function loadTraceability(overrideProgram, overrideNode) {
+      const program = overrideProgram ?? document.getElementById('sel-program').value;
+      const node = overrideNode ?? document.getElementById('sel-node').value;
+      if (!program || !node) { alert('Select a program and feature first.'); return; }
+
+      const btn = document.getElementById('btn-load');
+      btn.disabled = true; btn.textContent = 'Loading…';
+      document.getElementById('rpg-code').innerHTML = '<div class="loading"><span class="spinner"></span>Loading…</div>';
+      document.getElementById('java-code').innerHTML = '';
+      document.getElementById('ast-detail').style.display = 'none';
+
+      try {
+        const res = await fetch(`/api/traceability-data/${encodeURIComponent(program)}/${encodeURIComponent(node)}`);
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: res.statusText }));
+          throw new Error(err.error || `HTTP ${res.status}`);
+        }
+        DATA = await res.json();
+
+        // Build nodeId → Java reverse map
+        let nodeToJava = buildNodeToJavaMap(DATA.generatedFiles);
+        const hasAnnotations = Object.keys(nodeToJava).length > 0;
+        if (!hasAnnotations) {
+          nodeToJava = buildSymbolToJavaMap(DATA.generatedFiles, DATA.nodeIndex);
+        }
+        DATA._nodeToJava = nodeToJava;
+        DATA._hasAnnotations = hasAnnotations;
+
+        renderRpg();
+
+        document.getElementById('java-code').innerHTML = `
+          <div class="java-empty">
+            <div class="arrow">←</div>
+            Click an RPG line to see the Java code generated from it
+          </div>`;
+      } catch (e) {
+        document.getElementById('rpg-code').innerHTML = `<div class="empty-state"><div style="color:#f87171;">${esc(e.message)}</div></div>`;
+      } finally {
+        btn.disabled = false; btn.textContent = 'Load';
+      }
+    }
+
+    // ─── Load programs ───
+    let PROGRAMS_CACHE = [];
+    async function loadPrograms() {
+      try {
+        const res = await fetch('/api/list-programs');
+        const data = await res.json();
+        const programs = data.programs || [];
+        PROGRAMS_CACHE = programs;
+        const sel = document.getElementById('sel-program');
+        sel.innerHTML = '';
+        programs.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.programId; opt.textContent = p.programId;
+          sel.appendChild(opt);
+        });
+        const params = new URLSearchParams(window.location.search);
+        const urlProgram = params.get('program');
+        const urlNode = params.get('node');
+        const pid = (urlProgram && programs.some(p => p.programId === urlProgram)) ? urlProgram : (programs[0]?.programId);
+        if (programs.length > 0) {
+          document.getElementById('sel-program').value = pid;
+          populateNodes(programs, pid);
+          if (urlNode && pid === urlProgram) {
+            document.getElementById('sel-node').value = urlNode;
+          }
+        }
+        sel.addEventListener('change', () => populateNodes(programs, sel.value));
+      } catch (e) { console.error(e); }
+    }
+    function populateNodes(programs, pid) {
+      const sel = document.getElementById('sel-node');
+      sel.innerHTML = '';
+      const prog = programs.find(p => p.programId === pid);
+      if (!prog) return;
+      for (const n of (prog.nodes || [])) {
+        const opt = document.createElement('option');
+        opt.value = n.nodeId;
+        opt.textContent = `${n.nodeId} – ${n.kind || ''} ${n.procedureName || n.name || ''}`.trim();
+        sel.appendChild(opt);
+      }
+    }
+
+    // ─── Init ───
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('btn-load').addEventListener('click', () => loadTraceability());
+
+      const params = new URLSearchParams(window.location.search);
+      const urlProgram = params.get('program');
+      const urlNode = params.get('node');
+
+      if (urlProgram && urlNode) {
+        // Deep-link: load traceability immediately from URL params
+        loadTraceability(urlProgram, urlNode);
+      }
+
+      loadPrograms().then(() => {
+        if (urlProgram && urlNode) {
+          document.getElementById('sel-program').value = urlProgram;
+          populateNodes(PROGRAMS_CACHE, urlProgram);
+          document.getElementById('sel-node').value = urlNode;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

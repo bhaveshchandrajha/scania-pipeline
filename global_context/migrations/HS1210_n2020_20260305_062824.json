@@ -1,0 +1,186 @@
+{
+  "programId": "HS1210",
+  "unitId": "qsys:HSSRC/QRPGLESRC/HS1210",
+  "entryNodeId": "n2020",
+  "nodesInSlice": [
+    {
+      "nodeId": "n2020",
+      "kind": "Procedure",
+      "name": "reNumberPos",
+      "procedureName": "AddAttachments",
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+        "startLine": 3081,
+        "endLine": 3118
+      }
+    }
+  ],
+  "contextFiles": [
+    "/Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/context_index/HS1210_n2020.json"
+  ],
+  "dbFiles": [
+    {
+      "name": "AUFWKO",
+      "library": "HSSRC"
+    },
+    {
+      "name": "FISTAM",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HS1210D",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKLF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKLF8",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHKPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHPPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHTPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSAHWPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSBTSLF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSBTSPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSEPAF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSFLALF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG70F",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF2",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71LF7",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG71PF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG73LF1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG73PF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSG79F",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGFIPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSLF2",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSLF3",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGPSPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSGSCPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "HSKAMPF",
+      "library": "HSSRC"
+    },
+    {
+      "name": "RWAPRL1",
+      "library": "HSSRC"
+    },
+    {
+      "name": "ITLSMF3",
+      "library": "P400IMS"
+    },
+    {
+      "name": "PIPPMST",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F001",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F002",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F003",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F009",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3F085",
+      "library": "S400CAS"
+    },
+    {
+      "name": "S3L004H",
+      "library": "S400CAS"
+    }
+  ],
+  "generatedFiles": [
+    "com/scania/warranty/domain/ClaimPosition.java",
+    "com/scania/warranty/domain/ClaimPositionData.java",
+    "com/scania/warranty/repository/ClaimPositionRepository.java",
+    "com/scania/warranty/service/ClaimPositionRenumberService.java",
+    "com/scania/warranty/dto/ClaimPositionDto.java",
+    "com/scania/warranty/web/ClaimPositionController.java"
+  ],
+  "rpgSnippet": "     P reNumberPos     B\n     D reNumberPos     PI\n     D   dealerId                     3A   value\n     D   claimNo                      8A   value\n     D*****************************************************************\n       DCL-DS Claims qualified;\n              List Char(512) Pos(1);\n              Record Dim(999) Pos(1);\n                     lineNo zoned(3) overlay(Record: 1);\n                     pos zoned(3) overlay(Record: *next);\n       END-DS Claims;\n\n       DCL-S x uns(5) inz(1);\n       DCL-S posN uns(3) inz(0);\n       DCL-S posW uns(3) inz(1);\n       DCL-S line uns(3) inz(1);\n\n       exec sql\n                select listagg(digits(GPS030) concat\n                               digits(GPS150))\n                within group(order by GPS150) as List\n                into :Claims.List\n                from HSGPSPF\n                where GPS000 = :dealerId and GPS010 = :claimNo;\n\n       Dow Claims.Record(x) <> *Blanks;\n           line = Claims.LineNo(x);\n           If x = 1 Or Claims.Pos(x) <> posW;\n              posW = Claims.Pos(x);\n              posN += 1;\n           EndIf;\n           exec sql\n                update HSGPSPF set GPS150 = :posN\n                where GPS000 = :dealerId and GPS010 = :claimNo and\n                      GPS030 = :line;\n           x += 1;\n       EnDDo;\n     P                 E",
+  "primaryServiceFile": "com/scania/warranty/service/ClaimPositionRenumberService.java",
+  "runs": [
+    {
+      "contextFile": "/Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/context_index/HS1210_n2020.json",
+      "returnCode": 0,
+      "stdoutPreview": "// === domain/ClaimPosition.java ===\npackage com.scania.warranty.domain;\n\nimport jakarta.persistence.*;\nimport java.io.Serializable;\n\n/**\n * JPA entity for claim position (HSGPSPF).\n */\n@Entity\n@Table(name = \"HSGPSPF\")\npublic class ClaimPosition implements Serializable {\n\n    @Id\n    @Column(name = \"GPS000\")\n    private String dealerId;\n\n    @Id\n    @Column(name = \"GPS010\")\n    private String claimNo;\n\n    @Id\n    @Column(name = \"GPS030\")\n    private Integer lineNo;\n\n    @Column(name = \"GPS150\")\n    private Integer position;\n\n    public ClaimPosition() {\n    }\n\n    public ClaimPosition(String dealerId, String claimNo, Integer lineNo, Integer position) {\n        this.dealerId = dealerId;\n        this.claimNo = claimNo;\n        this.lineNo = lineNo;\n        this.position = position;\n    }\n\n    public String getDealerId() {\n        return dealerId;\n    }\n\n    public void setDealerId(String dealerId) {\n        this.dealerId = dealerId;\n    }\n\n    public String getClaimNo() {\n        return claimNo;\n    }\n\n    public void setClaimNo(String claimNo) {\n        this.claimNo = claimNo;\n    }\n\n    public Integer getLineNo() {\n        return lineNo;\n    }\n\n    public void setLineNo(Integer lineNo) {\n        this.lineNo = lineNo;\n    }\n\n    public Integer getPosition() {\n        return position;\n    }\n\n    public void setPosition(Integer position) {\n        this.position = position;\n    }\n}\n\n// ==========================================\n// === domain/ClaimPositionData.java ===\npackage com.scania.warranty.domain;\n\n/**\n * Value object for aggregated claim position data.\n */\npublic record ClaimPositionData(\n    Integer lineNo,\n    Integer position\n) {\n}\n\n// ==========================================\n// === repository/ClaimPositionRepository.java ===\npackage com.scania.warranty.repository;\n\nimport com.scania.warranty.domain.ClaimPosition;\nimport org.springframework.data.jpa.repository.JpaRepository;\nimport org.springframework.data.jpa.repository.Modifying;\nimport org.springframework.data.jpa.repository.Query;\nimport org.springframework.data.repository.query.Param;\nimport org.springframework.stereotype.Repository;\n\nimport java.util.List;\n\n/**\n * Repository for claim position operations.\n */\n@Repository\npublic interface ClaimPositionRepository extends JpaRepository<ClaimPosition, String> {\n\n    @Query(value = \"SELECT LISTAGG(DIGITS(GPS030) CONCAT DIGITS(GPS150)) WITHIN GROUP(ORDER BY GPS150) AS List \" +\n                   \"FROM HSGPSPF \" +\n                   \"WHERE GPS000 = :dealerId AND GPS010 = :claimNo\",\n           nativeQuery = true)\n    String findAggregatedPositionData(@Param(\"dealerId\") String dealerId, \n                                      @Param(\"claimNo\") String claimNo);\n\n    @Modifying\n    @Query(\"UPDATE ClaimPosition c SET c.position = :position \" +\n           \"WHERE c.dealerId = :dealerId AND c.claimNo = :claimNo AND c.lineNo = :lineNo\")\n    int updatePosition(@Param(\"dealerId\") String dealerId,\n                       @Param(\"claimNo\") String claimNo,\n                       @Param(\"lineNo\") Integer lineNo,\n                       @Param(\"position\") Integer position);\n\n    @Query(\"SELECT c FROM ClaimPosition c \" +\n           \"WHERE c.dealerId = :dealerId AND c.claimNo = :claimNo \" +\n           \"ORDER BY c.position\")\n    List<ClaimPosition> findByDealerIdAndClaimNoOrderByPosition(@Param(\"dealerId\") String dealerId,\n                                                                  @Param(\"claimNo\") String claimNo);\n}\n\n// ==========================================\n// === service/ClaimPositionRenumberService.java ===\npackage com.scania.warranty.service;\n\nimport com.scania.warranty.domain.ClaimPositionData;\nimport com.scania.warranty.repository.ClaimPositionRepository;\nimport org.springframework.stereotype.Service;\nimport org.springframework.transaction.annotation.Transactional;\n\nimport java.util.ArrayList;\nimport java.util.List;\n\n/**\n * Service for renumbering claim positions.\n */\n@Service\npublic class ClaimPositionRenumberService {\n\n ",
+      "stderrPreview": "// Context package size: 2.0 KB\n// DB Contracts: 0, Total columns: 0\n// Extracted 2 embedded SQL statement(s) for translation to repository methods\n// Generating Pure Java (Track B) with layered architecture...\n// This may take 60-120 seconds for large packages...\n// Prompt size: 21.2 KB\n// Integration mode: writing into existing project warranty_demo\n// Starting Pure Java migration (Track B)...\n// Sending request to LLM (this may take 60-120 seconds for large prompts)...\n// LLM response received in 23.7 seconds\n// Parsing multi-file output...\n// Parser extracted 6 files:\n//   - domain/ClaimPosition.java\n//   - domain/ClaimPositionData.java\n//   - dto/ClaimPositionDto.java\n//   - repository/ClaimPositionRepository.java\n//   - service/ClaimPositionRenumberService.java\n//   - web/ClaimPositionController.java\n// Found 6 Java files to write\n// \u2705 Wrote com/scania/warranty/domain/ClaimPosition.java (1508 chars)\n// \u2705 Wrote com/scania/warranty/domain/ClaimPositionData.java (320 chars)\n// \u2705 Wrote com/scania/warranty/repository/ClaimPositionRepository.java (1850 chars)\n// \u2705 Wrote com/scania/warranty/service/ClaimPositionRenumberService.java (2864 chars)\n// \u2705 Wrote com/scania/warranty/dto/ClaimPositionDto.java (321 chars)\n// \u2705 Wrote com/scania/warranty/web/ClaimPositionController.java (1025 chars)\n\n// \u2705 Successfully generated 6 Java files\n// \ud83d\udcc1 Output directory: /Users/fkhan/Documents/ScaniaRPG2JavaRevisedDesign/warranty_demo/src/main/java\n// \ud83d\udce6 Package structure:\n//    com/scania/warranty/domain/ClaimPosition.java\n//    com/scania/warranty/domain/ClaimPositionData.java\n//    com/scania/warranty/dto/ClaimPositionDto.java\n//    com/scania/warranty/repository/ClaimPositionRepository.java\n//    com/scania/warranty/service/ClaimPositionRenumberService.java\n//    com/scania/warranty/web/ClaimPositionController.java\n// \u2705 Injected @origin annotations into com/scania/warranty/service/ClaimPositionRenumberService.java\n// \u2705 Migration complete! Files integrated into project: warranty_demo/src\n"
+    }
+  ],
+  "summary": "Migrated feature starting at HS1210 n2020 with 1 node(s); DB files involved: AUFWKO (HSSRC), FISTAM (HSSRC), HS1210D (HSSRC), HSAHKLF3 (HSSRC), HSAHKLF8 (HSSRC), HSAHKPF (HSSRC), HSAHPPF (HSSRC), HSAHTPF (HSSRC), HSAHWPF (HSSRC), HSBTSLF1 (HSSRC), HSBTSPF (HSSRC), HSEPAF (HSSRC), HSFLALF1 (HSSRC), HSG70F (HSSRC), HSG71LF2 (HSSRC), HSG71LF3 (HSSRC), HSG71LF7 (HSSRC), HSG71PF (HSSRC), HSG73LF1 (HSSRC), HSG73PF (HSSRC), HSG79F (HSSRC), HSGFIPF (HSSRC), HSGPSLF2 (HSSRC), HSGPSLF3 (HSSRC), HSGPSPF (HSSRC), HSGSCPF (HSSRC), HSKAMPF (HSSRC), RWAPRL1 (HSSRC), ITLSMF3 (P400IMS), PIPPMST (S400CAS), S3F001 (S400CAS), S3F002 (S400CAS), S3F003 (S400CAS), S3F009 (S400CAS), S3F085 (S400CAS), S3L004H (S400CAS)."
+}

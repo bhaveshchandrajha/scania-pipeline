@@ -1,0 +1,3 @@
+# Migration pipeline – Python dependencies (Docker / EC2)
+# anthropic>=0.45.2: compatible with httpx 0.28+ (older SDKs passed removed `proxies` kwarg)
+anthropic>=0.45.2,<1

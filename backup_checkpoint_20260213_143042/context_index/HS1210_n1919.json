@@ -1,0 +1,596 @@
+{
+  "astNode": {
+    "id": "n1919",
+    "kind": "Procedure",
+    "name": null,
+    "sem": "{\"sym.file.HSGPSPF\":{\"refersTo\":\"sym.file.HSGPSPF\"},\"sym.var.G73000\":{\"refersTo\":\"sym.var.G73000\"},\"sym.var.G73050\":{\"refersTo\":\"sym.var.G73050\"},\"sym.var.G73060\":{\"refersTo\":\"sym.var.G73060\"},\"sym.var.counter\":{\"refersTo\":\"sym.var.counter\"},\"sym.var.error\":{\"refersTo\":\"sym.var.error\"},\"sym.var.3011\":{\"refersTo\":\"sym.var.3011\"}}",
+    "outgoingEdges": [
+      "sym.var.counter",
+      "sym.var.error",
+      "sym.var.3011",
+      "sym.var.G73000",
+      "sym.var.G73050",
+      "sym.var.G73060",
+      "sym.file.HSGPSPF"
+    ],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1210",
+      "startLine": 2968,
+      "startColumn": 7,
+      "endLine": 3033,
+      "endColumn": 24
+    },
+    "raw": {
+      "id": "n1919",
+      "kind": "Procedure",
+      "sem": {
+        "sym.file.HSGPSPF": {
+          "refersTo": "sym.file.HSGPSPF"
+        },
+        "sym.var.G73000": {
+          "refersTo": "sym.var.G73000"
+        },
+        "sym.var.G73050": {
+          "refersTo": "sym.var.G73050"
+        },
+        "sym.var.G73060": {
+          "refersTo": "sym.var.G73060"
+        },
+        "sym.var.counter": {
+          "refersTo": "sym.var.counter"
+        },
+        "sym.var.error": {
+          "refersTo": "sym.var.error"
+        },
+        "sym.var.3011": {
+          "refersTo": "sym.var.3011"
+        }
+      },
+      "range": {
+        "fileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+        "startLine": 2968,
+        "startLinePP": 2970,
+        "startCol": 7,
+        "startByte": 138568,
+        "endLine": 3033,
+        "endLinePP": 3035,
+        "endCol": 24,
+        "endByte": 141147
+      },
+      "props": {
+        "procedure_name": "CreateFail",
+        "opcode": "PROC",
+        "name": "CheckClaim"
+      },
+      "children": [
+        "n1920",
+        "n1921",
+        "n1922",
+        "n1923",
+        "n1931",
+        "n1936",
+        "n1942",
+        "n1947",
+        "n1953",
+        "n1958",
+        "n1959",
+        "n1967",
+        "n1972",
+        "n1977",
+        "n1981"
+      ]
+    }
+  },
+  "narrative": "### Node n1919: Procedure\n\nProcedure `n1919` expresses business logic derived from its semantic block and referenced symbols/files.\n\n- **Files / DB Contracts**:\n  - HSGPSPF (columns: KUERZEL CHAR(3), CLAIM-NR. CHAR(8), FEHLER-NR. CHAR(2), FOLGE-NR. CHAR(2), ZEILE DECIMAL(3,0), AUFTEILUNG DECIMAL(3,0), SATZART CHAR(3), NR. CHAR(18), MENGE DECIMAL(5,0), WERT DECIMAL(11,2), STEUER-CODE CHAR(40), HAUPTGRUPPE CHAR(2), ZEIT DECIMAL(3,1), GRUND DECIMAL(4,0), VERG�TUNG DECIMAL(3,0), MANUELL CHAR(1), KAMPAGNE DECIMAL(8,0), POS.-NR. DECIMAL(3,0), RESULTCODE CHAR(2), CODE TYPE CHAR(2), CODE ID CHAR(5), COMPFAC. DECIMAL(3,0), GROSSPRICE DECIMAL(13,2), DISCOUNT DECIMAL(5,2), COMPAMOUNT DECIMAL(15,2), COMPQTY DECIMAL(7,0), TYPE CHAR(5), MIA STATUS CHAR(1), CATEGORYS CHAR(2), TEXT CHAR(2000))\n\n- **Variables**:\n  - G73000 (type: t.char.3)\n  - G73050 (type: t.char.8)\n  - G73060 (type: t.char.2)\n  - counter (type: t.dec1_0)\n  - error\n  - 3011 (type: t.klist.3011)\n\n- **Outgoing edges**:\n  - sym.var.counter\n  - sym.var.error\n  - sym.var.3011\n  - sym.var.G73000\n  - sym.var.G73050\n  - sym.var.G73060\n  - sym.file.HSGPSPF\n\n- **Raw sem JSON**:\n```json\n{\n  \"sym.file.HSGPSPF\" : {\n    \"refersTo\" : \"sym.file.HSGPSPF\"\n  },\n  \"sym.var.G73000\" : {\n    \"refersTo\" : \"sym.var.G73000\"\n  },\n  \"sym.var.G73050\" : {\n    \"refersTo\" : \"sym.var.G73050\"\n  },\n  \"sym.var.G73060\" : {\n    \"refersTo\" : \"sym.var.G73060\"\n  },\n  \"sym.var.counter\" : {\n    \"refersTo\" : \"sym.var.counter\"\n  },\n  \"sym.var.error\" : {\n    \"refersTo\" : \"sym.var.error\"\n  },\n  \"sym.var.3011\" : {\n    \"refersTo\" : \"sym.var.3011\"\n  }\n}\n```\n",
+  "rpgSnippet": "     P CheckClaim      B\n     D CheckClaim      PI              N\n     D*----------------------------------------------------------------\n     D counter         S              1  0 Inz(0)\n     D error           S               N   Inz(*Off)\n     D*****************************************************************\n      /free\n       errorT = *Blanks;\n       If %Trim(G73360) = '3' And G73280 = *Blanks;\n          counter += 1;\n          %Subst(errorT:(counter - 1) * 70 + 1:70) = 'Ursache Kampagne aber ' +\n                 'keine Kampagnen-Nr. eingetragen.';\n          G73360 = *Blanks;\n          Update HSG73LR1;\n       EndIf;\n       If G73360 = *Blanks;\n          counter += 1;\n          %Subst(errorT:(counter - 1) * 70 + 1:70) = 'Schadenscodierung Kund' +\n                 'e ung�ltig.';\n       EndIf;\n       If %Trim(G73360) = '3' And (G73370 <> *Blanks Or G73380 <> *Blanks);\n          counter += 1;\n          %Subst(errorT:(counter - 1) * 70 + 1:70) = 'Schadenscodierung Kund' +\n                 'e ung�ltig.';\n       EndIf;\n       If G73390 = *Blanks;\n          counter += 1;\n          %Subst(errorT:(counter - 1) * 70 + 1:70) = 'Schadenscodierung Werk' +\n                 'statt ung�ltig.';\n       EndIf;\n       If %Trim(G73390) = '97' And (G73400 <> *Blanks Or G73410 <> *Blanks);\n          counter += 1;\n          %Subst(errorT:(counter - 1) * 70 + 1:70) = 'Schadenscodierung Werk' +\n                 'statt ung�ltig.';\n       EndIf;\n       If G73070 = *Blanks;\n          counter += 1;\n          %Subst(errort:(counter - 1) * 70 + 1:70) = 'Es ist keine schadens'+\n                 'verursachende Teilenummer angegeben.';\n       EndIf;\n       SetlL (G73000:G73050:G73060) HSGPSPF;\n       ReadE(N) (G73000:G73050:G73060) HSGPSPF;\n       Dow Not %Eof(HSGPSPF) And Not error;\n          If GPS040 = 'SMA' And (GPS220 = *Blanks Or GPS240 = *Blanks);\n             error = *On;\n          EndIf;\n          ReadE(N) (G73000:G73050:G73060) HSGPSPF;\n       EndDo;\n       If error;\n          counter += 1;\n          %Subst(errorT:counter * 1:60) = 'Es sind Sonderkosten '+\n                 'ohne Codierung vorhanden.';\n       EndIf;\n       If getClaimValues('Requested':G73000:G73050:G73060:G73065) = 0;\n          counter += 1;\n          %Subst(errorT:counter * 1:60) = 'Antrag mit Wert 0 kan'+\n                 'n nicht versendet werden.';\n       EndIf;\n\n       If counter > 0 And errorT <> *Blanks;\n          ExFmt HS1210WE;\n          Return *Off;\n       EndIf;\n       Return *On;\n      /end-free\n     P                 E",
+  "dbContracts": [
+    {
+      "name": "HSGPSPF",
+      "description": null,
+      "columns": [
+        {
+          "name": "KUERZEL",
+          "description": null,
+          "type": "CHAR",
+          "length": 3,
+          "scale": null,
+          "key": false
+        },
+        {
+          "name": "CLAIM-NR.",
+          "description": null,
+          "type": "CHAR",
+          "length": 8,
+          "scale": null,
+          "key": false
+        },
+        {
+          "name": "FEHLER-NR.",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false
+        },
+        {
+          "name": "FOLGE-NR.",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false
+        },
+        {
+          "name": "ZEILE",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 3,
+          "scale": 0,
+          "key": false
+        },
+        {
+          "name": "AUFTEILUNG",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 3,
+          "scale": 0,
+          "key": false
+        },
+        {
+          "name": "SATZART",
+          "description": null,
+          "type": "CHAR",
+          "length": 3,
+          "scale": null,
+          "key": false
+        },
+        {
+          "name": "NR.",
+          "description": null,
+          "type": "CHAR",
+          "length": 18,
+          "scale": null,
+          "key": false
+        },
+        {
+          "name": "MENGE",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 5,
+          "scale": 0,
+          "key": false
+        },
+        {
+          "name": "WERT",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 11,
+          "scale": 2,
+          "key": false
+        },
+        {
+          "name": "STEUER-CODE",
+          "description": null,
+          "type": "CHAR",
+          "length": 40,
+          "scale": null,
+          "key": false
+        },
+        {
+          "name": "HAUPTGRUPPE",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false
+        },
+        {
+          "name": "ZEIT",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 3,
+          "scale": 1,
+          "key": false
+        },
+        {
+          "name": "GRUND",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 4,
+          "scale": 0,
+          "key": false
+        },
+        {
+          "name": "VERG�TUNG",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 3,
+          "scale": 0,
+          "key": false
+        },
+        {
+          "name": "MANUELL",
+          "description": null,
+          "type": "CHAR",
+          "length": 1,
+          "scale": null,
+          "key": false
+        },
+        {
+          "name": "KAMPAGNE",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 8,
+          "scale": 0,
+          "key": false
+        },
+        {
+          "name": "POS.-NR.",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 3,
+          "scale": 0,
+          "key": false
+        },
+        {
+          "name": "RESULTCODE",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false
+        },
+        {
+          "name": "CODE TYPE",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false
+        },
+        {
+          "name": "CODE ID",
+          "description": null,
+          "type": "CHAR",
+          "length": 5,
+          "scale": null,
+          "key": false
+        },
+        {
+          "name": "COMPFAC.",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 3,
+          "scale": 0,
+          "key": false
+        },
+        {
+          "name": "GROSSPRICE",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 13,
+          "scale": 2,
+          "key": false
+        },
+        {
+          "name": "DISCOUNT",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 5,
+          "scale": 2,
+          "key": false
+        },
+        {
+          "name": "COMPAMOUNT",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 15,
+          "scale": 2,
+          "key": false
+        },
+        {
+          "name": "COMPQTY",
+          "description": null,
+          "type": "DECIMAL",
+          "length": 7,
+          "scale": 0,
+          "key": false
+        },
+        {
+          "name": "TYPE",
+          "description": null,
+          "type": "CHAR",
+          "length": 5,
+          "scale": null,
+          "key": false
+        },
+        {
+          "name": "MIA STATUS",
+          "description": null,
+          "type": "CHAR",
+          "length": 1,
+          "scale": null,
+          "key": false
+        },
+        {
+          "name": "CATEGORYS",
+          "description": null,
+          "type": "CHAR",
+          "length": 2,
+          "scale": null,
+          "key": false
+        },
+        {
+          "name": "TEXT",
+          "description": null,
+          "type": "CHAR",
+          "length": 2000,
+          "scale": null,
+          "key": false
+        }
+      ],
+      "raw": {
+        "symbolId": "sym.file.HSGPSPF",
+        "name": "HSGPSPF",
+        "library": "HSSRC",
+        "typeId": "t.file.HSGPSPF",
+        "externallyDescribed": true,
+        "recordFormat": "HSGPSPR",
+        "usage": [
+          "update",
+          "update",
+          "input",
+          "update",
+          "update",
+          "input",
+          "update",
+          "update",
+          "update",
+          "update",
+          "input",
+          "input",
+          "input",
+          "input",
+          "input",
+          "update",
+          "input",
+          "update",
+          "input",
+          "input",
+          "input",
+          "input",
+          "input"
+        ],
+        "keyed": false,
+        "keys": [
+          {
+            "name": "GPS000",
+            "ascending": true
+          },
+          {
+            "name": "GPS010",
+            "ascending": true
+          },
+          {
+            "name": "GPS020",
+            "ascending": true
+          },
+          {
+            "name": "GPS030",
+            "ascending": true
+          },
+          {
+            "name": "GPS035",
+            "ascending": true
+          },
+          {
+            "name": "GPS040",
+            "ascending": true
+          }
+        ],
+        "commitmentControl": false,
+        "openOptions": {
+          "usropn": false
+        },
+        "columns": [
+          {
+            "name": "KUERZEL",
+            "typeId": "t.char.3",
+            "nullable": false
+          },
+          {
+            "name": "CLAIM-NR.",
+            "typeId": "t.char.8",
+            "nullable": false
+          },
+          {
+            "name": "FEHLER-NR.",
+            "typeId": "t.char.2",
+            "nullable": false
+          },
+          {
+            "name": "FOLGE-NR.",
+            "typeId": "t.char.2",
+            "nullable": false
+          },
+          {
+            "name": "ZEILE",
+            "typeId": "t.dec3_0",
+            "nullable": false
+          },
+          {
+            "name": "AUFTEILUNG",
+            "typeId": "t.dec3_0",
+            "nullable": false
+          },
+          {
+            "name": "SATZART",
+            "typeId": "t.char.3",
+            "nullable": false
+          },
+          {
+            "name": "NR.",
+            "typeId": "t.char.18",
+            "nullable": false
+          },
+          {
+            "name": "MENGE",
+            "typeId": "t.dec5_0",
+            "nullable": false
+          },
+          {
+            "name": "WERT",
+            "typeId": "t.dec11_2",
+            "nullable": false
+          },
+          {
+            "name": "STEUER-CODE",
+            "typeId": "t.char.40",
+            "nullable": false
+          },
+          {
+            "name": "HAUPTGRUPPE",
+            "typeId": "t.char.2",
+            "nullable": false
+          },
+          {
+            "name": "ZEIT",
+            "typeId": "t.dec3_1",
+            "nullable": false
+          },
+          {
+            "name": "GRUND",
+            "typeId": "t.dec4_0",
+            "nullable": false
+          },
+          {
+            "name": "VERG�TUNG",
+            "typeId": "t.dec3_0",
+            "nullable": false
+          },
+          {
+            "name": "MANUELL",
+            "typeId": "t.char.1",
+            "nullable": false
+          },
+          {
+            "name": "KAMPAGNE",
+            "typeId": "t.dec8_0",
+            "nullable": false
+          },
+          {
+            "name": "POS.-NR.",
+            "typeId": "t.dec3_0",
+            "nullable": false
+          },
+          {
+            "name": "RESULTCODE",
+            "typeId": "t.char.2",
+            "nullable": false
+          },
+          {
+            "name": "CODE TYPE",
+            "typeId": "t.char.2",
+            "nullable": false
+          },
+          {
+            "name": "CODE ID",
+            "typeId": "t.char.5",
+            "nullable": false
+          },
+          {
+            "name": "COMPFAC.",
+            "typeId": "t.dec3_0",
+            "nullable": false
+          },
+          {
+            "name": "GROSSPRICE",
+            "typeId": "t.dec13_2",
+            "nullable": false
+          },
+          {
+            "name": "DISCOUNT",
+            "typeId": "t.dec5_2",
+            "nullable": false
+          },
+          {
+            "name": "COMPAMOUNT",
+            "typeId": "t.dec15_2",
+            "nullable": false
+          },
+          {
+            "name": "COMPQTY",
+            "typeId": "t.dec7_0",
+            "nullable": false
+          },
+          {
+            "name": "TYPE",
+            "typeId": "t.char.5",
+            "nullable": false
+          },
+          {
+            "name": "MIA STATUS",
+            "typeId": "t.char.1",
+            "nullable": false
+          },
+          {
+            "name": "CATEGORYS",
+            "typeId": "t.char.2",
+            "nullable": false
+          },
+          {
+            "name": "TEXT",
+            "typeId": "t.char.2000",
+            "nullable": false
+          }
+        ]
+      }
+    }
+  ],
+  "symbolMetadata": {
+    "sym.var.G73000": {
+      "name": "G73000",
+      "kind": "variable",
+      "description": null,
+      "typeRef": "t.char.3"
+    },
+    "sym.var.G73050": {
+      "name": "G73050",
+      "kind": "variable",
+      "description": null,
+      "typeRef": "t.char.8"
+    },
+    "sym.var.G73060": {
+      "name": "G73060",
+      "kind": "variable",
+      "description": null,
+      "typeRef": "t.char.2"
+    },
+    "sym.var.counter": {
+      "name": "counter",
+      "kind": "variable",
+      "description": null,
+      "typeRef": "t.dec1_0"
+    },
+    "sym.var.error": {
+      "name": "error",
+      "kind": "variable",
+      "description": null,
+      "typeRef": null
+    },
+    "sym.var.3011": {
+      "name": "3011",
+      "kind": "variable",
+      "description": null,
+      "typeRef": "t.klist.3011"
+    }
+  },
+  "displayFiles": [
+    {
+      "symbolId": "sym.dspf.HS1210D",
+      "name": "HS1210D",
+      "fileId": "qsys:HSSRC/QDDSSRC/HS1210D",
+      "path": "/QSYS.LIB/HSSRC.LIB/QDDSSRC.FILE/HS1210D.MBR"
+    }
+  ]
+}

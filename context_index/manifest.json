@@ -1,0 +1,313 @@
+{
+  "entries": [
+    {
+      "unitId": "HS1210",
+      "nodeId": "n1",
+      "kind": "CompilationUnit",
+      "name": null,
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+      "dbFilesUsed": [
+        "FISTAM",
+        "S3F002"
+      ],
+      "calls": [
+        "n1779"
+      ],
+      "calledBy": []
+    },
+    {
+      "unitId": "HS1210",
+      "nodeId": "n404",
+      "kind": "Subroutine",
+      "name": null,
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+      "dbFilesUsed": [
+        "HSAHKLF3",
+        "HSAHWPF",
+        "HSFLALF1",
+        "HSG70F",
+        "HSG71LF2",
+        "HSG73PF"
+      ],
+      "calls": [
+        "n1919",
+        "n1983"
+      ],
+      "calledBy": []
+    },
+    {
+      "unitId": "HS1210",
+      "nodeId": "n1779",
+      "kind": "Procedure",
+      "name": "CreateClaim",
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+      "dbFilesUsed": [
+        "HSG71PF",
+        "HSG73PF",
+        "HSGPSLF3"
+      ],
+      "calls": [],
+      "calledBy": [
+        "n1"
+      ]
+    },
+    {
+      "unitId": "HS1210",
+      "nodeId": "n1838",
+      "kind": "Procedure",
+      "name": "CreateFail",
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+      "dbFilesUsed": [],
+      "calls": [],
+      "calledBy": []
+    },
+    {
+      "unitId": "HS1210",
+      "nodeId": "n1919",
+      "kind": "Procedure",
+      "name": "CheckClaim",
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+      "dbFilesUsed": [
+        "HSGPSPF"
+      ],
+      "calls": [],
+      "calledBy": [
+        "n404"
+      ]
+    },
+    {
+      "unitId": "HS1210",
+      "nodeId": "n1983",
+      "kind": "Procedure",
+      "name": "CheckV4",
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+      "dbFilesUsed": [],
+      "calls": [],
+      "calledBy": [
+        "n404"
+      ]
+    },
+    {
+      "unitId": "HS1210",
+      "nodeId": "n2010",
+      "kind": "Procedure",
+      "name": "AddAttachments",
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+      "dbFilesUsed": [],
+      "calls": [],
+      "calledBy": []
+    },
+    {
+      "unitId": "HS1210",
+      "nodeId": "n2020",
+      "kind": "Procedure",
+      "name": "reNumberPos",
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1210",
+      "dbFilesUsed": [],
+      "calls": [],
+      "calledBy": []
+    },
+    {
+      "unitId": "HS1212",
+      "nodeId": "n1",
+      "kind": "CompilationUnit",
+      "name": null,
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "dbFilesUsed": [
+        "HSG71PF",
+        "S3F003"
+      ],
+      "calls": [],
+      "calledBy": []
+    },
+    {
+      "unitId": "HS1212",
+      "nodeId": "n498",
+      "kind": "Subroutine",
+      "name": null,
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "dbFilesUsed": [
+        "AUFWSKF",
+        "FARSTLF4",
+        "HSG71LF7",
+        "HSG71PF",
+        "HSG73LF1",
+        "HSGPSPF",
+        "S3F004",
+        "S3F103",
+        "S3F104",
+        "S3F105",
+        "S3F106"
+      ],
+      "calls": [
+        "n2698",
+        "n2757",
+        "n2793",
+        "n3215",
+        "n3357",
+        "n3445",
+        "n3455"
+      ],
+      "calledBy": []
+    },
+    {
+      "unitId": "HS1212",
+      "nodeId": "n2575",
+      "kind": "Procedure",
+      "name": "loadText",
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "dbFilesUsed": [],
+      "calls": [
+        "n2698"
+      ],
+      "calledBy": []
+    },
+    {
+      "unitId": "HS1212",
+      "nodeId": "n2614",
+      "kind": "Procedure",
+      "name": "loadTextGPT",
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "dbFilesUsed": [],
+      "calls": [],
+      "calledBy": []
+    },
+    {
+      "unitId": "HS1212",
+      "nodeId": "n2647",
+      "kind": "Procedure",
+      "name": "loadTextGPS",
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "dbFilesUsed": [],
+      "calls": [],
+      "calledBy": []
+    },
+    {
+      "unitId": "HS1212",
+      "nodeId": "n2671",
+      "kind": "Procedure",
+      "name": null,
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "dbFilesUsed": [],
+      "calls": [],
+      "calledBy": []
+    },
+    {
+      "unitId": "HS1212",
+      "nodeId": "n2698",
+      "kind": "Procedure",
+      "name": "loadTextFromSfl",
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "dbFilesUsed": [],
+      "calls": [
+        "n2698"
+      ],
+      "calledBy": [
+        "n2575",
+        "n2698",
+        "n498"
+      ]
+    },
+    {
+      "unitId": "HS1212",
+      "nodeId": "n2757",
+      "kind": "Procedure",
+      "name": "saveText",
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "dbFilesUsed": [],
+      "calls": [],
+      "calledBy": [
+        "n498"
+      ]
+    },
+    {
+      "unitId": "HS1212",
+      "nodeId": "n2793",
+      "kind": "Procedure",
+      "name": "CheckClaim",
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "dbFilesUsed": [],
+      "calls": [
+        "n3187",
+        "n3445"
+      ],
+      "calledBy": [
+        "n498"
+      ]
+    },
+    {
+      "unitId": "HS1212",
+      "nodeId": "n3187",
+      "kind": "Procedure",
+      "name": "GetClaimAge",
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "dbFilesUsed": [],
+      "calls": [],
+      "calledBy": [
+        "n2793"
+      ]
+    },
+    {
+      "unitId": "HS1212",
+      "nodeId": "n3215",
+      "kind": "Procedure",
+      "name": "GetDescription",
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "dbFilesUsed": [],
+      "calls": [],
+      "calledBy": [
+        "n498"
+      ]
+    },
+    {
+      "unitId": "HS1212",
+      "nodeId": "n3357",
+      "kind": "Procedure",
+      "name": "loadClaim",
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "dbFilesUsed": [],
+      "calls": [],
+      "calledBy": [
+        "n498"
+      ]
+    },
+    {
+      "unitId": "HS1212",
+      "nodeId": "n3445",
+      "kind": "Procedure",
+      "name": "getDates",
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "dbFilesUsed": [],
+      "calls": [],
+      "calledBy": [
+        "n2793",
+        "n3455",
+        "n498"
+      ]
+    },
+    {
+      "unitId": "HS1212",
+      "nodeId": "n3455",
+      "kind": "Procedure",
+      "name": "getModules",
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "dbFilesUsed": [],
+      "calls": [
+        "n3445"
+      ],
+      "calledBy": [
+        "n498"
+      ]
+    },
+    {
+      "unitId": "HS1212",
+      "nodeId": "n3468",
+      "kind": "Procedure",
+      "name": "readPositions",
+      "sourceFileId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "dbFilesUsed": [],
+      "calls": [],
+      "calledBy": []
+    }
+  ]
+}

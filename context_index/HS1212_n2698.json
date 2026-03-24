@@ -1,0 +1,756 @@
+{
+  "astNode": {
+    "id": "n2698",
+    "kind": "Procedure",
+    "name": "loadTextFromSfl",
+    "sem": "{}",
+    "outgoingEdges": [],
+    "range": {
+      "sourceId": "qsys:HSSRC/QRPGLESRC/HS1212",
+      "startLine": 3648,
+      "startColumn": 7,
+      "endLine": 3702,
+      "endColumn": 24
+    }
+  },
+  "narrative": "### Node n2698: Procedure `loadTextFromSfl`\n\nThis procedure references symbols derived from its semantic block and symbol table.\n\n- **Raw sem JSON**:\n```json\n{}\n```",
+  "rpgSnippet": "     P loadOrderTextSfl...\n     P                 B\n     D loadOrderTextSfl...\n     D                 PI\n     D*----------------------------------------------------------------\n       *IN90 = *Off;\n       *IN99 = *On;\n       ZLA = 0;\n       Write HS1212CA;\n       *IN99 = *OFF;\n       DATTXT = DATTX5;\n       DATTOP = DATTO5;\n\n       Chain(N) KEYGPS2 HSGPSPR;\n       DOW Not %EoF(HSGPSPF);\n           If GPS020 = *Blanks And GPS040 = 'TXT';\n              MARKA = *Blanks;\n              DATA  = *Blanks;\n              DAT5  = %Char(GPS150);\n              DAT6  = GPS080;\n              If %Subst(GPS080:1:1) <> '+';\n                 ZLA += 1;\n                 Write HS1212SA;\n               EndIf;\n           EndIf;\n           ReadE(N) KEYGPS2 HSGPSPR;\n       EndDo;\n\n       If ZLA <> 0;\n          *In90 = *On;\n          *In95 = *On;\n          Write HS1212WA;\n          ExFmt HS1212CA;\n          *In90 = *Off;\n          *In95 = *Off;\n\n          If Not *In12;\n              countZ = 0;\n              ReadC HS1212SA;\n              DoW Not %EoF(HS1212D);\n                  If MARKA <> *Blanks;\n                     countZ += 1;\n                     Chain countZ HS1212ST;\n                     If Not %EoF(HS1212D);\n                        TEXT = DAT6;\n                        Update HS1212ST;\n                     EndIf;\n                  EndIf;\n                  ReadC HS1212SA;\n              EndDo;\n              loadTextFromSfl();\n          EndIf;\n       EndIf;\n       *In12 = *Off;\n     P                 E",
+  "dbContracts": [],
+  "symbolMetadata": {},
+  "callGraph": {
+    "calls": [
+      "n2698"
+    ],
+    "calledBy": [
+      "n498",
+      "n2575",
+      "n2698"
+    ],
+    "subroutinesInvoked": [
+      "LOADTEXTFROMSFL"
+    ],
+    "callsWithDetails": [
+      {
+        "calleeNodeId": "n2698",
+        "calleeName": "LOADTEXTFROMSFL",
+        "opcode": "CALLP"
+      }
+    ],
+    "tableAccess": {
+      "HS1212D": [
+        {
+          "nodeId": "n2703",
+          "opcode": "WRITE",
+          "line": 3656
+        },
+        {
+          "nodeId": "n2730",
+          "opcode": "WRITE",
+          "line": 3679
+        },
+        {
+          "nodeId": "n2722",
+          "opcode": "WRITE",
+          "line": 3670
+        },
+        {
+          "nodeId": "n2742",
+          "opcode": "CHAIN",
+          "line": 3690
+        },
+        {
+          "nodeId": "n2747",
+          "opcode": "UPDATE",
+          "line": 3693
+        }
+      ],
+      "HSGPSPF": [
+        {
+          "nodeId": "n2707",
+          "opcode": "CHAIN",
+          "line": 3661
+        }
+      ]
+    }
+  },
+  "statementNodes": [
+    {
+      "id": "n2699",
+      "kind": "Comment",
+      "opcode": null,
+      "startLine": 3652,
+      "endLine": 3652
+    },
+    {
+      "id": "n2700",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3653,
+      "endLine": 3653,
+      "target": "sym.ind.90",
+      "symbols": [
+        "sym.ind.90"
+      ]
+    },
+    {
+      "id": "n2701",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3654,
+      "endLine": 3654,
+      "target": "sym.ind.99",
+      "symbols": [
+        "sym.ind.99"
+      ]
+    },
+    {
+      "id": "n2702",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3655,
+      "endLine": 3655,
+      "target": "sym.var.ZLA",
+      "symbols": [
+        "sym.var.ZLA"
+      ]
+    },
+    {
+      "id": "n2703",
+      "kind": "Write",
+      "opcode": "WRITE",
+      "startLine": 3656,
+      "endLine": 3656,
+      "target": "HS1212D",
+      "symbols": [
+        "sym.var.HS1212CA"
+      ]
+    },
+    {
+      "id": "n2704",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3657,
+      "endLine": 3657,
+      "target": "sym.ind.99",
+      "symbols": [
+        "sym.ind.99"
+      ]
+    },
+    {
+      "id": "n2705",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3658,
+      "endLine": 3658,
+      "target": "sym.var.DATTXT",
+      "symbols": [
+        "sym.var.DATTXT"
+      ]
+    },
+    {
+      "id": "n2706",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3659,
+      "endLine": 3659,
+      "target": "sym.var.DATTOP",
+      "symbols": [
+        "sym.var.DATTOP"
+      ]
+    },
+    {
+      "id": "n2707",
+      "kind": "Chain",
+      "opcode": "CHAIN",
+      "startLine": 3661,
+      "endLine": 3661,
+      "target": "HSGPSPF",
+      "symbols": [
+        "sym.var.KEYGPS2",
+        "sym.var.HSGPSPR"
+      ]
+    },
+    {
+      "id": "n2708",
+      "kind": "DoW",
+      "opcode": "DOW",
+      "startLine": 3662,
+      "endLine": 3674,
+      "symbols": [
+        "sym.var.KEYGPS2",
+        "sym.var.HSGPSPR"
+      ]
+    },
+    {
+      "id": "n2726",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 3676,
+      "endLine": 3700,
+      "symbols": [
+        "sym.var.HS1212CA"
+      ]
+    },
+    {
+      "id": "n2753",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3701,
+      "endLine": 3701,
+      "target": "sym.ind.12",
+      "symbols": [
+        "sym.ind.12"
+      ]
+    },
+    {
+      "id": "n2709",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3662,
+      "endLine": 3662
+    },
+    {
+      "id": "n2711",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 3663,
+      "endLine": 3672
+    },
+    {
+      "id": "n2725",
+      "kind": "EndDo",
+      "opcode": null,
+      "startLine": 3674,
+      "endLine": 3674
+    },
+    {
+      "id": "n2727",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3676,
+      "endLine": 3676,
+      "symbols": [
+        "sym.var.ZLA"
+      ]
+    },
+    {
+      "id": "n2728",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3677,
+      "endLine": 3677,
+      "target": "sym.ind.90",
+      "symbols": [
+        "sym.ind.90"
+      ]
+    },
+    {
+      "id": "n2729",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3678,
+      "endLine": 3678,
+      "target": "sym.ind.95",
+      "symbols": [
+        "sym.ind.95"
+      ]
+    },
+    {
+      "id": "n2730",
+      "kind": "Write",
+      "opcode": "WRITE",
+      "startLine": 3679,
+      "endLine": 3679,
+      "target": "HS1212D",
+      "symbols": [
+        "sym.var.HS1212WA"
+      ]
+    },
+    {
+      "id": "n2731",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3681,
+      "endLine": 3681,
+      "target": "sym.ind.90",
+      "symbols": [
+        "sym.ind.90"
+      ]
+    },
+    {
+      "id": "n2732",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3682,
+      "endLine": 3682,
+      "target": "sym.ind.95",
+      "symbols": [
+        "sym.ind.95"
+      ]
+    },
+    {
+      "id": "n2733",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 3684,
+      "endLine": 3699,
+      "symbols": [
+        "sym.var.HS1212SA"
+      ]
+    },
+    {
+      "id": "n2752",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 3700,
+      "endLine": 3700
+    },
+    {
+      "id": "n2710",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 3662,
+      "endLine": 3662
+    },
+    {
+      "id": "n2712",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3663,
+      "endLine": 3663,
+      "symbols": [
+        "sym.var.GPS020",
+        "sym.var.GPS040"
+      ]
+    },
+    {
+      "id": "n2713",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3664,
+      "endLine": 3664,
+      "target": "sym.var.MARKA",
+      "symbols": [
+        "sym.var.MARKA"
+      ]
+    },
+    {
+      "id": "n2714",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3665,
+      "endLine": 3665,
+      "target": "sym.ds.DATA",
+      "symbols": [
+        "sym.ds.DATA"
+      ]
+    },
+    {
+      "id": "n2715",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3666,
+      "endLine": 3666,
+      "target": "sym.var.DAT5",
+      "symbols": [
+        "sym.var.DAT5"
+      ]
+    },
+    {
+      "id": "n2717",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3667,
+      "endLine": 3667,
+      "target": "sym.var.DAT6",
+      "symbols": [
+        "sym.var.GPS080",
+        "sym.var.DAT6"
+      ]
+    },
+    {
+      "id": "n2718",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 3668,
+      "endLine": 3671
+    },
+    {
+      "id": "n2724",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 3672,
+      "endLine": 3672
+    },
+    {
+      "id": "n2734",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3684,
+      "endLine": 3684,
+      "symbols": [
+        "sym.ind.12"
+      ]
+    },
+    {
+      "id": "n2735",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3685,
+      "endLine": 3685,
+      "target": "sym.var.CountZ",
+      "symbols": [
+        "sym.var.CountZ"
+      ]
+    },
+    {
+      "id": "n2736",
+      "kind": "DoW",
+      "opcode": "DOW",
+      "startLine": 3687,
+      "endLine": 3697,
+      "symbols": [
+        "sym.var.HS1212SA"
+      ]
+    },
+    {
+      "id": "n2751",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 3699,
+      "endLine": 3699
+    },
+    {
+      "id": "n2716",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 3666,
+      "endLine": 3666,
+      "symbols": [
+        "sym.var.GPS150"
+      ]
+    },
+    {
+      "id": "n2719",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3668,
+      "endLine": 3668
+    },
+    {
+      "id": "n2721",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3669,
+      "endLine": 3669,
+      "target": "sym.var.ZLA",
+      "symbols": [
+        "sym.var.ZLA"
+      ]
+    },
+    {
+      "id": "n2722",
+      "kind": "Write",
+      "opcode": "WRITE",
+      "startLine": 3670,
+      "endLine": 3670,
+      "target": "HS1212D",
+      "symbols": [
+        "sym.var.HS1212SA"
+      ]
+    },
+    {
+      "id": "n2723",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 3671,
+      "endLine": 3671
+    },
+    {
+      "id": "n2737",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3687,
+      "endLine": 3687
+    },
+    {
+      "id": "n2739",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 3688,
+      "endLine": 3695
+    },
+    {
+      "id": "n2750",
+      "kind": "EndDo",
+      "opcode": null,
+      "startLine": 3697,
+      "endLine": 3697
+    },
+    {
+      "id": "n2720",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 3668,
+      "endLine": 3668,
+      "symbols": [
+        "sym.var.GPS080"
+      ]
+    },
+    {
+      "id": "n2738",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 3687,
+      "endLine": 3687
+    },
+    {
+      "id": "n2740",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3688,
+      "endLine": 3688,
+      "symbols": [
+        "sym.var.MARKA"
+      ]
+    },
+    {
+      "id": "n2741",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3689,
+      "endLine": 3689,
+      "target": "sym.var.CountZ",
+      "symbols": [
+        "sym.var.CountZ"
+      ]
+    },
+    {
+      "id": "n2742",
+      "kind": "Chain",
+      "opcode": "CHAIN",
+      "startLine": 3690,
+      "endLine": 3690,
+      "target": "HS1212D",
+      "symbols": [
+        "sym.var.CountZ",
+        "sym.var.HS1212ST"
+      ]
+    },
+    {
+      "id": "n2743",
+      "kind": "If",
+      "opcode": "IF",
+      "startLine": 3691,
+      "endLine": 3694
+    },
+    {
+      "id": "n2749",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 3695,
+      "endLine": 3695
+    },
+    {
+      "id": "n2744",
+      "kind": "Condition",
+      "opcode": "COND",
+      "startLine": 3691,
+      "endLine": 3691
+    },
+    {
+      "id": "n2746",
+      "kind": "Assign",
+      "opcode": "EVAL",
+      "startLine": 3692,
+      "endLine": 3692,
+      "target": "sym.var.TEXT",
+      "symbols": [
+        "sym.var.TEXT",
+        "sym.var.DAT6"
+      ]
+    },
+    {
+      "id": "n2747",
+      "kind": "Update",
+      "opcode": "UPDATE",
+      "startLine": 3693,
+      "endLine": 3693,
+      "target": "HS1212D",
+      "symbols": [
+        "sym.var.HS1212ST"
+      ]
+    },
+    {
+      "id": "n2748",
+      "kind": "EndIf",
+      "opcode": null,
+      "startLine": 3694,
+      "endLine": 3694
+    },
+    {
+      "id": "n2745",
+      "kind": "Builtin",
+      "opcode": null,
+      "startLine": 3691,
+      "endLine": 3691
+    }
+  ],
+  "lineToNodeMap": {
+    "3652": [
+      "n2699"
+    ],
+    "3653": [
+      "n2700"
+    ],
+    "3654": [
+      "n2701"
+    ],
+    "3655": [
+      "n2702"
+    ],
+    "3656": [
+      "n2703"
+    ],
+    "3657": [
+      "n2704"
+    ],
+    "3658": [
+      "n2705"
+    ],
+    "3659": [
+      "n2706"
+    ],
+    "3661": [
+      "n2707"
+    ],
+    "3662-3674": [
+      "n2708"
+    ],
+    "3676-3700": [
+      "n2726"
+    ],
+    "3701": [
+      "n2753"
+    ],
+    "3662": [
+      "n2709",
+      "n2710"
+    ],
+    "3663-3672": [
+      "n2711"
+    ],
+    "3674": [
+      "n2725"
+    ],
+    "3676": [
+      "n2727"
+    ],
+    "3677": [
+      "n2728"
+    ],
+    "3678": [
+      "n2729"
+    ],
+    "3679": [
+      "n2730"
+    ],
+    "3681": [
+      "n2731"
+    ],
+    "3682": [
+      "n2732"
+    ],
+    "3684-3699": [
+      "n2733"
+    ],
+    "3700": [
+      "n2752"
+    ],
+    "3663": [
+      "n2712"
+    ],
+    "3664": [
+      "n2713"
+    ],
+    "3665": [
+      "n2714"
+    ],
+    "3666": [
+      "n2715",
+      "n2716"
+    ],
+    "3667": [
+      "n2717"
+    ],
+    "3668-3671": [
+      "n2718"
+    ],
+    "3672": [
+      "n2724"
+    ],
+    "3684": [
+      "n2734"
+    ],
+    "3685": [
+      "n2735"
+    ],
+    "3687-3697": [
+      "n2736"
+    ],
+    "3699": [
+      "n2751"
+    ],
+    "3668": [
+      "n2719",
+      "n2720"
+    ],
+    "3669": [
+      "n2721"
+    ],
+    "3670": [
+      "n2722"
+    ],
+    "3671": [
+      "n2723"
+    ],
+    "3687": [
+      "n2737",
+      "n2738"
+    ],
+    "3688-3695": [
+      "n2739"
+    ],
+    "3697": [
+      "n2750"
+    ],
+    "3688": [
+      "n2740"
+    ],
+    "3689": [
+      "n2741"
+    ],
+    "3690": [
+      "n2742"
+    ],
+    "3691-3694": [
+      "n2743"
+    ],
+    "3695": [
+      "n2749"
+    ],
+    "3691": [
+      "n2744",
+      "n2745"
+    ],
+    "3692": [
+      "n2746"
+    ],
+    "3693": [
+      "n2747"
+    ],
+    "3694": [
+      "n2748"
+    ]
+  }
+}
