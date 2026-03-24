@@ -20,7 +20,7 @@ fi
 export UI_PORT=${UI_PORT:-8003}
 export APP_PORT=${APP_PORT:-8081}
 PORT=$UI_PORT
-URL="http://127.0.0.1:${PORT}/"
+URL="http://0.0.0.0:${PORT}/"
 
 echo "Starting Global Context UI server on port $PORT..."
 echo "URL: $URL"
