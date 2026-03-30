@@ -1,5 +1,10 @@
 name: Deploy Scania Java Migration Pipeline to EC2
 
+# Required GitHub Actions secrets (repo → Settings → Secrets and variables → Actions):
+#   ANTHROPIC_API_KEY — Anthropic API key for LLM calls in the pipeline UI (migrate, fix, etc.)
+# Optional repository variables (same page → Variables tab):
+#   ANTHROPIC_MODEL — e.g. claude-sonnet-4-5; if unset, the app picks a default model
+
 on:
   push:
     branches: '**'
@@ -47,8 +52,11 @@ jobs:
             
             # Run the new container 
             # (Mapping EC2 Port 8003 to Spring Boot Port 8003)
+            # ANTHROPIC_API_KEY from GitHub Actions secrets; ANTHROPIC_MODEL optional (repo variable)
             sudo docker run -d \
               --name scania-migration-pipeline-container \
               -p 8003:8003 \
               --restart always \
+              -e ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }} \
+              -e ANTHROPIC_MODEL=${{ vars.ANTHROPIC_MODEL }} \
               ${{ secrets.DOCKERHUB_USERNAME }}/scania-migration-pipeline:latest
