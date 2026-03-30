@@ -1,11 +1,12 @@
 # Verifies the migration pipeline Docker image builds on each push (deploy confidence).
+# Uses the same Dockerfile as .github/workflows/deploy.yml (EC2), not Dockerfile.pipeline.
 name: Pipeline Docker
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, migration/gc-warranty-claim]
   pull_request:
-    branches: [main, master]
+    branches: [main, master, migration/gc-warranty-claim]
 
 jobs:
   build:
@@ -14,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build pipeline image
-        run: docker build -f Dockerfile.pipeline -t migration-pipeline:ci .
+        run: docker build -t migration-pipeline:ci .
 
       - name: Smoke check (health endpoint)
         run: |
