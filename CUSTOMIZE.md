@@ -15,7 +15,7 @@ This guide helps you modify the migrated Java application to fit your needs.
       ├── application.properties
       └── static/demo.html
 
-## Where to Make Changes
+## Where to Make Changes 
 
 ### Business Logic
   → service/
