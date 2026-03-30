@@ -45,6 +45,8 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 import anthropic
 
+from anthropic_env import load_anthropic_from_env_files
+
 ROOT_DIR = Path(__file__).resolve().parent
 
 # Domain glossary: Map RPG file names to domain entity names
@@ -1697,13 +1699,15 @@ def main():
     )
     args = parser.parse_args()
 
+    load_anthropic_from_env_files(ROOT_DIR)
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         raise SystemExit(
             "ANTHROPIC_API_KEY env var is not set.\n"
-            "Please export your key:\n"
-            "  export ANTHROPIC_API_KEY='sk-ant-...'\n"
-            "Then retry this command."
+            "Export it: export ANTHROPIC_API_KEY='sk-ant-...'\n"
+            "Or add it to .env in the pipeline repo (or /workspace/.env), set ANTHROPIC_KEY_FILE,\n"
+            "or mount a Docker secret at /run/secrets/anthropic_api_key.\n"
+            "For GitHub Actions deploy, set the ANTHROPIC_API_KEY repository secret."
         )
     
     if not api_key.startswith("sk-ant-"):

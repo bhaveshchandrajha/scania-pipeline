@@ -281,6 +281,10 @@ def main() -> None:
     )
     args = parser.parse_args()
 
+    from anthropic_env import load_anthropic_from_env_files
+
+    load_anthropic_from_env_files(Path(__file__).resolve().parent)
+
     # Output Java file: same base name as the context JSON, in current working directory
     output_java = Path.cwd() / (Path(args.context_file).stem + ".java")
 

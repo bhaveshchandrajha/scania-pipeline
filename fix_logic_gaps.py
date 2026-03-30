@@ -185,6 +185,10 @@ def main() -> None:
     parser.add_argument("--max-tokens", type=int, default=32000)
     args = parser.parse_args()
 
+    from anthropic_env import load_anthropic_from_env_files
+
+    load_anthropic_from_env_files(Path(__file__).resolve().parent)
+
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         print("ANTHROPIC_API_KEY env var is not set", file=sys.stderr)
