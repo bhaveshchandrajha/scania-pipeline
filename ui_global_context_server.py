@@ -551,7 +551,15 @@ class GlobalContextHandler(BaseHTTPRequestHandler):
 
         if parsed.path == "/api/health":
             port = self.server.server_address[1] if self.server else 8003
-            self._send_json({"ok": True, "server": "global-context", "port": port})
+            has_anthropic = bool((os.environ.get("ANTHROPIC_API_KEY") or "").strip())
+            self._send_json(
+                {
+                    "ok": True,
+                    "server": "global-context",
+                    "port": port,
+                    "anthropicConfigured": has_anthropic,
+                }
+            )
             return
 
         if parsed.path == "/api/discover-directories":
@@ -2851,6 +2859,8 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
 
 def main():
     load_anthropic_from_env_files(ROOT_DIR)
+    _has = bool((os.environ.get("ANTHROPIC_API_KEY") or "").strip())
+    print(f"ANTHROPIC_API_KEY configured: {_has}", flush=True)
     port = int(os.environ.get("UI_PORT", "8003"))
     bind_host = os.environ.get("BIND_HOST", "0.0.0.0")  # 0.0.0.0 for Docker; 127.0.0.1 for local-only
     addr = (bind_host, port)

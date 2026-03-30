@@ -14,7 +14,7 @@ _PIPELINE_ROOT = Path(__file__).resolve().parent
 
 
 def _parse_env_line(line: str) -> tuple[str, str] | None:
-    line = line.strip()
+    line = line.replace("\r", "").strip()
     if not line or line.startswith("#"):
         return None
     if line.startswith("export "):
@@ -27,13 +27,21 @@ def _parse_env_line(line: str) -> tuple[str, str] | None:
     return (key, val) if key else None
 
 
+def _normalize_api_key(raw: str) -> str:
+    s = raw.replace("\ufeff", "").replace("\r\n", "\n").replace("\r", "\n").strip()
+    if "\n" in s:
+        s = s.split("\n", 1)[0].strip()
+    return s
+
+
 def _try_read_secret_file(path: Path) -> bool:
     try:
-        raw = path.read_text(encoding="utf-8", errors="ignore").strip()
+        raw = path.read_text(encoding="utf-8", errors="ignore")
     except OSError:
         return False
-    if raw:
-        os.environ["ANTHROPIC_API_KEY"] = raw
+    val = _normalize_api_key(raw)
+    if val:
+        os.environ["ANTHROPIC_API_KEY"] = val
         return True
     return False
 
@@ -48,9 +56,11 @@ def _try_read_dotenv(path: Path) -> bool:
         if not parsed:
             continue
         k, v = parsed
-        if k == "ANTHROPIC_API_KEY" and v:
-            os.environ["ANTHROPIC_API_KEY"] = v
-            return True
+        if k == "ANTHROPIC_API_KEY":
+            v = _normalize_api_key(v)
+            if v:
+                os.environ["ANTHROPIC_API_KEY"] = v
+                return True
     return False
 
 
@@ -71,6 +81,8 @@ def load_anthropic_from_env_files(repo_root: Path | None = None) -> None:
     if key_file and _try_read_secret_file(Path(key_file)):
         return
     if _try_read_secret_file(Path("/run/secrets/anthropic_api_key")):
+        return
+    if _try_read_secret_file(Path("/etc/scania/anthropic_api_key")):
         return
 
     seen: set[Path] = set()

@@ -47,7 +47,10 @@ COPY --chown=appuser:appuser . .
 
 # Pre-create upload dirs (gitignored); bind-mounting the host over /workspace may still require PIPELINE_DATA_DIR or host uid 1000
 USER root
-RUN mkdir -p /workspace/uploads /workspace/JSON_ast && chown -R appuser:appuser /workspace/uploads /workspace/JSON_ast
+RUN mkdir -p /workspace/uploads /workspace/JSON_ast /etc/scania \
+    && chown -R appuser:appuser /workspace/uploads /workspace/JSON_ast \
+    && chmod +x /workspace/docker-entrypoint.sh \
+    && chown appuser:appuser /workspace/docker-entrypoint.sh
 USER appuser
 
 EXPOSE 8003 8081
@@ -55,4 +58,5 @@ EXPOSE 8003 8081
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
     CMD curl -fsS http://127.0.0.1:8003/api/health >/dev/null || exit 1
 
+ENTRYPOINT ["/workspace/docker-entrypoint.sh"]
 CMD ["python3", "ui_global_context_server.py"]
