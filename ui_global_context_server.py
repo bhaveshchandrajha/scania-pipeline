@@ -43,6 +43,37 @@ from urllib.error import URLError, HTTPError
 
 ROOT_DIR = Path(__file__).resolve().parent
 
+
+def _ensure_anthropic_key_from_workspace_env() -> None:
+    """
+    If ANTHROPIC_API_KEY is unset, try workspace .env (manual EC2/docker-compose or bind-mounted repo).
+    Does not override a non-empty env var.
+    """
+    if (os.environ.get("ANTHROPIC_API_KEY") or "").strip():
+        return
+    paths: list[Path] = []
+    extra = (os.environ.get("ANTHROPIC_KEY_FILE") or "").strip()
+    if extra:
+        paths.append(Path(extra))
+    paths.extend([ROOT_DIR / ".env", Path("/workspace/.env")])
+    for p in paths:
+        if not p.is_file():
+            continue
+        try:
+            text = p.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        for line in text.splitlines():
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            if line.startswith("ANTHROPIC_API_KEY="):
+                val = line.split("=", 1)[1].strip().strip('"').strip("'")
+                if val:
+                    os.environ["ANTHROPIC_API_KEY"] = val
+                    return
+
+
 BUILD_OUTPUT_MAX_CHARS = 80_000
 MAX_UPLOAD_BYTES = 512 * 1024 * 1024  # 512 MiB — AST/RPG source zips
 
@@ -2106,6 +2137,7 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
                         text=True,
                         bufsize=1,  # Line-buffered for real-time streaming
                         cwd=str(ROOT_DIR),
+                        env=os.environ.copy(),
                     )
                     start = time.monotonic()
                     migrate_timeout = int(os.environ.get("MIGRATE_TIMEOUT", "3600"))  # default 60 min for large nodes like n404
@@ -2823,6 +2855,7 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
 
 
 def main():
+    _ensure_anthropic_key_from_workspace_env()
     port = int(os.environ.get("UI_PORT", "8003"))
     bind_host = os.environ.get("BIND_HOST", "0.0.0.0")  # 0.0.0.0 for Docker; 127.0.0.1 for local-only
     addr = (bind_host, port)
