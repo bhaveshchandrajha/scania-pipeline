@@ -1,39 +1,55 @@
-# Warranty Claim Management - UAT Container
-# Build from project root: docker build -t warranty-claim-uat:1.0.0 .
+# Migration pipeline – runs ui_global_context_server.py (Global Context UI)
+#
+# Build:
+#   docker build -t migration-pipeline:1.0 .
+#
+# Run:
+#   docker run -d --name migration-pipeline \
+#     -p 8003:8003 -p 8081:8081 \
+#     -e ANTHROPIC_API_KEY=... \
+#     -e BIND_HOST=0.0.0.0 -e UI_PORT=8003 \
+#     migration-pipeline:1.0
+#
+# Optional: mount repo for live edits
+#   docker run ... -v $(pwd):/workspace migration-pipeline:1.0
 
-# Stage 1: Build Angular UI
-FROM node:20-alpine AS angular-build
-WORKDIR /build
+FROM python:3.11-slim-bookworm
 
-COPY warranty-ui/package*.json ./
-RUN npm ci
+# Node.js 20, Maven, Java 17, Git (used by pipeline UI: Maven builds, git push, etc.)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    gnupg \
+    ca-certificates \
+    git \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
+    && curl -fsSL https://archive.apache.org/dist/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz | tar xz -C /opt \
+    && ln -sf /opt/apache-maven-3.9.6/bin/mvn /usr/local/bin/mvn \
+    && apt-get install -y --no-install-recommends openjdk-17-jdk \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY warranty-ui/ ./
-RUN npm run build -- --base-href /angular/
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_ROOT_USER_ACTION=ignore \
+    UI_PORT=8003 \
+    BIND_HOST=0.0.0.0
 
-# Stage 2: Build Spring Boot
-FROM maven:3.9-eclipse-temurin-17-alpine AS maven-build
-WORKDIR /build
+RUN useradd -m -u 1000 -s /bin/bash appuser
 
-# Copy Maven project
-COPY warranty_demo/ ./warranty_demo/
+WORKDIR /workspace
 
-# Overwrite with fresh Angular build
-COPY --from=angular-build /build/dist/warranty-ui/browser/ ./warranty_demo/src/main/resources/static/angular/
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
+    && pip install --no-cache-dir -r requirements.txt
 
-WORKDIR /build/warranty_demo
-RUN mvn package -DskipTests -q
-
-# Stage 3: Runtime
-FROM eclipse-temurin:17-jre-alpine
-WORKDIR /app
-
-RUN adduser -D -u 1000 appuser && mkdir -p /data && chown -R appuser:appuser /data
-
-COPY --from=maven-build /build/warranty_demo/target/*.jar app.jar
-
-ENV SPRING_PROFILES_ACTIVE=docker
-EXPOSE 8081
+COPY --chown=appuser:appuser . .
 
 USER appuser
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+EXPOSE 8003 8081
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+    CMD curl -fsS http://127.0.0.1:8003/api/health >/dev/null || exit 1
+
+CMD ["python3", "ui_global_context_server.py"]
