@@ -44,6 +44,28 @@ from urllib.error import URLError, HTTPError
 ROOT_DIR = Path(__file__).resolve().parent
 
 
+def _pipeline_data_root() -> Path:
+    """
+    Base directory for uploads (JSON_ast, uploads/). When /workspace is bind-mounted from the host
+    as root-owned, mkdir under ROOT_DIR fails — fall back to a temp dir (still works for migration).
+    Override with PIPELINE_DATA_DIR.
+    """
+    override = (os.environ.get("PIPELINE_DATA_DIR") or "").strip()
+    if override:
+        p = Path(override)
+        p.mkdir(parents=True, exist_ok=True)
+        return p
+    try:
+        probe = ROOT_DIR / "uploads"
+        probe.mkdir(parents=True, exist_ok=True)
+        return ROOT_DIR
+    except (PermissionError, OSError):
+        pass
+    fb = Path(tempfile.gettempdir()) / "scania_pipeline_data"
+    fb.mkdir(parents=True, exist_ok=True)
+    return fb
+
+
 def _ensure_anthropic_key_from_workspace_env() -> None:
     """
     If ANTHROPIC_API_KEY is unset, try workspace .env (manual EC2/docker-compose or bind-mounted repo).
@@ -1678,9 +1700,10 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
                     if bad:
                         self._send_json({"ok": False, "error": f"Corrupt zip at {bad}"}, status=400)
                         return
+                data_root = _pipeline_data_root()
                 if kind == "ast_zip":
                     dest_rel = f"JSON_ast/upload_{ts}_{slug}"
-                    dest = ROOT_DIR / dest_rel
+                    dest = data_root / dest_rel
                     dest.mkdir(parents=True, exist_ok=True)
                     with zipfile.ZipFile(tmp_path, "r") as zf:
                         _safe_extract_zip(zf, dest)
@@ -1706,14 +1729,14 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
                     )
                 else:
                     dest_rel = f"uploads/rpg_{ts}_{slug}"
-                    dest = ROOT_DIR / dest_rel
+                    dest = data_root / dest_rel
                     dest.mkdir(parents=True, exist_ok=True)
                     with zipfile.ZipFile(tmp_path, "r") as zf:
                         _safe_extract_zip(zf, dest)
                     rpg_root = _find_rpg_root_with_hssrc(dest)
                     if rpg_root:
                         try:
-                            rel_from_root = rpg_root.relative_to(ROOT_DIR)
+                            rel_from_root = rpg_root.relative_to(data_root)
                             rpg_rel = str(rel_from_root).replace("\\", "/")
                         except ValueError:
                             rpg_rel = dest_rel

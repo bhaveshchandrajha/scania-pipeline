@@ -45,6 +45,9 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
 
 COPY --chown=appuser:appuser . .
 
+# Pre-create upload dirs (gitignored); bind-mounting the host over /workspace may still require PIPELINE_DATA_DIR or host uid 1000
+USER root
+RUN mkdir -p /workspace/uploads /workspace/JSON_ast && chown -R appuser:appuser /workspace/uploads /workspace/JSON_ast
 USER appuser
 
 EXPOSE 8003 8081
