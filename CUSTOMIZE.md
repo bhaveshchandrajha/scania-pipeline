@@ -55,7 +55,7 @@ Use these to understand which RPG block a Java section came from. Hover over
   cd warranty_demo
   mvn spring-boot:run
 
-Demo UI: http://localhost:8081/demo.html
+Demo UI: http://0.0.0.0:8081/demo.html
 
 ## Testing Changes
 

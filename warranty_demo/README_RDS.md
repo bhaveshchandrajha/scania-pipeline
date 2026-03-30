@@ -16,9 +16,9 @@ cd warranty_demo
 mvn spring-boot:run
 ```
 
-- **H2 Console:** http://localhost:8081/h2-connect.html (one-click) or paste `jdbc:h2:file:./data/warranty_db`, User: sa, Driver: Generic H2 (Embedded)
-- **Demo:** http://localhost:8081/demo.html
-- **Swagger:** http://localhost:8081/swagger-ui.html
+- **H2 Console:** http://0.0.0.0:8081/h2-connect.html (one-click) or paste `jdbc:h2:file:./data/warranty_db`, User: sa, Driver: Generic H2 (Embedded)
+- **Demo:** http://0.0.0.0:8081/demo.html
+- **Swagger:** http://0.0.0.0:8081/swagger-ui.html
 
 ---
 

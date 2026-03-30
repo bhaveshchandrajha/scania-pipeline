@@ -1,0 +1,64 @@
+<div class="claim-detail">
+  <h1>Claim history</h1>
+  <p class="subtitle">Current status at the top; below is the full timeline including error subfile (HSG73).</p>
+
+  <div class="error" *ngIf="error">{{ error }}</div>
+  <div class="loading" *ngIf="loading">Loading…</div>
+
+  <ng-container *ngIf="!loading && detail && companyCode && claimNumber">
+    <section class="status-banner">
+      <div class="status-banner-inner">
+        <div class="status-banner-label">Current status</div>
+        <div class="status-banner-value">{{ detail.claim.statusText || detail.claim.statusDescription || '—' }}</div>
+        <div class="status-banner-meta">
+          Claim {{ detail.claim.claimNr || detail.claim.claimNumber }} · Invoice {{ detail.claim.invoiceNr || detail.claim.invoiceNumber }}
+          · Status code {{ detail.claim.statusCode }}
+        </div>
+      </div>
+    </section>
+
+    <section class="meta-grid">
+      <h2 class="sr-only">Claim details</h2>
+      <dl>
+        <dt>Company</dt>
+        <dd>{{ detail.claim.companyCode }}</dd>
+        <dt>Chassis</dt>
+        <dd>{{ detail.claim.chassisNr || detail.claim.chassisNumber }}</dd>
+        <dt>Repair date</dt>
+        <dd>{{ detail.claim.repairDate || '—' }}</dd>
+        <dt>Customer</dt>
+        <dd>{{ detail.claim.customerName }}</dd>
+        <dt>Errors (count)</dt>
+        <dd>{{ detail.claim.errorCount }}</dd>
+      </dl>
+    </section>
+
+    <section class="history">
+      <h2>History</h2>
+      <p class="hint" *ngIf="historyRows.length === 0">No history lines for this claim.</p>
+      <table class="hist-table" *ngIf="historyRows.length > 0">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Title</th>
+            <th>Detail</th>
+            <th>Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let h of historyRows" [class.row-status]="h.entryType === 'STATUS'" [class.row-error]="h.entryType === 'ERROR'">
+            <td>{{ h.entryType === 'STATUS' ? 'Status' : 'Error' }}</td>
+            <td>{{ h.title }}</td>
+            <td>{{ h.detail }}</td>
+            <td>{{ h.reference }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </ng-container>
+
+  <div class="actions">
+    <button type="button" class="action-btn" (click)="goBack()">Back to list</button>
+    <button type="button" class="action-btn action-delete" (click)="deleteClaim()">Delete claim</button>
+  </div>
+</div>

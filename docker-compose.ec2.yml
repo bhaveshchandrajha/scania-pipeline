@@ -1,0 +1,51 @@
+# Migration pipeline — EC2 / server deployment
+#
+# Usage (from repo root on the server):
+#   cp .env.example .env   # then edit .env — set ANTHROPIC_API_KEY at minimum
+#   docker compose -f docker-compose.ec2.yml up -d --build
+#
+# UI:  http://<EC2_PUBLIC_IP>:8003/
+# App: http://<EC2_PUBLIC_IP>:8082/  (after "Run Application" in tab 5)
+#
+# Updates: git pull && docker compose -f docker-compose.ec2.yml up -d --build
+#
+# Security group: allow TCP 8003 and 8082 (and 22 for SSH). Prefer VPN or IP allowlist.
+
+services:
+  pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile.pipeline
+    image: migration-pipeline:ec2
+    container_name: migration-pipeline
+    restart: unless-stopped
+    ports:
+      - "8003:8003"
+      - "8082:8081"
+    env_file: .env
+    environment:
+      - UI_PORT=8003
+      - APP_PORT=8082
+      - SPRING_INTERNAL_PORT=8081
+      - BIND_HOST=0.0.0.0
+      - GIT_USE_TOKEN=1
+      - GIT_USER_EMAIL=${GIT_USER_EMAIL:-pipeline@localhost}
+      - GIT_USER_NAME=${GIT_USER_NAME:-Migration Pipeline}
+      - RUN_PROFILE=${RUN_PROFILE:-rds}
+      - SKIP_TESTS=${SKIP_TESTS:-0}
+    working_dir: /workspace
+    # Host checkout is mounted so git pull updates code without rebuilding the image
+    # for Python/UI changes. Re-run --build after Dockerfile or system dependency changes.
+    volumes:
+      - .:/workspace
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8003/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "4"

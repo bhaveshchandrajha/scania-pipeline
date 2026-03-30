@@ -18,6 +18,7 @@
         </div>
       </div>
       <div class="actions">
+        <a routerLink="/claims/failed" class="toolbar-link">Failed claims</a>
         <button *ngFor="let action of schema.actions" 
                 type="button" 
                 class="action-btn"
@@ -35,14 +36,24 @@
     <table class="claims-table">
       <thead>
         <tr>
+          <th class="select-col" scope="col"></th>
           <th *ngFor="let col of schema.columns">{{ col.label }}</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let item of claims" 
+        <tr *ngFor="let item of claims"
             [class.color-indicator]="item.colorIndicator"
             [class.selected]="selectedClaim === item"
-            (click)="selectRow(item)">
+            (click)="openClaimDetail(item)"
+            class="data-row">
+          <td class="select-col" (click)="$event.stopPropagation()">
+            <input
+              type="checkbox"
+              [checked]="selectedClaim === item"
+              (change)="onSelectCheckbox(item, $event)"
+              [attr.aria-label]="'Select claim ' + (item.claimNr || item.claimNumber || '')"
+            />
+          </td>
           <td *ngFor="let col of schema.columns">
             {{ getValue(item, col.dtoField) ?? '' }}
           </td>

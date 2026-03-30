@@ -75,8 +75,36 @@ export class ClaimsListComponent implements OnInit {
     this.loadClaims();
   }
 
-  selectRow(item: ClaimListItem): void {
-    this.selectedClaim = this.selectedClaim === item ? null : item;
+  /** Open claim history (same keys as CF11 View). */
+  openClaimDetail(item: ClaimListItem): void {
+    const row = item as Record<string, unknown>;
+    const cc = this.rowCompanyCode(row);
+    const nr = this.rowClaimNr(row);
+    if (!cc || !nr) {
+      return;
+    }
+    this.router.navigateByUrl(`/claims/${encodeURIComponent(cc)}/${encodeURIComponent(nr)}`);
+  }
+
+  /** Checkbox selection only (matches RPG line selection without row double-click). */
+  onSelectCheckbox(item: ClaimListItem, ev: Event): void {
+    const checked = (ev.target as HTMLInputElement).checked;
+    if (checked) {
+      this.selectedClaim = item;
+    } else if (this.selectedClaim === item) {
+      this.selectedClaim = null;
+    }
+  }
+
+  /** Resolve DTO field: API uses claimNr; schema placeholders may use claimNumber. */
+  private rowClaimNr(row: Record<string, unknown>): string {
+    const v = row['claimNr'] ?? row['claimNumber'];
+    return v != null ? String(v) : '';
+  }
+
+  private rowCompanyCode(row: Record<string, unknown>): string {
+    const v = row['companyCode'];
+    return v != null ? String(v) : '';
   }
 
   /**
@@ -162,8 +190,8 @@ export class ClaimsListComponent implements OnInit {
   private executeDeleteAction(action: UiSchemaAction): void {
     const row = this.selectedClaim as Record<string, unknown> | null;
     if (!row) return;
-    const companyCode = row['companyCode'] != null ? String(row['companyCode']) : '';
-    const claimNumber = row['claimNumber'] != null ? String(row['claimNumber']) : '';
+    const companyCode = this.rowCompanyCode(row);
+    const claimNumber = this.rowClaimNr(row);
     if (!companyCode || !claimNumber) {
       alert('Cannot delete: missing company code or claim number.');
       return;
@@ -184,6 +212,9 @@ export class ClaimsListComponent implements OnInit {
       return template.replace(/\{\{[^}]+\}\}/g, '');
     }
     return template.replace(/\{\{(\w+)\}\}/g, (_, key) => {
+      if (key === 'claimNumber') {
+        return this.rowClaimNr(row);
+      }
       const val = row[key];
       return val != null ? String(val) : '';
     });

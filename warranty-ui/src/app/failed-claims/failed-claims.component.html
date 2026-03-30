@@ -1,0 +1,45 @@
+<div class="failed-page">
+  <header>
+    <h1>Failed claim attempts</h1>
+    <p class="subtitle">
+      Rows are stored when claim creation fails validation (for example repair date more than 19 days in the past).
+    </p>
+    <div class="toolbar">
+      <label>
+        Company
+        <input type="text" [(ngModel)]="companyCode" (ngModelChange)="load()" />
+      </label>
+      <a routerLink="/claims" class="link-back">Back to claims list</a>
+    </div>
+  </header>
+
+  <div class="error" *ngIf="error">{{ error }}</div>
+  <div class="loading" *ngIf="loading">Loading…</div>
+
+  <div class="table-wrap" *ngIf="!loading && rows.length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th>Failed at</th>
+          <th>Invoice</th>
+          <th>Invoice date</th>
+          <th>Workshop</th>
+          <th>Days past</th>
+          <th>Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of rows">
+          <td>{{ r.failedAt | date : 'medium' }}</td>
+          <td>{{ r.invoiceNr }}</td>
+          <td>{{ r.invoiceDate }}</td>
+          <td>{{ r.workshopCode }}</td>
+          <td>{{ r.repairAgeDays }}</td>
+          <td>{{ r.failureReason }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="empty" *ngIf="!loading && !error && rows.length === 0">No failed attempts for this company.</p>
+</div>

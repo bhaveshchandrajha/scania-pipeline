@@ -71,7 +71,19 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  align-items: center;
   margin-left: auto;
+}
+
+.toolbar-link {
+  font-size: 0.875rem;
+  color: #2563eb;
+  text-decoration: none;
+  margin-right: 0.25rem;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .action-btn {
@@ -118,8 +130,8 @@
     border-bottom: none;
   }
 
-  tr:hover td {
-    background: #f8fafc;
+  tr.data-row:hover td {
+    background: #f1f5f9;
   }
 
   tr.selected td {
@@ -127,8 +139,14 @@
     border-left: 3px solid #1890ff;
   }
 
+  .select-col {
+    width: 2.5rem;
+    text-align: center;
+    vertical-align: middle;
+  }
+
   tr {
-    cursor: pointer;
+    cursor: default;
   }
 
   tr.color-indicator {

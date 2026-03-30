@@ -8,12 +8,14 @@ package com.scania.warranty.service;
 
 import com.scania.warranty.domain.*;
 import com.scania.warranty.repository.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,13 +28,18 @@ public class ClaimCreationService {
     private final LaborRepository laborRepository; // @rpg-trace: n958
     private final ExternalServiceRepository externalServiceRepository; // @rpg-trace: n958
     private final ClaimErrorRepository claimErrorRepository; // @rpg-trace: n958
+    private final FailedClaimService failedClaimService;
+    private final int maxRepairAgeDays;
 
-    public ClaimCreationService(InvoiceRepository invoiceRepository, ClaimRepository claimRepository, LaborRepository laborRepository, ExternalServiceRepository externalServiceRepository, ClaimErrorRepository claimErrorRepository) {
+    public ClaimCreationService(InvoiceRepository invoiceRepository, ClaimRepository claimRepository, LaborRepository laborRepository, ExternalServiceRepository externalServiceRepository, ClaimErrorRepository claimErrorRepository, FailedClaimService failedClaimService,
+                                @Value("${warranty.claim.max-repair-age-days:19}") int maxRepairAgeDays) {
         this.invoiceRepository = invoiceRepository;
         this.claimRepository = claimRepository;
         this.laborRepository = laborRepository;
         this.externalServiceRepository = externalServiceRepository;
         this.claimErrorRepository = claimErrorRepository;
+        this.failedClaimService = failedClaimService;
+        this.maxRepairAgeDays = maxRepairAgeDays;
     }
 
     public String createClaimFromInvoice(String companyCode, String invoiceNumber, String invoiceDate, String workshopCode, String serviceType) {
@@ -52,6 +59,8 @@ public class ClaimCreationService {
         }
 
         Invoice invoice = invoiceOpt.get(); // @rpg-trace: n984
+
+        validateRepairAgeOrRecordFailure(invoice);
 
         List<Invoice> cancellations = invoiceRepository.findStornoByKey(companyCode, invoiceDate, invoiceNumber); // @rpg-trace: n975
         if (!cancellations.isEmpty()) { // @rpg-trace: n977
@@ -114,6 +123,44 @@ public class ClaimCreationService {
             return Integer.parseInt(registrationDate); // @rpg-trace: n1008
         } catch (NumberFormatException e) {
             return 0; // @rpg-trace: n1008
+        }
+    }
+
+    private void validateRepairAgeOrRecordFailure(Invoice invoice) {
+        Optional<LocalDate> repairOpt = repairDateAsLocalDate(invoice);
+        if (repairOpt.isEmpty()) {
+            return;
+        }
+        long daysPast = ChronoUnit.DAYS.between(repairOpt.get(), LocalDate.now());
+        if (daysPast > maxRepairAgeDays) {
+            String invDate = invoice.getAhk080() != null ? invoice.getAhk080() : invoice.getAhk020();
+            failedClaimService.recordFailure(
+                invoice.getAhk000(),
+                invoice.getAhk010(),
+                invDate != null ? invDate : "",
+                invoice.getAhk040(),
+                "Repair date is " + daysPast + " days before today (maximum allowed is " + maxRepairAgeDays + " days)",
+                (int) daysPast
+            );
+            throw new IllegalArgumentException(
+                "Claim rejected: repair date is more than " + maxRepairAgeDays + " days in the past.");
+        }
+    }
+
+    private Optional<LocalDate> repairDateAsLocalDate(Invoice invoice) {
+        BigDecimal bd = parseRepairDateAsBigDecimal(invoice);
+        if (bd == null || bd.signum() <= 0) {
+            return Optional.empty();
+        }
+        try {
+            long v = bd.longValue();
+            if (v < 19000101L || v > 29991231L) {
+                return Optional.empty();
+            }
+            String s = String.format("%08d", v);
+            return Optional.of(LocalDate.parse(s, DateTimeFormatter.BASIC_ISO_DATE));
+        } catch (Exception e) {
+            return Optional.empty();
         }
     }
 

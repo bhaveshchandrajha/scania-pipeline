@@ -27,15 +27,52 @@ export interface ClaimListItem {
   invoiceNr?: string;
   formattedInvoiceDate?: string;
   invoiceDate?: string;
+  /** Repair date (yyyyMMdd as string from API). */
+  repairDate?: string;
   chassisNumber?: string;
   chassisNr?: string;
   customerNumber?: string;
   customerNr?: string;
   customerName?: string;
   statusDescription?: string;
+  statusText?: string;
+  statusCode?: number;
   demandCode?: string;
   statusCodeSde?: number;
   errorCount?: number;
   colorIndicator?: string;
   orderNumber?: string;
+}
+
+export interface ClaimErrorSummary {
+  errorNr: string;
+  sequenceNr: string;
+  description: string;
+  demandCode: string;
+  processingStatus: number;
+}
+
+/** Ordered timeline: STATUS first, then ERROR lines (matches backend ClaimHistoryEntryDto). */
+export interface ClaimHistoryEntry {
+  entryType: string;
+  title: string;
+  detail: string;
+  reference: string;
+}
+
+export interface ClaimDetailResponse {
+  claim: ClaimListItem;
+  history: ClaimHistoryEntry[];
+  errors: ClaimErrorSummary[];
+}
+
+export interface FailedClaimItem {
+  id: number;
+  companyCode: string;
+  invoiceNr: string;
+  invoiceDate: string;
+  workshopCode: string;
+  failureReason: string;
+  repairAgeDays: number | null;
+  failedAt: string;
 }

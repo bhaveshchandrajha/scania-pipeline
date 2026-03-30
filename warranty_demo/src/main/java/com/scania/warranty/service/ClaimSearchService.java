@@ -283,24 +283,61 @@ public class ClaimSearchService {
         return new ColorResult(color, errorCount);
     }
 
+    /**
+     * Claim header + error subfile (RPG: drill-down / claim history from list).
+     */
+    @Transactional(readOnly = true)
+    public Optional<ClaimDetailDto> getClaimDetail(String companyCode, String claimNr) {
+        return ClaimLookupSupport.findClaim(claimRepository, companyCode, claimNr)
+            .map(claim -> {
+                ClaimListItemDto summary = mapToListItem(claim);
+                List<ClaimError> errorEntities = claimErrorRepository
+                    .findByCompanyAndClaimNr(claim.getG71000(), claim.getG71050());
+                List<ClaimErrorSummaryDto> errors = errorEntities.stream()
+                    .map(e -> new ClaimErrorSummaryDto(
+                        e.getG73060(),
+                        e.getG73065(),
+                        e.getG73120() != null ? e.getG73120().trim() : "",
+                        e.getG73140() != null ? e.getG73140().trim() : "",
+                        e.getG73290()))
+                    .collect(Collectors.toList());
+                List<ClaimHistoryEntryDto> history = new ArrayList<>();
+                String statusTitle = summary.statusText() != null && !summary.statusText().isBlank()
+                    ? summary.statusText()
+                    : "Current status";
+                history.add(new ClaimHistoryEntryDto(
+                    ClaimHistoryEntryDto.TYPE_STATUS,
+                    statusTitle,
+                    "Claim " + summary.claimNr() + " · Invoice " + summary.invoiceNr() + " · Repair date " + summary.repairDate(),
+                    "Status code " + summary.statusCode()
+                ));
+                for (ClaimError e : errorEntities) {
+                    history.add(new ClaimHistoryEntryDto(
+                        ClaimHistoryEntryDto.TYPE_ERROR,
+                        "Error " + e.getG73060() + " / " + e.getG73065(),
+                        e.getG73120() != null ? e.getG73120().trim() : "",
+                        "DMC " + (e.getG73140() != null ? e.getG73140().trim() : "") + " · processing " + e.getG73290()
+                    ));
+                }
+                return new ClaimDetailDto(summary, history, errors);
+            });
+    }
+
     @Transactional
-    public void deleteClaim(ClaimDeleteRequestDto request) {
-        String g71000 = request.companyCode(); // @rpg-trace: n587
-        String claimNr = request.claimNr(); // @rpg-trace: n587
-
-        Optional<Claim> claimOpt = claimRepository.findByCompanyAndClaimNr(g71000, claimNr); // @rpg-trace: n586
-        if (claimOpt.isPresent()) {
-            Claim claim = claimOpt.get();
-            claim.setG71170(ClaimStatus.EXCLUDED.getCode()); // @rpg-trace: n589
-            claimRepository.save(claim); // @rpg-trace: n589
-
-            claimErrorRepository.deleteByCompanyAndClaimNr(g71000, claimNr); // @rpg-trace: n593
+    public boolean deleteClaim(ClaimDeleteRequestDto request) {
+        Optional<Claim> claimOpt = ClaimLookupSupport.findClaim(claimRepository, request.companyCode(), request.claimNr()); // @rpg-trace: n586
+        if (claimOpt.isEmpty()) {
+            return false;
         }
+        Claim claim = claimOpt.get();
+        claimErrorRepository.deleteByCompanyAndClaimNr(claim.getG71000(), claim.getG71050()); // @rpg-trace: n593
+        claimRepository.delete(claim); // physical delete from HSG71LF2
+        return true;
     }
 
     @Transactional
     public void updateClaimStatus(ClaimStatusUpdateDto request) {
-        Optional<Claim> claimOpt = claimRepository.findByCompanyAndClaimNr(request.companyCode(), request.claimNr()); // @rpg-trace: n653
+        Optional<Claim> claimOpt = ClaimLookupSupport.findClaim(claimRepository, request.companyCode(), request.claimNr()); // @rpg-trace: n653
         if (claimOpt.isPresent()) { // @rpg-trace: n654
             Claim claim = claimOpt.get();
             if (claim.getG71170() == 2) { // @rpg-trace: n657
@@ -312,7 +349,7 @@ public class ClaimSearchService {
 
     @Transactional
     public void bookMinimumClaim(MinimumClaimBookingDto request) {
-        Optional<Claim> claimOpt = claimRepository.findByCompanyAndClaimNr(request.companyCode(), request.claimNr()); // @rpg-trace: n1663
+        Optional<Claim> claimOpt = ClaimLookupSupport.findClaim(claimRepository, request.companyCode(), request.claimNr()); // @rpg-trace: n1663
         if (claimOpt.isPresent()) { // @rpg-trace: n1664
             Claim claim = claimOpt.get();
             if (claim.getG71170() == ClaimStatus.MINIMUM.getCode()) { // @rpg-trace: n1665

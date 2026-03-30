@@ -2333,6 +2333,12 @@
   },
   "displayFiles": [
     {
+      "symbolId": "sym.dspf.HSGFIPF",
+      "name": "HSGFIPF",
+      "fileId": null,
+      "path": null
+    },
+    {
       "symbolId": "sym.dspf.HSBTSLF1",
       "name": "HSBTSLF1",
       "fileId": null,
@@ -5833,12 +5839,6 @@
           }
         ]
       }
-    },
-    {
-      "symbolId": "sym.dspf.HSGFIPF",
-      "name": "HSGFIPF",
-      "fileId": null,
-      "path": null
     },
     {
       "symbolId": "sym.dspf.FISTAM",

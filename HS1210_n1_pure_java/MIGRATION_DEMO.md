@@ -27,7 +27,7 @@ Or:
 mvn spring-boot:run
 ```
 
-By default the app runs on **port 8080 or 8081** (check `application.properties` or `server.port`). If you use the **Python pipeline UI server** (e.g. port 8002), it can proxy `/api/demo/*` to the Spring Boot app: set `DEMO_BACKEND_PORT` to your app port (default 8081) and call `http://localhost:8002/api/demo/migrated-queries` — the UI server will forward to the Java app.
+By default the app runs on **port 8080 or 8081** (check `application.properties` or `server.port`). If you use the **Python pipeline UI server** (e.g. port 8002), it can proxy `/api/demo/*` to the Spring Boot app: set `DEMO_BACKEND_PORT` to your app port (default 8081) and call `http://0.0.0.0:8002/api/demo/migrated-queries` — the UI server will forward to the Java app.
 
 ## 2. Execute the migrated read SQLs and show the client
 
@@ -36,7 +36,7 @@ By default the app runs on **port 8080 or 8081** (check `application.properties`
 Open in a browser or call with `curl`:
 
 ```text
-GET http://localhost:8080/api/demo/migrated-queries
+GET http://0.0.0.0:8080/api/demo/migrated-queries
 ```
 
 (Replace `8080` with your server port if different.)
@@ -81,9 +81,9 @@ You can also demonstrate each query separately (e.g. from Swagger or Postman):
 
 ```bash
 # After app is running (e.g. on port 8080):
-curl -s http://localhost:8080/api/demo/migrated-queries | jq .
+curl -s http://0.0.0.0:8080/api/demo/migrated-queries | jq .
 # Or without jq:
-curl -s http://localhost:8080/api/demo/migrated-queries
+curl -s http://0.0.0.0:8080/api/demo/migrated-queries
 ```
 
 If `migrationSuccessful` is `true` and all entries in `queries` have `"status": "OK"`, the migrated read SQLs are executing successfully after the Maven build.

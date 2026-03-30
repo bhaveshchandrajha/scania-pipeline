@@ -218,7 +218,7 @@ public class ClaimSubfileService {
 
     @Transactional
     public void updateClaimStatus(String companyCode, String claimNumber, Integer newStatus) { // @rpg-trace: n654
-        Optional<Claim> claimOpt = claimRepository.findByCompanyAndClaimNr(companyCode, claimNumber); // @rpg-trace: n654
+        Optional<Claim> claimOpt = ClaimLookupSupport.findClaim(claimRepository, companyCode, claimNumber); // @rpg-trace: n654
         if (claimOpt.isPresent()) { // @rpg-trace: n657
             Claim claim = claimOpt.get(); // @rpg-trace: n657
             if (claim.getG71170() == 2) { // @rpg-trace: n657
@@ -230,16 +230,11 @@ public class ClaimSubfileService {
 
     @Transactional
     public void deleteClaimAndRelatedData(String companyCode, String claimNumber) { // @rpg-trace: n587
-        Optional<Claim> claimOpt = claimRepository.findByCompanyAndClaimNr(companyCode, claimNumber); // @rpg-trace: n587
+        Optional<Claim> claimOpt = ClaimLookupSupport.findClaim(claimRepository, companyCode, claimNumber); // @rpg-trace: n587
         if (claimOpt.isPresent()) { // @rpg-trace: n587
             Claim claim = claimOpt.get(); // @rpg-trace: n587
-            claim.setG71170(99); // @rpg-trace: n589
-            claimRepository.save(claim); // @rpg-trace: n589
-
-            List<ClaimError> errors = claimErrorRepository.findByCompanyAndClaimNr(companyCode, claimNumber); // @rpg-trace: n592
-            for (ClaimError error : errors) { // @rpg-trace: n593
-                claimErrorRepository.delete(error); // @rpg-trace: n593
-            }
+            claimErrorRepository.deleteByCompanyAndClaimNr(claim.getG71000(), claim.getG71050()); // @rpg-trace: n593
+            claimRepository.delete(claim); // physical delete from HSG71LF2
         }
     }
 

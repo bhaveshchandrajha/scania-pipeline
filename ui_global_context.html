@@ -149,9 +149,9 @@
   <div id="fetch-error-banner" style="display:none; background:#7f1d1d; color:#fecaca; padding:10px 20px; font-size:13px;">
     <div style="text-align:center;">
       <strong>Failed to connect.</strong> Page: <code id="diag-origin"></code> → API: <code id="diag-api"></code>
-      <br>Ensure <code>python3 ui_global_context_server.py</code> is running. Open
-      <a href="http://127.0.0.1:8003/" target="_blank" style="color:#fef08a; font-weight:bold;">http://127.0.0.1:8003/</a>
-      and verify the URL bar shows exactly that.
+      <br>      Ensure <code>python3 ui_global_context_server.py</code> is running. Open
+      <a href="#" id="banner-context-url" target="_blank" style="color:#fef08a; font-weight:bold;">the Global Context UI URL</a>
+      (same host and port you use for this page — not <code>file://</code>).
     </div>
     <div id="diag-detail" style="margin-top:8px; font-size:11px; font-family:monospace;"></div>
   </div>
@@ -189,6 +189,17 @@
           <label>RPG Directory:</label>
           <input type="text" id="rpg-dir" style="width: 340px;" placeholder="/Users/you/Downloads/PoC_HS1210">
         </div>
+        <div style="margin-bottom: 8px;">
+          <label>Upload ZIP:</label>
+          <select id="upload-kind" style="width: 160px;">
+            <option value="">— type —</option>
+            <option value="ast_zip">AST ZIP (*-ast.json)</option>
+            <option value="rpg_zip">RPG sources ZIP</option>
+          </select>
+          <input type="file" id="upload-file" accept=".zip,application/zip" style="max-width: 200px; font-size: 11px;" />
+          <button type="button" class="primary" id="upload-btn">Upload</button>
+        </div>
+        <div id="upload-status" style="margin-bottom: 8px; font-size: 11px; color: #9ca3af;"></div>
         <div style="margin-bottom: 8px;">
           <button class="primary" id="discover-btn">🔍 Discover Directories</button>
           <button class="primary" id="build-btn">Build Global Context</button>
@@ -301,8 +312,8 @@
         <h2>5. Run & Demo — Migrated UI</h2>
         <p>Start the migrated application and open the <strong>migrated UI</strong> (warranty claim demo). Customize the code in <code>warranty_demo/</code> as needed.</p>
         <div id="run-context" style="margin-bottom: 12px; padding: 10px 12px; background: #111827; border: 1px solid #1f2937; border-radius: 6px; font-size: 11px;">
-          <div style="color: #9ca3af;">App URL: <code>http://localhost:__APP_PORT__</code></div>
-          <div style="margin-top: 6px; color: #e5e7eb;">Migrated UIs: <a href="http://localhost:__APP_PORT__/demo.html" target="_blank" rel="noopener" style="color: #34d399;">demo.html</a> · <a href="http://localhost:__APP_PORT__/angular/" target="_blank" rel="noopener" style="color: #34d399;">angular</a> · <a href="http://localhost:__APP_PORT__/hs1210d.html" target="_blank" rel="noopener" style="color: #34d399;">hs1210d.html</a> · <a href="http://localhost:__APP_PORT__/" target="_blank" rel="noopener" style="color: #34d399;">index</a></div>
+          <div style="color: #9ca3af;">App URL: <code id="spring-app-url-code">…</code></div>
+          <div style="margin-top: 6px; color: #e5e7eb;" id="spring-app-links"></div>
         </div>
         <div style="margin-bottom: 8px; display: flex; gap: 8px; align-items: center;">
           <span style="font-size: 12px; color: #9ca3af;">Database: PostgreSQL (RDS). Set <code>RUN_PROFILE=""</code> for H2 local.</span>
@@ -331,16 +342,34 @@
   </div>
 
   <script>
-    // API base: same-origin when on http://localhost:8003 or http://127.0.0.1:8003, else explicit URL
+    // API base: same-origin when served over http(s) so EC2/Docker hostnames work; ?server= override for split setups
     function getApiBase() {
       const params = new URLSearchParams(location.search);
       const override = params.get('server');
       if (override) return override.replace(/\/$/, '');
-      if (location.protocol === 'http:' && (location.hostname === 'localhost' || location.hostname === '127.0.0.1') && (location.port === '8003' || location.port === ''))
-        return '';
+      if (location.protocol === 'http:' || location.protocol === 'https:') return '';
       return 'http://127.0.0.1:8003';
     }
     const API_BASE = getApiBase();
+
+    /** Migrated Spring app (browser): host from this page + APP_PORT from server (host-mapped port in Docker). */
+    function springAppBase() {
+      const p = window.APP_PORT || '8081';
+      if (location.protocol === 'http:' || location.protocol === 'https:') {
+        return location.protocol + '//' + location.hostname + ':' + p;
+      }
+      return 'http://127.0.0.1:' + p;
+    }
+
+    function initSpringRunLinks() {
+      const codeEl = document.getElementById('spring-app-url-code');
+      const linksEl = document.getElementById('spring-app-links');
+      const b = springAppBase();
+      if (codeEl) codeEl.textContent = b;
+      if (linksEl) {
+        linksEl.innerHTML = 'Migrated UIs: <a href="' + b + '/demo.html" target="_blank" rel="noopener" style="color: #34d399;">demo.html</a> · <a href="' + b + '/angular/" target="_blank" rel="noopener" style="color: #34d399;">angular</a> · <a href="' + b + '/hs1210d.html" target="_blank" rel="noopener" style="color: #34d399;">hs1210d.html</a> · <a href="' + b + '/" target="_blank" rel="noopener" style="color: #34d399;">index</a>';
+      }
+    }
 
     async function discoverGlobalDirs() {
       const statusDiv = document.getElementById('status');
@@ -387,11 +416,58 @@
       } catch (e) {
         console.error('discoverGlobalDirs error', e);
         showFetchErrorBanner(e);
-        statusDiv.innerHTML = '<div class="status error">✗ Failed to fetch: ' + e.message + '. Ensure the server is running: <code>python3 ui_global_context_server.py</code>. Open <a href="http://127.0.0.1:8003/" target="_blank" style="color:#60a5fa">http://127.0.0.1:8003/</a> in your browser.</div>';
+        var hint = (location.protocol === 'http:' || location.protocol === 'https:') ? ('<a href="' + location.origin + '/" target="_blank" style="color:#60a5fa">' + location.origin + '/</a>') : 'http://127.0.0.1:8003/';
+        statusDiv.innerHTML = '<div class="status error">✗ Failed to fetch: ' + e.message + '. Ensure the server is running: <code>python3 ui_global_context_server.py</code>. Open ' + hint + ' in your browser.</div>';
         discoverBtn.textContent = originalText;
       } finally {
         discoverBtn.disabled = false;
       }
+    }
+
+    async function uploadWorkspaceZip() {
+      const kind = document.getElementById('upload-kind')?.value;
+      const fileInput = document.getElementById('upload-file');
+      const statusEl = document.getElementById('upload-status');
+      const btn = document.getElementById('upload-btn');
+      if (!kind || !fileInput?.files?.length) {
+        if (statusEl) statusEl.textContent = 'Choose upload type and a .zip file.';
+        return;
+      }
+      if (btn) btn.disabled = true;
+      if (statusEl) statusEl.textContent = 'Uploading…';
+      try {
+        const fd = new FormData();
+        fd.append('kind', kind);
+        fd.append('file', fileInput.files[0]);
+        const res = await fetch(API_BASE + '/api/upload', { method: 'POST', body: fd });
+        const data = await res.json().catch(() => ({}));
+        if (data.ok) {
+          if (statusEl) statusEl.innerHTML = '<span style="color:#86efac;">✓ ' + (data.message || 'Done') + '</span>';
+          if (kind === 'ast_zip' && data.relativePath) {
+            await discoverGlobalDirs();
+            const astSelect = document.getElementById('ast-dir');
+            if (astSelect) {
+              for (let i = 0; i < astSelect.options.length; i++) {
+                if (astSelect.options[i].value === data.relativePath) {
+                  astSelect.selectedIndex = i;
+                  break;
+                }
+              }
+            }
+          }
+          if (kind === 'rpg_zip' && data.rpgRelativePath) {
+            const rpgInput = document.getElementById('rpg-dir');
+            if (rpgInput) rpgInput.value = data.rpgRelativePath;
+            await discoverGlobalDirs();
+          }
+        } else {
+          if (statusEl) statusEl.innerHTML = '<span style="color:#fca5a5;">✗ ' + (data.error || res.status) + '</span>';
+        }
+      } catch (e) {
+        if (statusEl) statusEl.innerHTML = '<span style="color:#fca5a5;">✗ ' + e.message + '</span>';
+        showFetchErrorBanner(e);
+      }
+      if (btn) btn.disabled = false;
     }
 
     async function buildGlobalContext() {
@@ -1221,8 +1297,6 @@
     }
     document.getElementById('build-push-code-btn')?.addEventListener('click', pushCodeToRepo);
 
-    const APP_BASE = 'http://localhost:' + (window.APP_PORT || '8081');
-    const DEMO_URL = APP_BASE + '/demo.html';
     let _statusPollTimer = null;
     const STATUS_POLL_INTERVAL = 3000;  // Poll every 3s for faster feedback (H2 local starts in ~30s)
     const STATUS_POLL_MAX_MS = 300000;  // 5 min max wait
@@ -1353,7 +1427,7 @@
     }
 
     function openDemo() {
-      window.open(DEMO_URL, '_blank', 'noopener');
+      window.open(springAppBase() + '/demo.html', '_blank', 'noopener');
     }
 
     function apiTestOutput(msg) {
@@ -1362,9 +1436,10 @@
     }
 
     async function testMigratedQueries() {
-      apiTestOutput('Testing GET ' + APP_BASE + '/api/demo/migrated-queries…');
+      const sb = springAppBase();
+      apiTestOutput('Testing GET ' + sb + '/api/demo/migrated-queries…');
       try {
-        const res = await fetch(APP_BASE + '/api/demo/migrated-queries');
+        const res = await fetch(sb + '/api/demo/migrated-queries');
         const data = await res.json();
         apiTestOutput('✓ Success\n\n' + JSON.stringify(data, null, 2));
       } catch (e) {
@@ -1373,9 +1448,10 @@
     }
 
     async function testClaimSearch() {
-      apiTestOutput('Testing POST ' + APP_BASE + '/api/claims/search…');
+      const sb = springAppBase();
+      apiTestOutput('Testing POST ' + sb + '/api/claims/search…');
       try {
-        const res = await fetch(APP_BASE + '/api/claims/search', {
+        const res = await fetch(sb + '/api/claims/search', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
@@ -1453,10 +1529,15 @@
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
+      initSpringRunLinks();
+      const bu = document.getElementById('banner-context-url');
+      if (bu && (location.protocol === 'http:' || location.protocol === 'https:')) {
+        bu.href = location.origin + '/';
+        bu.textContent = location.origin + '/';
+      }
       let connected = false;
-      // If opened from file://, fetch will fail - must use http://localhost:8003/
       if (location.protocol === 'file:') {
-        showFetchErrorBanner(new Error('Page opened from file:// - open http://127.0.0.1:8003/ instead'));
+        showFetchErrorBanner(new Error('Page opened from file:// — open this UI via the Global Context server (e.g. http://127.0.0.1:8003/ or your EC2 host:8003/)'));
       } else {
       try {
         const r = await fetch(API_BASE + '/api/build-context', { signal: AbortSignal.timeout(5000) });
@@ -1466,10 +1547,9 @@
         showFetchErrorBanner(e);
       }
       }
-      // Show hint when not on expected origin
       const hint = document.getElementById('server-hint');
       if (API_BASE && hint) {
-        hint.innerHTML = '| <a href="http://127.0.0.1:8003/" target="_blank" style="color:#60a5fa">Open http://127.0.0.1:8003/</a> if you see "Failed to fetch"';
+        hint.innerHTML = '| Using <code>?server=</code> override — prefer same-origin <a href="' + location.origin + '/" style="color:#60a5fa">' + location.origin + '</a> if possible';
       }
       // Tabs
       const tabs = document.querySelectorAll('.tabs .tab');
@@ -1502,6 +1582,7 @@
 
       document.getElementById('discover-btn').addEventListener('click', discoverGlobalDirs);
       document.getElementById('build-btn').addEventListener('click', buildGlobalContext);
+      document.getElementById('upload-btn')?.addEventListener('click', uploadWorkspaceZip);
       document.getElementById('mf-refresh-btn').addEventListener('click', loadProgramsAndNodes);
       document.getElementById('mf-run-btn').addEventListener('click', migrateFeature);
       document.getElementById('mf-regen-ui-btn').addEventListener('click', regenerateUiSchema);

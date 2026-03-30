@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ClaimListItem, ClaimSearchCriteria } from '../models/claim.model';
+import {
+  ClaimDetailResponse,
+  ClaimListItem,
+  ClaimSearchCriteria,
+  FailedClaimItem
+} from '../models/claim.model';
 
 @Injectable({ providedIn: 'root' })
 export class ClaimService {
@@ -31,5 +36,17 @@ export class ClaimService {
 
   delete(companyCode: string, claimNumber: string): Observable<void> {
     return this.http.delete<void>(`${this.apiBase}/${companyCode}/${claimNumber}`);
+  }
+
+  /** Claim header + ordered history (current status first, then error subfile). */
+  getDetail(companyCode: string, claimNumber: string): Observable<ClaimDetailResponse> {
+    return this.http.get<ClaimDetailResponse>(`${this.apiBase}/${companyCode}/${claimNumber}`);
+  }
+
+  /** Validation failures (e.g. repair date &gt; 19 days), newest first. */
+  listFailedClaims(companyCode: string): Observable<FailedClaimItem[]> {
+    return this.http.get<FailedClaimItem[]>(`${this.apiBase}/failed`, {
+      params: { companyCode }
+    });
   }
 }

@@ -5451,6 +5451,18 @@
   },
   "displayFiles": [
     {
+      "symbolId": "sym.dspf.HSG73PF",
+      "name": "HSG73PF",
+      "fileId": null,
+      "path": null
+    },
+    {
+      "symbolId": "sym.dspf.HSG71PF",
+      "name": "HSG71PF",
+      "fileId": null,
+      "path": null
+    },
+    {
       "symbolId": "sym.dspf.HS1212D",
       "name": "HS1212D",
       "fileId": null,
@@ -11009,12 +11021,6 @@
       }
     },
     {
-      "symbolId": "sym.dspf.HSG71PF",
-      "name": "HSG71PF",
-      "fileId": null,
-      "path": null
-    },
-    {
       "symbolId": "sym.dspf.HSGPSPF",
       "name": "HSGPSPF",
       "fileId": null,
@@ -11023,12 +11029,6 @@
     {
       "symbolId": "sym.dspf.HSG73LF1",
       "name": "HSG73LF1",
-      "fileId": null,
-      "path": null
-    },
-    {
-      "symbolId": "sym.dspf.HSG73PF",
-      "name": "HSG73PF",
       "fileId": null,
       "path": null
     }

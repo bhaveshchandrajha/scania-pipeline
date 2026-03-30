@@ -1,6 +1,6 @@
 # Warranty Claim Management - UAT
 # Run: docker-compose up -d
-# Access: http://localhost:8081/angular/#/claims
+# Access: http://0.0.0.0:8081/angular/#/claims
 
 services:
   warranty-uat:

@@ -4559,8 +4559,14 @@
       "path": null
     },
     {
-      "symbolId": "sym.dspf.HSG71PF",
-      "name": "HSG71PF",
+      "symbolId": "sym.dspf.HSAHKLF8",
+      "name": "HSAHKLF8",
+      "fileId": null,
+      "path": null
+    },
+    {
+      "symbolId": "sym.dspf.HSG71LF2",
+      "name": "HSG71LF2",
       "fileId": null,
       "path": null
     },
@@ -8061,20 +8067,8 @@
       }
     },
     {
-      "symbolId": "sym.dspf.HSAHTPF",
-      "name": "HSAHTPF",
-      "fileId": null,
-      "path": null
-    },
-    {
-      "symbolId": "sym.dspf.AUFWKO",
-      "name": "AUFWKO",
-      "fileId": null,
-      "path": null
-    },
-    {
-      "symbolId": "sym.dspf.HSG71LF2",
-      "name": "HSG71LF2",
+      "symbolId": "sym.dspf.HSG71PF",
+      "name": "HSG71PF",
       "fileId": null,
       "path": null
     },
@@ -8085,8 +8079,8 @@
       "path": null
     },
     {
-      "symbolId": "sym.dspf.HSAHKLF8",
-      "name": "HSAHKLF8",
+      "symbolId": "sym.dspf.HSG71LF3",
+      "name": "HSG71LF3",
       "fileId": null,
       "path": null
     },
@@ -8097,14 +8091,20 @@
       "path": null
     },
     {
-      "symbolId": "sym.dspf.HSG71LF3",
-      "name": "HSG71LF3",
+      "symbolId": "sym.dspf.HSAHKPF",
+      "name": "HSAHKPF",
       "fileId": null,
       "path": null
     },
     {
-      "symbolId": "sym.dspf.HSAHKPF",
-      "name": "HSAHKPF",
+      "symbolId": "sym.dspf.AUFWKO",
+      "name": "AUFWKO",
+      "fileId": null,
+      "path": null
+    },
+    {
+      "symbolId": "sym.dspf.HSAHTPF",
+      "name": "HSAHTPF",
       "fileId": null,
       "path": null
     }

@@ -10,7 +10,7 @@ Usage:
   UI_PORT=8003 python3 ui_global_context_server.py
 
 Then open:
-  http://localhost:8003/
+  http://0.0.0.0:8003/
 
 Endpoints:
   GET  /                       -> ui_global_context.html
@@ -22,14 +22,19 @@ Endpoints:
   POST /api/migrate-feature      (generates Java + ui-schemas from displayFiles)
   POST /api/regenerate-ui-schema (regenerate ui-schemas without full migration)
   POST /api/build-application
+  POST /api/upload              (multipart: kind=ast_zip|rpg_zip, file=<zip>)
 """
 
 import json
 import os
+import re
+import shutil
 import subprocess
 import sys
 import threading
 import time
+import tempfile
+import zipfile
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
@@ -39,6 +44,74 @@ from urllib.error import URLError, HTTPError
 ROOT_DIR = Path(__file__).resolve().parent
 
 BUILD_OUTPUT_MAX_CHARS = 80_000
+MAX_UPLOAD_BYTES = 512 * 1024 * 1024  # 512 MiB — AST/RPG source zips
+
+
+def _spring_internal_base() -> str:
+    """URL for server-side HTTP calls to Spring Boot inside the same container/host."""
+    host = os.environ.get("SPRING_BOOT_INTERNAL_HOST", "127.0.0.1")
+    # Port Spring listens on inside Docker (not APP_PORT, which is often the host-mapped browser port).
+    port = os.environ.get("SPRING_INTERNAL_PORT", "8081")
+    return f"http://{host}:{port}"
+
+
+def _slug_from_filename(name: str) -> str:
+    stem = Path(name).stem
+    s = re.sub(r"[^A-Za-z0-9_-]+", "_", stem).strip("_")
+    return (s[:80] or "upload")
+
+
+def _parse_multipart_form_data(body: bytes, content_type: str) -> tuple[dict[str, str], dict[str, tuple[str, bytes]]]:
+    m = re.search(r"boundary=([^;\s]+)", content_type, re.I)
+    if not m:
+        return {}, {}
+    raw_boundary = m.group(1).strip().strip('"')
+    boundary = b"--" + raw_boundary.encode("ascii", errors="ignore")
+    parts = body.split(boundary)
+    fields: dict[str, str] = {}
+    files: dict[str, tuple[str, bytes]] = {}
+    for part in parts[1:]:
+        if part.startswith(b"--") or not part.strip():
+            continue
+        part = part.lstrip(b"\r\n")
+        header_end = part.find(b"\r\n\r\n")
+        if header_end < 0:
+            continue
+        headers = part[:header_end].decode("latin-1", errors="replace")
+        body_data = part[header_end + 4 :]
+        if body_data.endswith(b"\r\n"):
+            body_data = body_data[:-2]
+        name_m = re.search(r'name="([^"]+)"', headers)
+        if not name_m:
+            continue
+        name = name_m.group(1)
+        fn_m = re.search(r'filename="([^"]*)"', headers)
+        if fn_m and fn_m.group(1).strip():
+            files[name] = (fn_m.group(1), body_data)
+        else:
+            fields[name] = body_data.decode("utf-8", errors="replace") if body_data else ""
+    return fields, files
+
+
+def _safe_extract_zip(zf: zipfile.ZipFile, dest: Path) -> None:
+    dest = dest.resolve()
+    dest.mkdir(parents=True, exist_ok=True)
+    for member in zf.infolist():
+        if member.is_dir():
+            continue
+        target = (dest / member.filename).resolve()
+        try:
+            target.relative_to(dest)
+        except ValueError as e:
+            raise ValueError(f"Unsafe path in zip: {member.filename!r}") from e
+    zf.extractall(dest)
+
+
+def _find_rpg_root_with_hssrc(base: Path) -> Path | None:
+    for qrpg in base.rglob("QRPGLESRC"):
+        if qrpg.is_dir() and qrpg.parent.name == "HSSRC":
+            return qrpg.parent.parent
+    return None
 
 # Module-level: running Spring Boot process (for /api/run-application)
 _app_process = None
@@ -657,8 +730,7 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
             return
 
         # Proxy to warranty app (avoids CORS when UI is on 8003 and app on 8081)
-        app_port = os.environ.get("APP_PORT", "8081")
-        app_base = f"http://127.0.0.1:{app_port}"
+        app_base = _spring_internal_base()
         if parsed.path == "/api/proxy/app-status":
             try:
                 req = Request(app_base + "/demo.html", method="GET")
@@ -1537,12 +1609,110 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
             "manifestPath": str(latest) if manifest_data else None,
         }
 
+    def _handle_upload_post(self) -> None:
+        try:
+            ct = self.headers.get("Content-Type", "")
+            if "multipart/form-data" not in ct:
+                self._send_json({"ok": False, "error": "Expected multipart/form-data"}, status=400)
+                return
+            cl = int(self.headers.get("Content-Length", 0))
+            if cl <= 0 or cl > MAX_UPLOAD_BYTES:
+                self._send_json(
+                    {"ok": False, "error": f"Invalid or too large upload (max {MAX_UPLOAD_BYTES // (1024 * 1024)} MiB)"},
+                    status=400,
+                )
+                return
+            body = self.rfile.read(cl)
+            fields, files = _parse_multipart_form_data(body, ct)
+            kind = (fields.get("kind") or "").strip()
+            if kind not in ("ast_zip", "rpg_zip"):
+                self._send_json({"ok": False, "error": "kind must be ast_zip or rpg_zip"}, status=400)
+                return
+            if "file" not in files:
+                self._send_json({"ok": False, "error": "Missing file field"}, status=400)
+                return
+            orig_name, raw = files["file"]
+            if not raw:
+                self._send_json({"ok": False, "error": "Empty file"}, status=400)
+                return
+            slug = _slug_from_filename(orig_name)
+            ts = int(time.time())
+            fd, tmp_name = tempfile.mkstemp(suffix=".zip")
+            os.close(fd)
+            tmp_path = Path(tmp_name)
+            try:
+                tmp_path.write_bytes(raw)
+                with zipfile.ZipFile(tmp_path, "r") as zf:
+                    bad = zf.testzip()
+                    if bad:
+                        self._send_json({"ok": False, "error": f"Corrupt zip at {bad}"}, status=400)
+                        return
+                if kind == "ast_zip":
+                    dest_rel = f"JSON_ast/upload_{ts}_{slug}"
+                    dest = ROOT_DIR / dest_rel
+                    dest.mkdir(parents=True, exist_ok=True)
+                    with zipfile.ZipFile(tmp_path, "r") as zf:
+                        _safe_extract_zip(zf, dest)
+                    ast_files = list(dest.glob("**/*-ast.json"))
+                    if not ast_files:
+                        shutil.rmtree(dest, ignore_errors=True)
+                        self._send_json(
+                            {
+                                "ok": False,
+                                "error": "No *-ast.json files found after extraction. Ensure the ZIP contains AST JSON exports.",
+                            },
+                            status=400,
+                        )
+                        return
+                    self._send_json(
+                        {
+                            "ok": True,
+                            "kind": kind,
+                            "relativePath": dest_rel.replace("\\", "/"),
+                            "astFileCount": len(ast_files),
+                            "message": f"Extracted {len(ast_files)} AST JSON files to {dest_rel}",
+                        }
+                    )
+                else:
+                    dest_rel = f"uploads/rpg_{ts}_{slug}"
+                    dest = ROOT_DIR / dest_rel
+                    dest.mkdir(parents=True, exist_ok=True)
+                    with zipfile.ZipFile(tmp_path, "r") as zf:
+                        _safe_extract_zip(zf, dest)
+                    rpg_root = _find_rpg_root_with_hssrc(dest)
+                    if rpg_root:
+                        try:
+                            rel_from_root = rpg_root.relative_to(ROOT_DIR)
+                            rpg_rel = str(rel_from_root).replace("\\", "/")
+                        except ValueError:
+                            rpg_rel = dest_rel
+                    else:
+                        rpg_rel = dest_rel
+                    msg = "Extracted RPG archive."
+                    if rpg_root:
+                        msg += f" Found HSSRC/QRPGLESRC under {rpg_rel}."
+                    else:
+                        msg += " Point RPG Directory to the folder that contains HSSRC/QRPGLESRC if needed."
+                    self._send_json({"ok": True, "kind": kind, "rpgRelativePath": rpg_rel.replace("\\", "/"), "message": msg})
+            finally:
+                try:
+                    tmp_path.unlink()
+                except Exception:
+                    pass
+        except ValueError as e:
+            self._send_json({"ok": False, "error": str(e)}, status=400)
+        except Exception as e:
+            self._send_json({"ok": False, "error": str(e)}, status=500)
+
     def do_POST(self):
         parsed = urlparse(self.path)
 
+        if parsed.path == "/api/upload":
+            self._handle_upload_post()
+            return
+
         # Proxy to warranty app (avoids CORS when UI is on 8003 and app on 8081)
-        app_port = os.environ.get("APP_PORT", "8081")
-        app_base = f"http://127.0.0.1:{app_port}"
+        app_base = _spring_internal_base()
         if parsed.path == "/api/proxy/seed":
             content_length = int(self.headers.get("Content-Length", 0))
             if content_length > 0:
@@ -2658,7 +2828,7 @@ def main():
     addr = (bind_host, port)
     httpd = HTTPServer(addr, GlobalContextHandler)
     print()
-    print(f"Global Context UI server running on http://localhost:{port}/")
+    print(f"Global Context UI server running on http://0.0.0.0:{port}/")
     print()
     print("Endpoints:")
     print(f"  GET  /                    - Global Context UI (ui_global_context.html)")
@@ -2678,6 +2848,7 @@ def main():
     print(f"  POST /api/regenerate-ui-schema")
     print(f"  POST /api/build-application")
     print(f"  POST /api/apply-approved-fixes")
+    print(f"  POST /api/upload")
     print()
     try:
         httpd.serve_forever()

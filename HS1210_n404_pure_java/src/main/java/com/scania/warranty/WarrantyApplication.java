@@ -16,7 +16,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  * Or:
  *   java -jar target/warranty-claim-management-1.0.0.jar
  * 
- * The application will start on http://localhost:8081
+ * The application will start on http://0.0.0.0:8081 (all interfaces; see server.address)
  */
 @SpringBootApplication(scanBasePackages = "com.scania.warranty")
 @EntityScan(basePackages = "com.scania.warranty.domain")
@@ -29,8 +29,8 @@ public class WarrantyApplication {
         System.out.println("Warranty Claim Management System");
         System.out.println("=".repeat(70));
         System.out.println("Application started successfully!");
-        System.out.println("API Documentation: http://localhost:8081/api/claims");
-        System.out.println("Demo UI: http://localhost:8081/demo.html");
+        System.out.println("API Documentation: http://0.0.0.0:8081/api/claims");
+        System.out.println("Demo UI: http://0.0.0.0:8081/demo.html");
         System.out.println("=".repeat(70) + "\n");
     }
 }

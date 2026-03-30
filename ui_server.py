@@ -10,7 +10,7 @@ Usage:
   export ANTHROPIC_API_KEY=sk-ant-...
   python ui_server.py
 
-Then open: http://localhost:8001
+Then open: http://0.0.0.0:8001
 """
 
 import json
@@ -365,7 +365,7 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
             from urllib.error import URLError, HTTPError
             demo_backend_port = int(os.environ.get("DEMO_BACKEND_PORT", "8081"))
             backend_path = parsed.path if parsed.path.startswith("/api/demo") else "/api/demo" + parsed.path
-            backend_url = f"http://localhost:{demo_backend_port}{backend_path}"
+            backend_url = f"http://0.0.0.0:{demo_backend_port}{backend_path}"
             if parsed.query:
                 backend_url += "?" + parsed.query
             try:
@@ -537,7 +537,7 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
             return
 
         if parsed.path == "/api/test-api":
-            # Test API endpoints on localhost:8081
+            # Test API endpoints on 0.0.0.0:8081
             from urllib.request import urlopen, Request
             from urllib.error import URLError, HTTPError
             import urllib.parse
@@ -548,7 +548,7 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
             body_data = params.get("body", [None])[0]
             
             try:
-                url = f"http://localhost:8081{endpoint}"
+                url = f"http://0.0.0.0:8081{endpoint}"
                 req = Request(url, method=method)
                 
                 if body_data and method in ["POST", "PUT", "PATCH"]:
@@ -606,7 +606,7 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
                         self._send_json({
                             "success": False,
                             "status": 0,
-                            "error": "Connection refused - Spring Boot application is not running on localhost:8081",
+                            "error": "Connection refused - Spring Boot application is not running on 0.0.0.0:8081",
                             "endpoint": endpoint,
                             "method": method,
                             "suggestion": "Start the application first: cd HS1210_n404_pure_java && mvn spring-boot:run",
@@ -633,7 +633,7 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
             return
         
         if parsed.path == "/api/test-api-old":
-            # Test API endpoints on localhost:8081
+            # Test API endpoints on 0.0.0.0:8081
             params = parse_qs(parsed.query)
             endpoint = params.get("endpoint", ["/api/claims"])[0]
             method = params.get("method", ["GET"])[0]
@@ -642,7 +642,7 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
             import urllib.error
             
             try:
-                url = f"http://localhost:8081{endpoint}"
+                url = f"http://0.0.0.0:8081{endpoint}"
                 req = urllib.request.Request(url)
                 req.get_method = lambda: method
                 
@@ -2226,7 +2226,7 @@ def main():
     
     port = int(os.environ.get("UI_PORT", "8001"))
     server = HTTPServer(("0.0.0.0", port), MigrationHandler)
-    print(f"UI server running on http://localhost:{port}")
+    print(f"UI server running on http://0.0.0.0:{port}")
     print("Endpoints:")
     print("  GET  /                    - Pure Java Pipeline UI (Track B) - DEFAULT")
     print("  GET  /pipeline            - Pure Java Pipeline UI (Track B)")
@@ -2235,7 +2235,7 @@ def main():
     print("  GET  /api/discover-directories - Discover available AST/RPG directories")
     print("  GET  /api/manifest        - List indexed nodes")
     print("  GET  /api/rpg-snippet     - RPG source snippet (traceability)")
-    print("  GET  /api/test-api        - Test API endpoints on localhost:8081")
+    print("  GET  /api/test-api        - Test API endpoints on 0.0.0.0:8081")
     print("  POST /api/compile         - Compile Java code (body=source)")
     print("  POST /api/migrate         - Run Track A migration (RPG-native)")
     print("  POST /api/migrate-pure-java - Run Track B migration (Pure Java)")

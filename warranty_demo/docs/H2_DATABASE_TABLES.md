@@ -170,7 +170,7 @@ If **HSG71LF2** (claims) has records but **HSAHKLF3** (invoices) is empty, claim
 
 **Fix 1 – Seed invoices only:**
 ```bash
-curl -X POST http://localhost:8081/api/seed-invoices
+curl -X POST http://0.0.0.0:8081/api/seed-invoices
 ```
 
 **Fix 2 – Full reset (fresh schema):**

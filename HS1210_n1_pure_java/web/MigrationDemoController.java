@@ -31,7 +31,7 @@ public class MigrationDemoController {
     /**
      * Execute all migrated read SQLs and return a report. Use this URL to show the client
      * that the migration was successful (each query runs and returns a result or graceful empty).
-     * Example: GET http://localhost:8081/api/demo/migrated-queries
+     * Example: GET http://0.0.0.0:8081/api/demo/migrated-queries
      */
     @GetMapping("/migrated-queries")
     public ResponseEntity<Map<String, Object>> runMigratedQueries() {

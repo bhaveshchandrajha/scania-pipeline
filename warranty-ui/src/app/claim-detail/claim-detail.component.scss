@@ -1,0 +1,134 @@
+.claim-detail {
+  padding: 1.5rem;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.subtitle {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.status-banner {
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+  color: #fff;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+}
+
+.status-banner-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.9;
+  margin-bottom: 0.35rem;
+}
+
+.status-banner-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.status-banner-meta {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  opacity: 0.92;
+}
+
+.meta-grid dl {
+  display: grid;
+  grid-template-columns: 10rem 1fr;
+  gap: 0.5rem 1rem;
+  margin: 0;
+}
+
+.meta-grid dt {
+  font-weight: 600;
+  color: #475569;
+}
+
+.meta-grid dd {
+  margin: 0;
+}
+
+.history {
+  margin-top: 2rem;
+}
+
+.hint {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.hist-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.hist-table th,
+.hist-table td {
+  border: 1px solid #e2e8f0;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.hist-table th {
+  background: #f1f5f9;
+}
+
+.hist-table tr.row-status {
+  background: #eff6ff;
+  font-weight: 500;
+}
+
+.hist-table tr.row-error td:first-child {
+  color: #b45309;
+}
+
+.actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.action-btn {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border: 1px solid #cbd5e0;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.action-delete {
+  background: #dc2626;
+  color: #fff;
+  border-color: #b91c1c;
+}
+
+.error {
+  color: #b91c1c;
+  padding: 0.75rem;
+  background: #fef2f2;
+  border-radius: 6px;
+}
+
+.loading {
+  padding: 1rem;
+  color: #64748b;
+}

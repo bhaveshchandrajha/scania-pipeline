@@ -22,7 +22,7 @@ public interface ClaimErrorRepository extends JpaRepository<ClaimError, ClaimErr
     @Query("SELECT ce FROM ClaimError ce WHERE ce.g73000 = :g73000 AND ce.g73050 = :g73050")
     List<ClaimError> findByCompanyAndClaimNr(@Param("g73000") String g73000, @Param("g73050") String g73050); // @rpg-trace: n456
 
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("DELETE FROM ClaimError ce WHERE ce.g73000 = :g73000 AND ce.g73050 = :g73050")
     int deleteByCompanyAndClaimNr(@Param("g73000") String g73000, @Param("g73050") String g73050); // @rpg-trace: n593
 

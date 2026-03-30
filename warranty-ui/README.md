@@ -14,7 +14,7 @@ Angular UI for the Warranty Claim Management system, generated from display file
 npm install
 
 # Start Angular dev server (port 4200)
-# API requests are proxied to http://localhost:8081
+# API requests are proxied to http://0.0.0.0:8081
 npm start
 ```
 
@@ -24,7 +24,7 @@ npm start
 cd ../warranty_demo && mvn spring-boot:run
 ```
 
-Then open http://localhost:4200
+Then open http://0.0.0.0:4200
 
 ## Build for Spring Boot
 
@@ -34,7 +34,7 @@ npm run build:spring
 
 This builds the Angular app and copies the output to `warranty_demo/src/main/resources/static/angular/`. After that, the Angular UI is available at:
 
-**http://localhost:8081/angular/** (uses hash routing: /angular/#/claims)
+**http://0.0.0.0:8081/angular/** (uses hash routing: /angular/#/claims)
 
 (When the Spring Boot app is running.)
 

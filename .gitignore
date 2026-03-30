@@ -44,6 +44,9 @@ warranty_demo/data/
 .env.local
 .env.*.local
 
+# Pipeline UI remote uploads (RPG/AST zips)
+uploads/
+
 # Optional: exclude large generated data
 # context_index_old_*/
 # JSON_ast/
