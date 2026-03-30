@@ -33,6 +33,16 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
+      # Fail before SSH if the secret is missing (empty expansion would start a container with no key).
+      - name: Require ANTHROPIC_API_KEY repository secret
+        run: |
+          if [ "${#ANTHROPIC_API_KEY}" -lt 20 ]; then
+            echo "::error::Repository secret ANTHROPIC_API_KEY is missing or too short. Add it under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
       - name: SSH into EC2 and Deploy
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -50,13 +60,18 @@ jobs:
             # Pull the latest image
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/scania-migration-pipeline:latest
             
-            # Run the new container 
-            # (Mapping EC2 Port 8003 to Spring Boot Port 8003)
-            # ANTHROPIC_API_KEY from GitHub Actions secrets; ANTHROPIC_MODEL optional (repo variable)
+            # Pass secrets via --env-file so the remote shell does not mangle $ or ! in the key.
+            # Values are expanded on the GitHub runner before this script is sent over SSH.
+            ENVF=$(mktemp /tmp/scania-pipeline.env.XXXXXX)
+            trap 'rm -f "$ENVF"' EXIT
+            chmod 600 "$ENVF"
+            printf '%s\n' 'ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}' > "$ENVF"
+            printf '%s\n' 'ANTHROPIC_MODEL=${{ vars.ANTHROPIC_MODEL }}' >> "$ENVF"
+            
+            # Run the new container (EC2 port 8003 → app 8003)
             sudo docker run -d \
               --name scania-migration-pipeline-container \
               -p 8003:8003 \
               --restart always \
-              -e ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }} \
-              -e ANTHROPIC_MODEL=${{ vars.ANTHROPIC_MODEL }} \
+              --env-file "$ENVF" \
               ${{ secrets.DOCKERHUB_USERNAME }}/scania-migration-pipeline:latest
