@@ -11,6 +11,7 @@ Environment:
   GIT_USER_EMAIL, GIT_USER_NAME - Git identity for commits (default: pipeline@scania.local)
   PUSH_TARGET_REPO - Override default repo URL
   CLONE_BRANCH - Branch to clone from (default: migration/HS1210_20260313_145001)
+  PUSH_TMP_DIR - Override directory for clone/push scratch (default: <project-parent>/.push_tmp, or system temp if not writable)
   Loads from .env in project root if present.
 """
 
@@ -19,6 +20,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 from datetime import datetime
 from pathlib import Path
 
@@ -75,6 +77,23 @@ def should_exclude(path: Path, base: Path) -> bool:
     return False
 
 
+def _resolve_push_tmp_dir(root: Path) -> Path:
+    """Writable scratch dir for git clone. Prefer repo-local .push_tmp; fall back when /workspace is ro."""
+    override = os.environ.get("PUSH_TMP_DIR", "").strip()
+    if override:
+        p = Path(override).expanduser().resolve()
+        p.mkdir(parents=True, exist_ok=True)
+        return p
+    candidate = root / ".push_tmp"
+    try:
+        candidate.mkdir(parents=True, exist_ok=True)
+        return candidate
+    except OSError:
+        fallback = Path(tempfile.gettempdir()) / "scania-pipeline-push"
+        fallback.mkdir(parents=True, exist_ok=True)
+        return fallback
+
+
 def copy_project(src: Path, dst: Path) -> None:
     """Copy warranty_demo contents to dst, excluding build artifacts."""
     for item in src.rglob("*"):
@@ -102,7 +121,7 @@ def push_to_repo(
     branch = branch_name or f"{BRANCH_PREFIX}HS1210_{timestamp}"
 
     root = project_dir.parent
-    tmp_dir = root / ".push_tmp"
+    tmp_dir = _resolve_push_tmp_dir(root)
     clone_dir = tmp_dir / "scania-java-v2"
 
     try:
