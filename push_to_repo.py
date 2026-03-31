@@ -3,7 +3,7 @@
 Push the generated warranty_demo Spring Boot application to a remote Git repository.
 
 Usage:
-  python push_to_repo.py [--project-dir warranty_demo] [--branch migration/HS1210_20260206]
+  python push_to_repo.py [--project-dir warranty_demo] [--branch migration/main]
 
 Environment:
   GITHUB_TOKEN or GIT_PUSH_TOKEN - Token with push access to the target repo
@@ -42,10 +42,10 @@ def _load_env():
 
 _load_env()
 
-DEFAULT_REPO = "https://github.com/farcaz/scania-springboot-app.git"
+DEFAULT_REPO = "https://github.com/bhaveshchandrajha/scania-generated-java.git"
 BRANCH_PREFIX = "migration/"
 # Branch to clone from (repo default). Use CLONE_BRANCH env to override.
-DEFAULT_CLONE_BRANCH = "migration/HS1210_20260313_145001"
+DEFAULT_CLONE_BRANCH = "main"
 
 # Paths to exclude when copying (like .gitignore)
 EXCLUDE_DIRS = {"target", ".git", ".idea", ".vscode", "node_modules", "__pycache__", ".push_tmp", ".venv", "venv"}
