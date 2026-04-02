@@ -1,6 +1,6 @@
 # Customizing the Migrated Warranty Application
 
-This guide helps you modify the migrated Java application to fit your needs.
+This guide helps you modify the migrated Java application to fit your needs. 
 
 ## Project Structure
 
