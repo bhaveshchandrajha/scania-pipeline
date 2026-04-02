@@ -9,7 +9,8 @@ Usage:
   python push_test_results.py [--project-dir warranty_demo]
 
 Environment:
-  GITHUB_TOKEN or GIT_PUSH_TOKEN - Token with push access (used automatically; GIT_USE_TOKEN=0 to disable)
+  GITHUB_TOKEN or GIT_PUSH_TOKEN - Token with push access (GIT_USE_TOKEN=0 to disable embedding)
+  GITHUB_TOKEN_FILE or GIT_PUSH_TOKEN_FILE - First line = PAT (CI/Docker/Kubernetes secrets)
   TEST_RESULTS_REPO - Override default repo URL
   TEST_RESULTS_BRANCH - Branch name (default: results)
   Loads from .env in project root if present.
@@ -22,6 +23,8 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
+
+from git_auth import get_github_push_token, server_credential_hint
 
 ROOT_DIR = Path(__file__).resolve().parent
 
@@ -45,13 +48,9 @@ DEFAULT_REPO = "https://github.com/bhaveshchandrajha/scania-generated-java.git"
 DEFAULT_BRANCH_PREFIX = "migration/"
 
 
-def get_token() -> str | None:
-    return os.environ.get("GITHUB_TOKEN") or os.environ.get("GIT_PUSH_TOKEN")
-
-
 def get_repo_url(repo_override: str | None) -> str:
     url = (repo_override or os.environ.get("TEST_RESULTS_REPO") or DEFAULT_REPO).strip()
-    token = get_token()
+    token = get_github_push_token(ROOT_DIR)
     if (
         token
         and url.startswith("https://github.com/")
@@ -141,10 +140,17 @@ def push_test_results(
             text=True,
             timeout=120,
             cwd=str(root),
+            env={**os.environ, "GIT_TERMINAL_PROMPT": "0"},
         )
         if proc.returncode != 0:
             err = (proc.stderr or proc.stdout or "").strip()
-            return {"success": False, "error": f"Git clone failed: {err[:300]}"}
+            hint = ""
+            if "terminal prompts disabled" in err.lower() or "could not read Username" in err:
+                hint = (
+                    " Set GITHUB_TOKEN, GIT_PUSH_TOKEN, or GITHUB_TOKEN_FILE. "
+                    + server_credential_hint()
+                )
+            return {"success": False, "error": f"Git clone failed: {err[:300]}{hint}"}
 
         subprocess.run(
             ["git", "checkout", "-b", branch_name],
@@ -183,10 +189,17 @@ def push_test_results(
             text=True,
             timeout=120,
             cwd=str(clone_dir),
+            env={**os.environ, "GIT_TERMINAL_PROMPT": "0"},
         )
         if proc.returncode != 0:
             err = (proc.stderr or proc.stdout or "").strip()
-            return {"success": False, "error": f"Git push failed: {err[:300]}"}
+            hint = ""
+            if "terminal prompts disabled" in err.lower() or "could not read Username" in err:
+                hint = (
+                    " Set GITHUB_TOKEN, GIT_PUSH_TOKEN, or GITHUB_TOKEN_FILE. "
+                    + server_credential_hint()
+                )
+            return {"success": False, "error": f"Git push failed: {err[:300]}{hint}"}
 
         return {
             "success": True,

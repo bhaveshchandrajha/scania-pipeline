@@ -7,8 +7,9 @@ Usage:
 
 Environment:
   GITHUB_TOKEN or GIT_PUSH_TOKEN - Token with push access to the target repo
+  GITHUB_TOKEN_FILE or GIT_PUSH_TOKEN_FILE - Path to a file whose first line is the PAT (CI/Docker secrets)
   GIT_USE_TOKEN=0 - Disable embedding PAT (use credential helper / SSH instead)
-  When GITHUB_TOKEN or GIT_PUSH_TOKEN is set, it is embedded for https://github.com/ URLs.
+  When a PAT is available, it is embedded for https://github.com/ URLs.
   If unset, `gh auth token` is tried (GitHub CLI). Push does not disable credential.helper unless the URL embeds a PAT, so Keychain / git-credential-helper can authenticate.
   GIT_USER_EMAIL, GIT_USER_NAME - Git identity for commits (default: pipeline@scania.local)
   PUSH_TARGET_REPO - Override default repo URL
@@ -25,6 +26,8 @@ import sys
 import tempfile
 from datetime import datetime
 from pathlib import Path
+
+from git_auth import get_github_push_token, server_credential_hint
 
 ROOT_DIR = Path(__file__).resolve().parent
 
@@ -54,31 +57,9 @@ EXCLUDE_DIRS = {"target", ".git", ".idea", ".vscode", "node_modules", "__pycache
 EXCLUDE_SUFFIXES = (".class", ".jar", ".log", ".tmp", ".swp", ".swo")
 
 
-def get_token() -> str | None:
-    t = (os.environ.get("GITHUB_TOKEN") or os.environ.get("GIT_PUSH_TOKEN") or "").strip()
-    if t:
-        return t
-    if os.environ.get("GIT_USE_TOKEN", "").lower() in ("0", "false", "no"):
-        return None
-    # GitHub CLI: common on dev machines without GITHUB_TOKEN in the shell
-    try:
-        proc = subprocess.run(
-            ["gh", "auth", "token"],
-            capture_output=True,
-            text=True,
-            timeout=8,
-            cwd=str(ROOT_DIR),
-        )
-        if proc.returncode == 0 and (proc.stdout or "").strip():
-            return proc.stdout.strip()
-    except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
-        pass
-    return None
-
-
 def get_repo_url(repo_override: str | None) -> str:
     url = (repo_override or os.environ.get("PUSH_TARGET_REPO") or DEFAULT_REPO).strip()
-    token = get_token()
+    token = get_github_push_token(ROOT_DIR)
     # Embed PAT when set; GIT_USE_TOKEN=0 opts out (credential helper / SSH).
     if (
         token
@@ -175,7 +156,13 @@ def push_to_repo(
         )
         if proc.returncode != 0:
             err = (proc.stderr or proc.stdout or "").strip()
-            return {"success": False, "error": f"Git clone failed: {err[:300]}"}
+            hint = ""
+            if "terminal prompts disabled" in err.lower() or "could not read Username" in err:
+                hint = (
+                    " Set GITHUB_TOKEN, GIT_PUSH_TOKEN, or GITHUB_TOKEN_FILE; or use SSH. "
+                    + server_credential_hint()
+                )
+            return {"success": False, "error": f"Git clone failed: {err[:300]}{hint}"}
 
         # Clear clone, copy warranty_demo to root, create branch (matches manual_push.sh flow)
         for item in clone_dir.iterdir():
@@ -242,9 +229,10 @@ def push_to_repo(
             hint = ""
             if "terminal prompts disabled" in err.lower() or "could not read Username" in err:
                 hint = (
-                    " Set GITHUB_TOKEN or GIT_PUSH_TOKEN, run `gh auth login`, save github.com creds in the "
-                    "git credential helper / macOS Keychain, or use SSH (PUSH_TARGET_REPO=git@github.com:...). "
-                    "GIT_USE_TOKEN=0 disables embedding a PAT in the URL."
+                    " Set GITHUB_TOKEN, GIT_PUSH_TOKEN, or GITHUB_TOKEN_FILE (server/CI); run `gh auth login` locally; "
+                    "or save github.com creds in the git credential helper / macOS Keychain; or use SSH "
+                    "(PUSH_TARGET_REPO=git@github.com:...). GIT_USE_TOKEN=0 disables embedding a PAT in the URL."
+                    + server_credential_hint()
                 )
             elif "403" in err or "Permission" in err or "denied" in err:
                 hint = (
