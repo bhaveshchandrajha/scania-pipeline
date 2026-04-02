@@ -7,6 +7,9 @@ name: Deploy Scania Java Migration Pipeline to EC2
 #     Injected into the EC2 container env so push_to_repo.py can authenticate (no Keychain in Docker).
 # Optional repository variables (same page → Variables tab):
 #   ANTHROPIC_MODEL — e.g. claude-sonnet-4-5; if unset, the app picks a default model
+#
+# EC2 Security Group: allow inbound TCP 8003 (Global Context UI) and 8081 (Spring Boot / demo.html)
+# from your IP or VPN. Without 8081 published + SG rule, http://<host>:8081/demo.html will not load.
 
 on:
   push:
@@ -88,10 +91,11 @@ jobs:
             )
             PY
             
-            # Run the new container (EC2 port 8003 → app 8003)
+            # Run the new container: 8003 = Python UI; 8081 = Spring Boot (demo.html, APIs) inside container
             sudo docker run -d \
               --name scania-migration-pipeline-container \
               -p 8003:8003 \
+              -p 8081:8081 \
               --restart always \
               --env-file "$ENVF" \
               ${{ secrets.DOCKERHUB_USERNAME }}/scania-migration-pipeline:latest
