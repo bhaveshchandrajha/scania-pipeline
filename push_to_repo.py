@@ -7,10 +7,12 @@ Usage:
 
 Environment:
   GITHUB_TOKEN or GIT_PUSH_TOKEN - Token with push access to the target repo
-  GIT_USE_TOKEN=1 - Use token for auth (required when no credential helper)
+  GIT_USE_TOKEN=0 - Disable embedding PAT (use credential helper / SSH instead)
+  When GITHUB_TOKEN or GIT_PUSH_TOKEN is set, it is embedded for https://github.com/ URLs.
+  If unset, `gh auth token` is tried (GitHub CLI). Push does not disable credential.helper unless the URL embeds a PAT, so Keychain / git-credential-helper can authenticate.
   GIT_USER_EMAIL, GIT_USER_NAME - Git identity for commits (default: pipeline@scania.local)
   PUSH_TARGET_REPO - Override default repo URL
-  CLONE_BRANCH - Branch to clone from (default: migration/HS1210_20260313_145001)
+  CLONE_BRANCH - Branch to clone from (default: main)
   PUSH_TMP_DIR - Override directory for clone/push scratch (default: <project-parent>/.push_tmp, or system temp if not writable)
   Loads from .env in project root if present.
 """
@@ -53,18 +55,50 @@ EXCLUDE_SUFFIXES = (".class", ".jar", ".log", ".tmp", ".swp", ".swo")
 
 
 def get_token() -> str | None:
-    return os.environ.get("GITHUB_TOKEN") or os.environ.get("GIT_PUSH_TOKEN")
+    t = (os.environ.get("GITHUB_TOKEN") or os.environ.get("GIT_PUSH_TOKEN") or "").strip()
+    if t:
+        return t
+    if os.environ.get("GIT_USE_TOKEN", "").lower() in ("0", "false", "no"):
+        return None
+    # GitHub CLI: common on dev machines without GITHUB_TOKEN in the shell
+    try:
+        proc = subprocess.run(
+            ["gh", "auth", "token"],
+            capture_output=True,
+            text=True,
+            timeout=8,
+            cwd=str(ROOT_DIR),
+        )
+        if proc.returncode == 0 and (proc.stdout or "").strip():
+            return proc.stdout.strip()
+    except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
+        pass
+    return None
 
 
 def get_repo_url(repo_override: str | None) -> str:
     url = (repo_override or os.environ.get("PUSH_TARGET_REPO") or DEFAULT_REPO).strip()
-    use_token = os.environ.get("GIT_USE_TOKEN", "").lower() in ("1", "true", "yes")
-    token = get_token() if use_token else None
-    if token and url.startswith("https://github.com/"):
-        # x-access-token format is more reliable for GitHub PAT auth
+    token = get_token()
+    # Embed PAT when set; GIT_USE_TOKEN=0 opts out (credential helper / SSH).
+    if (
+        token
+        and url.startswith("https://github.com/")
+        and os.environ.get("GIT_USE_TOKEN", "").lower() not in ("0", "false", "no")
+    ):
         token = token.strip()
         url = url.replace("https://github.com/", f"https://x-access-token:{token}@github.com/", 1)
     return url
+
+
+def _url_has_embedded_credentials(url: str) -> bool:
+    """True if URL carries user/token in the authority (so we can safely disable credential.helper)."""
+    if "x-access-token:" in url or "oauth2:" in url.lower():
+        return True
+    if "://" not in url:
+        return False
+    rest = url.split("://", 1)[1]
+    netloc = rest.split("/", 1)[0]
+    return "@" in netloc
 
 
 def should_exclude(path: Path, base: Path) -> bool:
@@ -137,6 +171,7 @@ def push_to_repo(
             text=True,
             timeout=180,
             cwd=str(root),
+            env={**os.environ, "GIT_TERMINAL_PROMPT": "0"},
         )
         if proc.returncode != 0:
             err = (proc.stderr or proc.stdout or "").strip()
@@ -181,12 +216,17 @@ def push_to_repo(
         if proc.returncode != 0 and "nothing to commit" not in (proc.stdout or "").lower():
             return {"success": False, "error": f"Git commit failed: {(proc.stderr or proc.stdout or '')[:200]}"}
 
-        # Ensure remote uses token URL and bypass credential helper (use URL auth only)
+        # Match remote URL to our resolved URL (with token embedded when set)
         subprocess.run(["git", "remote", "set-url", "origin", url], capture_output=True, timeout=10, cwd=str(clone_dir))
         force = os.environ.get("PUSH_FORCE", "").lower() in ("1", "true", "yes")
-        push_cmd = ["git", "-c", "credential.helper=", "push", "-u", "origin", branch]
+        # Only disable credential.helper when URL already carries the PAT; otherwise keychain/helper can authenticate
+        push_cmd = ["git"]
+        if _url_has_embedded_credentials(url):
+            push_cmd.extend(["-c", "credential.helper="])
+        push_cmd.append("push")
         if force:
-            push_cmd.insert(-1, "--force")
+            push_cmd.append("--force")
+        push_cmd.extend(["-u", "origin", branch])
         env = os.environ.copy()
         env["GIT_TERMINAL_PROMPT"] = "0"
         proc = subprocess.run(
@@ -200,8 +240,16 @@ def push_to_repo(
         if proc.returncode != 0:
             err = (proc.stderr or proc.stdout or "").strip()
             hint = ""
-            if "403" in err or "Permission" in err or "denied" in err:
-                hint = " Token tip: Use a Classic PAT (repo scope) or ensure Fine-grained token has 'farcaz/scania-springboot-app' in Repository access + Contents: Read and Write."
+            if "terminal prompts disabled" in err.lower() or "could not read Username" in err:
+                hint = (
+                    " Set GITHUB_TOKEN or GIT_PUSH_TOKEN, run `gh auth login`, save github.com creds in the "
+                    "git credential helper / macOS Keychain, or use SSH (PUSH_TARGET_REPO=git@github.com:...). "
+                    "GIT_USE_TOKEN=0 disables embedding a PAT in the URL."
+                )
+            elif "403" in err or "Permission" in err or "denied" in err:
+                hint = (
+                    " Token tip: Classic PAT needs repo scope; fine-grained needs Contents: Read/Write on the target repo."
+                )
             return {"success": False, "error": f"Git push failed: {err[:300]}{hint}"}
 
         return {

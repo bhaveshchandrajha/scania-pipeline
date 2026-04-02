@@ -9,7 +9,7 @@ Usage:
   python push_test_results.py [--project-dir warranty_demo]
 
 Environment:
-  GITHUB_TOKEN or GIT_PUSH_TOKEN - Token with push access to the target repo
+  GITHUB_TOKEN or GIT_PUSH_TOKEN - Token with push access (used automatically; GIT_USE_TOKEN=0 to disable)
   TEST_RESULTS_REPO - Override default repo URL
   TEST_RESULTS_BRANCH - Branch name (default: results)
   Loads from .env in project root if present.
@@ -41,8 +41,8 @@ def _load_env():
 
 _load_env()
 
-DEFAULT_REPO = "https://github.com/bhaveshchandrajha/scania-java-v2.git"
-DEFAULT_BRANCH_PREFIX = "warranty_demo_"
+DEFAULT_REPO = "https://github.com/bhaveshchandrajha/scania-generated-java.git"
+DEFAULT_BRANCH_PREFIX = "migration/"
 
 
 def get_token() -> str | None:
@@ -51,10 +51,14 @@ def get_token() -> str | None:
 
 def get_repo_url(repo_override: str | None) -> str:
     url = (repo_override or os.environ.get("TEST_RESULTS_REPO") or DEFAULT_REPO).strip()
-    use_token = os.environ.get("GIT_USE_TOKEN", "").lower() in ("1", "true", "yes")
-    token = get_token() if use_token else None
-    if token and url.startswith("https://github.com/"):
-        url = url.replace("https://", f"https://{token}@", 1)
+    token = get_token()
+    if (
+        token
+        and url.startswith("https://github.com/")
+        and os.environ.get("GIT_USE_TOKEN", "").lower() not in ("0", "false", "no")
+    ):
+        token = token.strip()
+        url = url.replace("https://github.com/", f"https://x-access-token:{token}@github.com/", 1)
     return url
 
 
