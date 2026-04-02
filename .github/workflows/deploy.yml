@@ -2,6 +2,9 @@ name: Deploy Scania Java Migration Pipeline to EC2
 
 # Required GitHub Actions secrets (repo → Settings → Secrets and variables → Actions):
 #   ANTHROPIC_API_KEY — Anthropic API key for LLM calls in the pipeline UI (migrate, fix, etc.)
+# Optional secrets:
+#   GIT_PUSH_TOKEN — GitHub PAT with repo access to push generated code (e.g. scania-generated-java).
+#     Injected into the EC2 container env so push_to_repo.py can authenticate (no Keychain in Docker).
 # Optional repository variables (same page → Variables tab):
 #   ANTHROPIC_MODEL — e.g. claude-sonnet-4-5; if unset, the app picks a default model
 
@@ -71,11 +74,15 @@ jobs:
             import pathlib
             key = """${{ secrets.ANTHROPIC_API_KEY }}"""
             model = """${{ vars.ANTHROPIC_MODEL }}"""
+            git_push = """${{ secrets.GIT_PUSH_TOKEN }}"""
             key = key.strip().split("\n", 1)[0].strip()
             lines = [f"ANTHROPIC_API_KEY={key}"]
             m = model.strip().split("\n", 1)[0].strip()
             if m:
                 lines.append(f"ANTHROPIC_MODEL={m}")
+            g = git_push.strip().split("\n", 1)[0].strip()
+            if g:
+                lines.append(f"GIT_PUSH_TOKEN={g}")
             pathlib.Path(os.environ["SCANIA_ENV_FILE"]).write_text(
                 "\n".join(lines) + "\n", encoding="utf-8"
             )

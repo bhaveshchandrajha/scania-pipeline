@@ -6,7 +6,7 @@ Usage:
   python push_to_repo.py [--project-dir warranty_demo] [--branch migration/main]
 
 Environment:
-  GITHUB_TOKEN or GIT_PUSH_TOKEN - Token with push access to the target repo
+  GITHUB_TOKEN, GIT_PUSH_TOKEN, or GH_TOKEN - PAT with push access to the target repo
   GITHUB_TOKEN_FILE or GIT_PUSH_TOKEN_FILE - Path to a file whose first line is the PAT (CI/Docker secrets)
   GIT_USE_TOKEN=0 - Disable embedding PAT (use credential helper / SSH instead)
   When a PAT is available, it is embedded for https://github.com/ URLs.

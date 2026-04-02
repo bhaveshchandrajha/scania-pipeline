@@ -31,7 +31,12 @@ def get_github_push_token(root_dir: Path | None = None) -> str | None:
     """Return a PAT for https://github.com/ when embedding in the remote URL is allowed."""
     if os.environ.get("GIT_USE_TOKEN", "").lower() in ("0", "false", "no"):
         return None
-    t = (os.environ.get("GITHUB_TOKEN") or os.environ.get("GIT_PUSH_TOKEN") or "").strip()
+    t = (
+        os.environ.get("GITHUB_TOKEN")
+        or os.environ.get("GIT_PUSH_TOKEN")
+        or os.environ.get("GH_TOKEN")
+        or ""
+    ).strip()
     if t:
         return t
     for key in ("GITHUB_TOKEN_FILE", "GIT_PUSH_TOKEN_FILE"):
