@@ -9,6 +9,10 @@ unchanged.
 Usage:
   UI_PORT=8003 python3 ui_global_context_server.py
 
+Environment:
+  LOG_LEVEL — logging level (default INFO): DEBUG, INFO, WARNING, ERROR
+  LOG_HEALTH_CHECKS — set to 0 to log /api/health from 127.0.0.1 at DEBUG only (reduces Docker healthcheck noise)
+
 Then open:
   http://0.0.0.0:8003/
 
@@ -26,6 +30,7 @@ Endpoints:
 """
 
 import json
+import logging
 import os
 import re
 import shutil
@@ -44,6 +49,26 @@ from urllib.error import URLError, HTTPError
 from anthropic_env import load_anthropic_from_env_files
 
 ROOT_DIR = Path(__file__).resolve().parent
+
+LOG = logging.getLogger("scania.ui")
+HTTP_LOG = logging.getLogger("scania.http")
+
+
+def _configure_logging() -> None:
+    """Send all application + access logs to stderr with timestamps (visible in docker logs)."""
+    level_name = (os.environ.get("LOG_LEVEL") or "INFO").upper()
+    level = getattr(logging, level_name, logging.INFO)
+    fmt = "%(asctime)s %(levelname)s [%(name)s] %(message)s"
+    logging.basicConfig(
+        level=level,
+        format=fmt,
+        datefmt="%Y-%m-%dT%H:%M:%S",
+        stream=sys.stderr,
+        force=True,
+    )
+    # Ensure our loggers follow LOG_LEVEL
+    for name in ("scania.ui", "scania.http"):
+        logging.getLogger(name).setLevel(level)
 
 
 def _pipeline_data_root() -> Path:
@@ -165,6 +190,8 @@ def _run_maven_build_with_autofix(proj_path: Path, progress_callback=None, hitl_
     progress_callback(msg: str) is called with status updates to keep connections alive.
     Returns a dict with buildSuccess, buildExitCode, buildOutput.
     """
+
+    LOG.info("Maven build start project=%s hitl_mode=%s", proj_path, hitl_mode)
 
     def _progress(msg: str) -> None:
         if progress_callback:
@@ -331,6 +358,12 @@ def _run_maven_build_with_autofix(proj_path: Path, progress_callback=None, hitl_
                 except Exception:
                     pass
                 if suggested_fixes:
+                    LOG.warning(
+                        "Maven build HITL propose-only: project=%s exit=%s suggestedFiles=%s",
+                        proj_path,
+                        exit_code,
+                        len(suggested_fixes),
+                    )
                     return {
                         "buildSuccess": False,
                         "buildExitCode": exit_code,
@@ -428,6 +461,19 @@ def _run_maven_build_with_autofix(proj_path: Path, progress_callback=None, hitl_
         exit_code == 0 if exit_code is not None else False
     ) and package_ok and test_ok
 
+    LOG.info(
+        "Maven build end project=%s success=%s compile_exit=%s package_ok=%s test_ok=%s test_summary=%s",
+        proj_path,
+        build_success,
+        exit_code,
+        package_ok,
+        test_ok,
+        (test_summary or "")[:200],
+    )
+    if not build_success:
+        tail = (combined_output or "")[-1500:]
+        LOG.warning("Maven build failure tail project=%s:\n%s", proj_path, tail)
+
     return {
         "buildSuccess": build_success,
         "buildExitCode": exit_code,
@@ -481,8 +527,38 @@ class GlobalContextHandler(BaseHTTPRequestHandler):
     server_version = "GlobalContextServer/0.1"
 
     def log_message(self, format, *args):
-        # Keep stdout clean; log to stderr
-        sys.stderr.write("%s - - [%s] %s\n" % (self.address_string(), self.log_date_time_string(), format % args))
+        """HTTP access line — same info as stdlib, but via logging (timestamps + docker logs)."""
+        msg = format % args
+        client = self.address_string()
+        if (
+            os.environ.get("LOG_HEALTH_CHECKS", "1").lower() in ("0", "false", "no")
+            and "/api/health" in msg
+            and client == "127.0.0.1"
+        ):
+            HTTP_LOG.debug("%s %s", client, msg)
+        else:
+            HTTP_LOG.info("%s %s", client, msg)
+
+    def handle(self):
+        """Wrap requests to log duration and ensure errors are logged."""
+        t0 = time.time()
+        path = getattr(self, "path", "")
+        client = self.address_string()
+        try:
+            super().handle()
+        except Exception:
+            LOG.exception("Request failed path=%s client=%s", path, client)
+            raise
+        finally:
+            cmd = getattr(self, "command", "")
+            if cmd in ("GET", "POST", "HEAD"):
+                LOG.info(
+                    "%s completed path=%s client=%s duration_sec=%.3f",
+                    cmd,
+                    path,
+                    client,
+                    time.time() - t0,
+                )
 
     def end_headers(self):
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -1888,6 +1964,14 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
                 output += (neo4j_proc.stdout or "") + (neo4j_proc.stderr or "")
             except Exception as e:
                 output += f"\n(Global context build failed: {e})"
+                LOG.exception("build-global-context pipeline step failed: %s", e)
+
+            LOG.info(
+                "build-global-context finished astDir=%s rpg=%s output_len=%s",
+                ast_dir,
+                str(rpg_path) if rpg_path else "",
+                len(output or ""),
+            )
 
             self._send_json({
                 "success": True,
@@ -2570,7 +2654,14 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
                     except Exception:
                         pass
                 self._send_json(resp_data)
+                LOG.info(
+                    "api/validate project=%s programId=%s entryNodeId=%s",
+                    project_dir,
+                    program_id,
+                    entry_node_id,
+                )
             except Exception as e:
+                LOG.exception("api/validate failed: %s", e)
                 self._send_json({
                     "success": False,
                     "error": str(e),
@@ -2601,6 +2692,11 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
                 from push_to_repo import push_to_repo
                 result = push_to_repo(proj_path, branch_name=branch_name)
                 if result.get("success"):
+                    LOG.info(
+                        "api/push-to-repo success project=%s branch=%s",
+                        project_dir,
+                        result.get("branch"),
+                    )
                     self._send_json({
                         "success": True,
                         "message": result.get("message", "Pushed successfully"),
@@ -2608,11 +2704,14 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
                         "repo": result.get("repo"),
                     })
                 else:
+                    err = result.get("error", "Push failed")
+                    LOG.warning("api/push-to-repo failed project=%s: %s", project_dir, err)
                     self._send_json({
                         "success": False,
-                        "error": result.get("error", "Push failed"),
+                        "error": err,
                     }, status=500)
             except Exception as e:
+                LOG.exception("api/push-to-repo exception")
                 self._send_json({
                     "success": False,
                     "error": str(e),
@@ -2784,7 +2883,23 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
                         pass
                 if detail:
                     resp["suggestedFixesDetail"] = detail
-            self._send_json(resp, status=200 if build_result["buildSuccess"] else 500)
+            http_status = 200 if build_result["buildSuccess"] else 500
+            LOG.info(
+                "api/build-application project=%s http_status=%s buildSuccess=%s exitCode=%s needsReview=%s",
+                project_dir,
+                http_status,
+                build_result.get("buildSuccess"),
+                build_result.get("buildExitCode"),
+                build_result.get("needsReview"),
+            )
+            if http_status == 500:
+                err_snip = (
+                    build_result.get("errorSummary")
+                    or (build_result.get("buildOutput") or "")[-2500:]
+                    or str(build_result)
+                )
+                LOG.warning("api/build-application failure detail: %s", err_snip[:4000])
+            self._send_json(resp, status=http_status)
             return
 
         if parsed.path == "/api/apply-approved-fixes":
@@ -2858,9 +2973,16 @@ a{{color:#60a5fa;}}</style></head><body><pre style="white-space:pre-wrap;">{esca
 
 
 def main():
+    _configure_logging()
+    LOG.info(
+        "Global Context UI starting (LOG_LEVEL=%s LOG_HEALTH_CHECKS=%s)",
+        os.environ.get("LOG_LEVEL", "INFO"),
+        os.environ.get("LOG_HEALTH_CHECKS", "1"),
+    )
     load_anthropic_from_env_files(ROOT_DIR)
     _has = bool((os.environ.get("ANTHROPIC_API_KEY") or "").strip())
     print(f"ANTHROPIC_API_KEY configured: {_has}", flush=True)
+    LOG.info("ANTHROPIC_API_KEY configured: %s", _has)
     port = int(os.environ.get("UI_PORT", "8003"))
     bind_host = os.environ.get("BIND_HOST", "0.0.0.0")  # 0.0.0.0 for Docker; 127.0.0.1 for local-only
     addr = (bind_host, port)
