@@ -5,7 +5,7 @@
 - Display file metadata
 - RPG narrative and snippets
 
----
+--- 
 
 ## Step 1: Analyze Java Service Structure
 
